@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- note: to re-use an existing Android attribute not already used by the superclass, name should have prefix "android:" and do not define a format -->
+    <declare-styleable name="FlyingView">
+        <attr name="speed" format="float" />
+        <attr name="horizontalPadding" format="dimension" />
+        <attr name="verticalPadding" format="dimension" />
+        <attr name="ignoreTouchEvent" format="boolean" />
+    </declare-styleable>
+    <!-- note: to re-use an existing Android attribute not already used by the superclass, name should have prefix "android:" and do not define a format -->
+    <declare-styleable name="VerticalDragDectorView">
+        <attr name="touchSlopScaleFactor" format="float" />
+        <attr name="detectionWidth" format="dimension" />
+    </declare-styleable>
+
+</resources>

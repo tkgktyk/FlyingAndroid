@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Flying Android</string>
+    <string name="xposed_description">Flying Android gives wings.</string>
+
+    <!-- SharedPreferences -->
+    <string name="Current_speed_f1">Current: x %1$.1f</string>
+    <string name="Speed">Speed</string>
+    <string name="pref_key_speed">pref_key_speed</string>
+    
+</resources>
