@@ -13,6 +13,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 	private static final String TAG = "VerticalDragDetectorView";
 
 	private static final float DEFAULT_DRAG_SLOP_SCALE_FACTOR = 5.0f;
+	private static final boolean DEFAULT_IGNORE_TOUCH_EVENT = false;
 
 	/**
 	 * Sentinel value for no current active pointer. Used by
@@ -42,6 +43,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 
 	private float mTouchSlopScaleFactor;
 	private int mDetectionWidth;
+	private boolean mIgnoreTouchEvent;
 
 	private void fetchAttribute(Context context, AttributeSet attrs) {
 		// get attributes specified in XML
@@ -54,6 +56,9 @@ public class VerticalDragDetectorView extends FrameLayout {
 			setDetectionWidth(a.getDimensionPixelSize(
 					R.styleable.VerticalDragDectorView_detectionWidth,
 					getDefaultDetectionWidth()));
+			setIgnoreTouchEvent(a.getBoolean(
+					R.styleable.FlyingView_ignoreTouchEvent,
+					DEFAULT_IGNORE_TOUCH_EVENT));
 		} finally {
 			a.recycle();
 		}
@@ -84,6 +89,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 
 		setDragSlopScaleFactor(DEFAULT_DRAG_SLOP_SCALE_FACTOR);
 		setDetectionWidth(getDefaultDetectionWidth());
+		setIgnoreTouchEvent(DEFAULT_IGNORE_TOUCH_EVENT);
 	}
 
 	public void setDragSlopScaleFactor(float scaleFactor) {
@@ -103,8 +109,20 @@ public class VerticalDragDetectorView extends FrameLayout {
 		return mDetectionWidth;
 	}
 
+	public void setIgnoreTouchEvent(boolean ignore) {
+		mIgnoreTouchEvent = ignore;
+	}
+
+	public boolean getIgnoreTouchEvent() {
+		return mIgnoreTouchEvent;
+	}
+
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
+		if (!isBeginAnything() && mIgnoreTouchEvent) {
+			return false;
+		}
+
 		/*
 		 * This method JUST determines whether we want to intercept the motion.
 		 * If we return true, onMotionEvent will be called and we do the actual
@@ -224,6 +242,10 @@ public class VerticalDragDetectorView extends FrameLayout {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
+		if (!isBeginAnything() && mIgnoreTouchEvent) {
+			return false;
+		}
+
 		final int action = ev.getAction();
 
 		switch (action & MotionEvent.ACTION_MASK) {

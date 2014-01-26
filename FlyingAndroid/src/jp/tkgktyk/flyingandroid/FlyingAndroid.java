@@ -67,6 +67,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 					XposedBridge.log("outside unhandled click");
 					v.returnToHome();
 					v.setIgnoreTouchEvent(true);
+					((VerticalDragDetectorView) v.getParent())
+							.setIgnoreTouchEvent(false);
 					Toast.makeText(v.getContext(), "Rest", Toast.LENGTH_SHORT)
 							.show();
 				}
@@ -89,10 +91,13 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 				fly.setIgnoreTouchEvent(next);
 				String text = null;
 				if (next) {
+					XposedBridge.log("toggle: never reached");
 					text = "Rest";
 					fly.returnToHome();
+					v.setIgnoreTouchEvent(false);
 				} else {
 					text = "Fly";
+					v.setIgnoreTouchEvent(true);
 				}
 				Toast.makeText(v.getContext(), text, Toast.LENGTH_SHORT).show();
 			}
