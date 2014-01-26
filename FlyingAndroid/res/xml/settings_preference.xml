@@ -2,10 +2,22 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:mylib="http://schemas.android.com/apk/res-auto" >
 
-    <ListPreference
-        android:entries="@array/speeds"
-        android:entryValues="@array/speedValues"
-        android:key="@string/pref_key_speed"
-        android:title="@string/Speed" />
+    <Preference
+        android:summary="@string/summary_note"
+        android:title="@string/Note" />
+
+    <PreferenceCategory android:title="@string/Settings" >
+        <ListPreference
+            android:entries="@array/speeds"
+            android:entryValues="@array/speedValues"
+            android:key="@string/pref_key_speed"
+            android:title="@string/Speed" />
+
+        <CheckBoxPreference
+            android:key="@string/pref_key_show_drag_area"
+            android:summaryOff="@string/summary_off_show_drag_area"
+            android:summaryOn="@string/summary_on_show_drag_area"
+            android:title="@string/Show_drag_area" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

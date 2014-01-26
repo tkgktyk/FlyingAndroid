@@ -5,8 +5,15 @@
     <string name="xposed_description">Flying Android gives wings.</string>
 
     <!-- SharedPreferences -->
+    <string name="Note">Note</string>
+    <string name="summary_note">You may need to reboot for changes to take effect</string>
+    <string name="Settings">Settings</string>
     <string name="Current_speed_f1">Current: x %1$.1f</string>
     <string name="Speed">Speed</string>
     <string name="pref_key_speed">pref_key_speed</string>
-    
+    <string name="Show_drag_area">Show drag area</string>
+    <string name="pref_key_show_drag_area">pref_key_show_drag_area</string>
+    <string name="summary_on_show_drag_area">Show drag area when start Activity.</string>
+    <string name="summary_off_show_drag_area">Not shown</string>
+
 </resources>
