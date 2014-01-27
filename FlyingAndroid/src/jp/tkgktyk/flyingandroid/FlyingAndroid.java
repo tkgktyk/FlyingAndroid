@@ -2,6 +2,10 @@ package jp.tkgktyk.flyingandroid;
 
 import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import jp.tkgktyk.flyingandroid.FlyingView2.OnUnhandledClickListener;
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
 import android.annotation.SuppressLint;
@@ -27,13 +31,23 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 			.getName();
 	private static float sSpeed;
 	private static boolean sShowDragArea;
+	private static Set<String> sBlackSet;
 
 	@Override
 	public void initZygote(StartupParam startupParam) {
+		reloadPreferences();
+	}
+
+	/**
+	 * cannot call static functions from other process such as MainActivity.
+	 */
+	public static void reloadPreferences() {
 		XSharedPreferences pref = new XSharedPreferences(PACKAGE_NAME);
 
 		sSpeed = Float.parseFloat(pref.getString("pref_key_speed", "1.5"));
 		sShowDragArea = pref.getBoolean("pref_key_show_drag_area", true);
+		sBlackSet = pref.getStringSet("pref_key_black_list",
+				new HashSet<String>());
 	}
 
 	private ViewGroup newFlyingView(Context context) throws Throwable {
@@ -105,7 +119,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		return drag;
 	}
 
-	private View newDragAreaView(final Context context, int width) {
+	private View newDragAreaView(final Context context, int width)
+			throws Throwable {
 		final RelativeLayout container = new RelativeLayout(context);
 		container.setLayoutParams(new ViewGroup.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
@@ -128,9 +143,12 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 						}
 					}
 				});
+		final Context flyContext = context.createPackageContext(PACKAGE_NAME,
+				Context.CONTEXT_IGNORE_SECURITY);
+		int background = flyContext.getResources().getColor(R.color.drag_area);
 		// add left
 		final View left = new View(context);
-		left.setBackgroundColor(0xAEFFCBDB);
+		left.setBackgroundColor(background);
 		final RelativeLayout.LayoutParams lpLeft = new RelativeLayout.LayoutParams(
 				width, ViewGroup.LayoutParams.WRAP_CONTENT);
 		lpLeft.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -139,7 +157,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		container.addView(left);
 		// add right
 		final View right = new View(context);
-		right.setBackgroundColor(0xAEFFCBDB);
+		right.setBackgroundColor(background);
 		final RelativeLayout.LayoutParams lpRight = new RelativeLayout.LayoutParams(
 				width, ViewGroup.LayoutParams.WRAP_CONTENT);
 		lpRight.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -181,8 +199,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 	public void handleLoadPackage(final LoadPackageParam lpparam)
 			throws Throwable {
 		try {
-			// if (!lpparam.packageName.equals("jp.tkgktyk.talktotimer"))
-			// return;
+			if (sBlackSet.contains(lpparam.packageName))
+				return;
 
 			// XposedBridge.log("Loaded app: " + lpparam.packageName);
 			// XposedBridge.log("is first app: " + lpparam.isFirstApplication);

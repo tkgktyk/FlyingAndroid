@@ -2,11 +2,11 @@
 <resources>
 
     <string name="app_name">Flying Android</string>
-    <string name="xposed_description">Flying Android gives wings.</string>
+    <string name="xposed_description">Gives wings to Android.</string>
 
     <!-- SharedPreferences -->
     <string name="Note">Note</string>
-    <string name="summary_note">You may need to reboot for changes to take effect</string>
+    <string name="summary_note">You may need to reboot for changes to take effect.</string>
     <string name="Settings">Settings</string>
     <string name="Current_speed_f1">Current: x %1$.1f</string>
     <string name="Speed">Speed</string>
@@ -15,5 +15,11 @@
     <string name="pref_key_show_drag_area">pref_key_show_drag_area</string>
     <string name="summary_on_show_drag_area">Show drag area when start Activity.</string>
     <string name="summary_off_show_drag_area">Not shown</string>
+    <string name="Black_list">Black list&#8230;</string>
+    <string name="pref_key_black_list">pref_key_black_list</string>
+    
+    <!-- BlackList -->
+    <string name="Show_only_black">Show only black</string>
+    <string name="No_applications">No applications</string>
 
 </resources>
