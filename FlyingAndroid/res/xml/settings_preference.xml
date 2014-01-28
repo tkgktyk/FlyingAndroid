@@ -13,6 +13,13 @@
             android:key="@string/pref_key_speed"
             android:title="@string/Speed" />
 
+        <EditTextPreference
+            android:key="@string/pref_key_drag_area_width_dp"
+            android:title="@string/Width_of_drag_area"
+            android:inputType="number"
+            android:dialogMessage="Unit is dp."
+            android:maxLength="3" />
+
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_key_show_drag_area"

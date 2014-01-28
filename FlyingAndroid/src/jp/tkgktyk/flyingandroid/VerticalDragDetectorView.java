@@ -101,6 +101,16 @@ public class VerticalDragDetectorView extends FrameLayout {
 		return mTouchSlopScaleFactor;
 	}
 
+	public void setDetectionWidthDp(int widthDp) {
+		setDetectionWidth(Math.round(widthDp
+				* getContext().getResources().getDisplayMetrics().density));
+	}
+
+	public int getDetectionWidthDp() {
+		return Math.round(getDetectionWidth()
+				/ getContext().getResources().getDisplayMetrics().density);
+	}
+
 	public void setDetectionWidth(int width) {
 		mDetectionWidth = width;
 	}

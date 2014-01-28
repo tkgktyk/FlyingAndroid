@@ -29,7 +29,11 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		IXposedHookZygoteInit {
 	public static final String PACKAGE_NAME = FlyingAndroid.class.getPackage()
 			.getName();
+
+	private static final int INVALID_WIDTH = 0;
+
 	private static float sSpeed;
+	private static int sDragAreaWidthDp;
 	private static boolean sShowDragArea;
 	private static Set<String> sBlackSet;
 
@@ -45,6 +49,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		XSharedPreferences pref = new XSharedPreferences(PACKAGE_NAME);
 
 		sSpeed = Float.parseFloat(pref.getString("pref_key_speed", "1.5"));
+		sDragAreaWidthDp = Integer.parseInt(pref.getString(
+				"pref_key_drag_area_width_dp", String.valueOf(INVALID_WIDTH)));
 		sShowDragArea = pref.getBoolean("pref_key_show_drag_area", true);
 		sBlackSet = pref.getStringSet("pref_key_black_list",
 				new HashSet<String>());
@@ -96,6 +102,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		drag.setLayoutParams(new ViewGroup.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT));
+		if (sDragAreaWidthDp != INVALID_WIDTH)
+			drag.setDetectionWidthDp(sDragAreaWidthDp);
 		drag.setOnDraggedListener(new OnDraggedListener() {
 			@Override
 			public void onDragged(VerticalDragDetectorView v) {
@@ -121,6 +129,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 
 	private View newDragAreaView(final Context context, int width)
 			throws Throwable {
+		final Context flyContext = context.createPackageContext(PACKAGE_NAME,
+				Context.CONTEXT_IGNORE_SECURITY);
 		final RelativeLayout container = new RelativeLayout(context);
 		container.setLayoutParams(new ViewGroup.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
@@ -132,7 +142,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 					@Override
 					public void onGlobalLayout() {
 						container.startAnimation(AnimationUtils.loadAnimation(
-								context, android.R.anim.fade_out));
+								flyContext, R.anim.fade_out));
 						container.setVisibility(View.GONE);
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 							container.getViewTreeObserver()
@@ -143,8 +153,6 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 						}
 					}
 				});
-		final Context flyContext = context.createPackageContext(PACKAGE_NAME,
-				Context.CONTEXT_IGNORE_SECURITY);
 		int background = flyContext.getResources().getColor(R.color.drag_area);
 		// add left
 		final View left = new View(context);
