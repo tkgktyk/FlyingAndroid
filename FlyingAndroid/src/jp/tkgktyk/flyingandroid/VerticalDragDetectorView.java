@@ -1,5 +1,6 @@
 package jp.tkgktyk.flyingandroid;
 
+import de.robv.android.xposed.XposedBridge;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -213,6 +214,11 @@ public class VerticalDragDetectorView extends FrameLayout {
 
 		case MotionEvent.ACTION_DOWN: {
 			final int x = (int) ev.getX();
+			// XposedBridge.log("left: " + getLeft());
+			// XposedBridge.log("right: " + getRight());
+			// XposedBridge.log("DetectionWidth: " + mDetectionWidth);
+			// XposedBridge.log("down at x: " + x);
+			// XposedBridge.log("down at y: " + ev.getY());
 			if ((x >= getLeft() && x <= getLeft() + mDetectionWidth)
 					|| (x >= getRight() - mDetectionWidth && x <= getRight())) {
 				/*
@@ -222,6 +228,10 @@ public class VerticalDragDetectorView extends FrameLayout {
 				mLastMotionX = (int) ev.getX();
 				mLastMotionY = (int) ev.getY();
 				mActivePointerId = ev.getPointerId(0);
+			} else {
+				XposedBridge.log("this touch event is ignored.");
+				// ignore this touch event
+				mIsBeginTouchedX = true;
 			}
 			break;
 		}
@@ -257,6 +267,10 @@ public class VerticalDragDetectorView extends FrameLayout {
 		}
 
 		final int action = ev.getAction();
+		if (action == MotionEvent.ACTION_MOVE) {
+			if (mIsBeginTouchedX)
+				return false;
+		}
 
 		switch (action & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN: {
@@ -265,12 +279,21 @@ public class VerticalDragDetectorView extends FrameLayout {
 			}
 
 			final int x = (int) ev.getX();
+			// XposedBridge.log("left: " + getLeft());
+			// XposedBridge.log("right: " + getRight());
+			// XposedBridge.log("DetectionWidth: " + mDetectionWidth);
+			// XposedBridge.log("down at x: " + x);
+			// XposedBridge.log("down at y: " + ev.getY());
 			if ((x >= getLeft() && x <= getLeft() + mDetectionWidth)
 					|| (x >= getRight() - mDetectionWidth && x <= getRight())) {
 				// Remember where the motion event started
 				mLastMotionX = (int) ev.getX();
 				mLastMotionY = (int) ev.getY();
 				mActivePointerId = ev.getPointerId(0);
+			} else {
+				XposedBridge.log("this touch event is ignored.");
+				// ignore this touch event
+				mIsBeginTouchedX = true;
 			}
 			break;
 		}
