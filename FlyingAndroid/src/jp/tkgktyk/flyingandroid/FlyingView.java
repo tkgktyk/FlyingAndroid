@@ -11,7 +11,7 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 public class FlyingView extends FrameLayout {
-	private static final String TAG = "ScrollView";
+	private static final String TAG = "FlyingView";
 
 	private static final float DEFAULT_SPEED = 1.0f;
 	private static final int DEFAULT_HORIZONTAL_PADDING = 0;
