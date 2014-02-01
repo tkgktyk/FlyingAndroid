@@ -26,7 +26,8 @@ public class VerticalDragDetectorView extends FrameLayout {
 	 * drags/flings if multiple pointers are used.
 	 */
 	private int mActivePointerId = INVALID_POINTER;
-	private int mTouchSlop;
+	private int mTouchSlopX;
+	private int mTouchSlopY;
 	private int mDragSlop;
 	/**
 	 * True if the user is currently dragging this ScrollView around. This is
@@ -72,21 +73,24 @@ public class VerticalDragDetectorView extends FrameLayout {
 	public VerticalDragDetectorView(Context context, AttributeSet attrs,
 			int defStyle) {
 		super(context, attrs, defStyle);
-		mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+		mTouchSlopY = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+		mTouchSlopX = mTouchSlopY * 2;
 
 		fetchAttribute(context, attrs);
 	}
 
 	public VerticalDragDetectorView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+		mTouchSlopY = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+		mTouchSlopX = mTouchSlopY * 2;
 
 		fetchAttribute(context, attrs);
 	}
 
 	public VerticalDragDetectorView(Context context) {
 		super(context);
-		mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+		mTouchSlopY = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+		mTouchSlopX = mTouchSlopY * 2;
 
 		setDragSlopScaleFactor(DEFAULT_DRAG_SLOP_SCALE_FACTOR);
 		setDetectionWidth(getDefaultDetectionWidth());
@@ -95,7 +99,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 
 	public void setDragSlopScaleFactor(float scaleFactor) {
 		mTouchSlopScaleFactor = scaleFactor;
-		mDragSlop = (int) Math.round(mTouchSlop * scaleFactor);
+		mDragSlop = (int) Math.round(mTouchSlopY * scaleFactor);
 	}
 
 	public float getDragSlopScaleFactor() {
@@ -180,7 +184,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 
 			final int x = (int) ev.getX(pointerIndex);
 			final int xDiff = Math.abs(x - mLastMotionX);
-			if (xDiff > mTouchSlop) {
+			if (xDiff > mTouchSlopX) {
 				// XposedBridge.log("last y: " + mLastMotionY);
 				// XposedBridge.log("y: " + y);
 				// XposedBridge.log("touch slop: " + mTouchSlop);
@@ -188,7 +192,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 			}
 			final int y = (int) ev.getY(pointerIndex);
 			final int yDiff = Math.abs(y - mLastMotionY);
-			if (yDiff > mTouchSlop) {
+			if (yDiff > mTouchSlopY) {
 				final ViewParent parent = getParent();
 				if (parent != null) {
 					parent.requestDisallowInterceptTouchEvent(true);
@@ -308,7 +312,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 
 			final int x = (int) ev.getX(activePointerIndex);
 			int deltaX = mLastMotionX - x;
-			if (!isBeginAnything() && Math.abs(deltaX) > mTouchSlop) {
+			if (!isBeginAnything() && Math.abs(deltaX) > mTouchSlopX) {
 				// XposedBridge.log("last y: " + mLastMotionY);
 				// XposedBridge.log("y: " + y);
 				// XposedBridge.log("touch slop: " + mTouchSlop);
@@ -316,7 +320,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 			}
 			final int y = (int) ev.getY(activePointerIndex);
 			int deltaY = mLastMotionY - y;
-			if (!mIsBeginTouchedY && Math.abs(deltaY) > mTouchSlop) {
+			if (!mIsBeginTouchedY && Math.abs(deltaY) > mTouchSlopY) {
 				// XposedBridge.log("last y: " + mLastMotionY);
 				// XposedBridge.log("y: " + y);
 				// XposedBridge.log("touch slop: " + mTouchSlop);
