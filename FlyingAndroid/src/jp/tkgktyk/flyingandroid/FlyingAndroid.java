@@ -2,6 +2,8 @@ package jp.tkgktyk.flyingandroid;
 
 import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import static de.robv.android.xposed.XposedHelpers.getAdditionalInstanceField;
+import static de.robv.android.xposed.XposedHelpers.setAdditionalInstanceField;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,7 +11,11 @@ import java.util.Set;
 import jp.tkgktyk.flyingandroid.FlyingView2.OnUnhandledClickListener;
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
+import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
@@ -255,84 +262,72 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 							return null;
 						}
 					});
-//			findAndHookMethod("android.app.Activity", lpparam.classLoader,
-//					"onCreate", Bundle.class, new XC_MethodHook() {
-//						@Override
-//						protected void afterHookedMethod(MethodHookParam param)
-//								throws Throwable {
-//							try {
-//								final Activity activity = (Activity) param.thisObject;
-//								Object r = getAdditionalInstanceField(activity,
-//										"flyingAndroidReceiver");
-//								if (r == null) {
-//									BroadcastReceiver receiver = new BroadcastReceiver() {
-//										@Override
-//										public void onReceive(Context context,
-//												Intent intent) {
-//											ActivityManager am = (ActivityManager) context
-//													.getSystemService(Context.ACTIVITY_SERVICE);
-//											List<RunningTaskInfo> taskInfo = am
-//													.getRunningTasks(1);
-//											if (activity
-//													.getClass()
-//													.getName()
-//													.equals(taskInfo.get(0).topActivity
-//															.getClassName())) {
-//												FlyingView2 fly = (FlyingView2) ((ViewGroup) ((ViewGroup) activity
-//														.getWindow()
-//														.getDecorView())
-//														.getChildAt(0))
-//														.getChildAt(0);
-//												XposedBridge.log("toggle");
-//												boolean next = !fly
-//														.getIgnoreTouchEvent();
-//												fly.setIgnoreTouchEvent(next);
-//												String text = null;
-//												if (next) {
-//													text = "Rest";
-//													fly.returnToHome();
-//												} else {
-//													text = "Fly";
-//												}
-//												Toast.makeText(activity, text,
-//														Toast.LENGTH_SHORT)
-//														.show();
-//											}
-//										}
-//									};
-//									activity.registerReceiver(
-//											receiver,
-//											new IntentFilter(
-//													"jp.tkgktyk.flyingandroid.ACTION_TOGGLE"));
-//									setAdditionalInstanceField(activity,
-//											"flyingAndroidReceiver", receiver);
-//									XposedBridge.log("register");
-//								}
-//							} catch (Throwable t) {
-//								XposedBridge.log(t);
-//							}
-//						}
-//					});
-//			findAndHookMethod("android.app.Activity", lpparam.classLoader,
-//					"onDestroy", new XC_MethodHook() {
-//						@Override
-//						protected void afterHookedMethod(MethodHookParam param)
-//								throws Throwable {
-//							try {
-//								final Activity activity = (Activity) param.thisObject;
-//								Object r = getAdditionalInstanceField(activity,
-//										"flyingAndroidReceiver");
-//								if (r != null) {
-//									activity.unregisterReceiver((BroadcastReceiver) r);
-//									setAdditionalInstanceField(activity,
-//											"flyingAndroidReceiver", null);
-//									XposedBridge.log("unregister");
-//								}
-//							} catch (Throwable t) {
-//								XposedBridge.log(t);
-//							}
-//						}
-//					});
+			findAndHookMethod("android.app.Activity", lpparam.classLoader,
+					"onResume", new XC_MethodHook() {
+						@Override
+						protected void afterHookedMethod(MethodHookParam param)
+								throws Throwable {
+							try {
+								final Activity activity = (Activity) param.thisObject;
+								Object r = getAdditionalInstanceField(activity,
+										"flyingAndroidReceiver");
+								if (r == null) {
+									BroadcastReceiver receiver = new BroadcastReceiver() {
+										@Override
+										public void onReceive(Context context,
+												Intent intent) {
+											FlyingView2 fly = (FlyingView2) ((ViewGroup) ((ViewGroup) activity
+													.getWindow().getDecorView())
+													.getChildAt(0))
+													.getChildAt(0);
+											XposedBridge.log("toggle");
+											boolean next = !fly
+													.getIgnoreTouchEvent();
+											fly.setIgnoreTouchEvent(next);
+											String text = null;
+											if (next) {
+												text = "Rest";
+												fly.returnToHome();
+											} else {
+												text = "Fly";
+											}
+											Toast.makeText(activity, text,
+													Toast.LENGTH_SHORT).show();
+										}
+									};
+									activity.registerReceiver(
+											receiver,
+											new IntentFilter(
+													"jp.tkgktyk.flyingandroid.ACTION_TOGGLE"));
+									setAdditionalInstanceField(activity,
+											"flyingAndroidReceiver", receiver);
+									XposedBridge.log("register");
+								}
+							} catch (Throwable t) {
+								XposedBridge.log(t);
+							}
+						}
+					});
+			findAndHookMethod("android.app.Activity", lpparam.classLoader,
+					"onPause", new XC_MethodHook() {
+						@Override
+						protected void afterHookedMethod(MethodHookParam param)
+								throws Throwable {
+							try {
+								final Activity activity = (Activity) param.thisObject;
+								Object r = getAdditionalInstanceField(activity,
+										"flyingAndroidReceiver");
+								if (r != null) {
+									activity.unregisterReceiver((BroadcastReceiver) r);
+									setAdditionalInstanceField(activity,
+											"flyingAndroidReceiver", null);
+									XposedBridge.log("unregister");
+								}
+							} catch (Throwable t) {
+								XposedBridge.log(t);
+							}
+						}
+					});
 		} catch (Throwable t) {
 			XposedBridge.log(t);
 		}
