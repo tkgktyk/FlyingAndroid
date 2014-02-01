@@ -246,9 +246,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 												newChild.getLayoutParams());
 									} else {
 										// already exists newChild and child
-										// have
-										// been
-										// added to newChild.
+										// have been added to newChild.
 									}
 								}
 							} catch (Throwable t) {
@@ -257,6 +255,84 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 							return null;
 						}
 					});
+//			findAndHookMethod("android.app.Activity", lpparam.classLoader,
+//					"onCreate", Bundle.class, new XC_MethodHook() {
+//						@Override
+//						protected void afterHookedMethod(MethodHookParam param)
+//								throws Throwable {
+//							try {
+//								final Activity activity = (Activity) param.thisObject;
+//								Object r = getAdditionalInstanceField(activity,
+//										"flyingAndroidReceiver");
+//								if (r == null) {
+//									BroadcastReceiver receiver = new BroadcastReceiver() {
+//										@Override
+//										public void onReceive(Context context,
+//												Intent intent) {
+//											ActivityManager am = (ActivityManager) context
+//													.getSystemService(Context.ACTIVITY_SERVICE);
+//											List<RunningTaskInfo> taskInfo = am
+//													.getRunningTasks(1);
+//											if (activity
+//													.getClass()
+//													.getName()
+//													.equals(taskInfo.get(0).topActivity
+//															.getClassName())) {
+//												FlyingView2 fly = (FlyingView2) ((ViewGroup) ((ViewGroup) activity
+//														.getWindow()
+//														.getDecorView())
+//														.getChildAt(0))
+//														.getChildAt(0);
+//												XposedBridge.log("toggle");
+//												boolean next = !fly
+//														.getIgnoreTouchEvent();
+//												fly.setIgnoreTouchEvent(next);
+//												String text = null;
+//												if (next) {
+//													text = "Rest";
+//													fly.returnToHome();
+//												} else {
+//													text = "Fly";
+//												}
+//												Toast.makeText(activity, text,
+//														Toast.LENGTH_SHORT)
+//														.show();
+//											}
+//										}
+//									};
+//									activity.registerReceiver(
+//											receiver,
+//											new IntentFilter(
+//													"jp.tkgktyk.flyingandroid.ACTION_TOGGLE"));
+//									setAdditionalInstanceField(activity,
+//											"flyingAndroidReceiver", receiver);
+//									XposedBridge.log("register");
+//								}
+//							} catch (Throwable t) {
+//								XposedBridge.log(t);
+//							}
+//						}
+//					});
+//			findAndHookMethod("android.app.Activity", lpparam.classLoader,
+//					"onDestroy", new XC_MethodHook() {
+//						@Override
+//						protected void afterHookedMethod(MethodHookParam param)
+//								throws Throwable {
+//							try {
+//								final Activity activity = (Activity) param.thisObject;
+//								Object r = getAdditionalInstanceField(activity,
+//										"flyingAndroidReceiver");
+//								if (r != null) {
+//									activity.unregisterReceiver((BroadcastReceiver) r);
+//									setAdditionalInstanceField(activity,
+//											"flyingAndroidReceiver", null);
+//									XposedBridge.log("unregister");
+//								}
+//							} catch (Throwable t) {
+//								XposedBridge.log(t);
+//							}
+//						}
+//					});
 		} catch (Throwable t) {
 			XposedBridge.log(t);
 		}

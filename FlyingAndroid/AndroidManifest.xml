@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.tkgktyk.flyingandroid"
-    android:versionCode="5"
-    android:versionName="0.4.1" >
+    android:versionCode="6"
+    android:versionName="0.4.2" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -10,9 +10,10 @@
 
     <application
         android:allowBackup="true"
+        android:debuggable="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" android:debuggable="true">
+        android:theme="@style/AppTheme" >
         <meta-data
             android:name="xposedmodule"
             android:value="true" />
@@ -32,7 +33,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="BlackListActivity"></activity>
+        <activity android:name="jp.tkgktyk.flyingandroid.BlackListActivity" >
+        </activity>
+        <activity
+            android:name="jp.tkgktyk.flyingandroid.ToggleActivity"
+            android:label="@string/toggle_app_name" >
+        </activity>
     </application>
 
 </manifest>
