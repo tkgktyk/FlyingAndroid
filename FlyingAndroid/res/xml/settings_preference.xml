@@ -8,24 +8,25 @@
 
     <PreferenceCategory android:title="@string/Settings" >
         <ListPreference
+            android:defaultValue="1.5"
             android:entries="@array/speeds"
             android:entryValues="@array/speedValues"
             android:key="@string/pref_key_speed"
             android:title="@string/Speed" />
 
-        <EditTextPreference
-            android:key="@string/pref_key_drag_area_width_dp"
-            android:title="@string/Width_of_drag_area"
-            android:inputType="number"
-            android:dialogMessage="Unit is dp."
-            android:maxLength="3" />
-
         <CheckBoxPreference
+            android:summaryOff="@string/summary_off_notify_flying"
+            android:summaryOn="@string/summary_on_notify_flying"
             android:defaultValue="true"
-            android:key="@string/pref_key_show_drag_area"
-            android:summaryOff="@string/summary_off_show_drag_area"
-            android:summaryOn="@string/summary_on_show_drag_area"
-            android:title="@string/Show_drag_area" />
+            android:key="@string/pref_key_notify_flying"
+            android:title="@string/Notify_flying" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/takeoffPositions"
+            android:entryValues="@array/takeoffPositionValues"
+            android:key="@string/pref_key_takeoff_position"
+            android:title="@string/Takeoff_position" />
 
         <Preference
             android:key="@string/pref_key_black_list"

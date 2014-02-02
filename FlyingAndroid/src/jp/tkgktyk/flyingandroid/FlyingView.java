@@ -286,7 +286,7 @@ public class FlyingView extends FrameLayout {
 			if (mIsBeingDragged) {
 				// Scroll to follow the motion event
 
-				onMove(deltaX, deltaY);
+				onMove(-deltaX, -deltaY);
 				mLastMotionX = x;
 				mLastMotionY = y;
 			}
@@ -349,20 +349,24 @@ public class FlyingView extends FrameLayout {
 	}
 
 	public void onMove(int deltaX, int deltaY) {
+		deltaX = (int) Math.round(deltaX * mSpeed);
+		deltaY = (int) Math.round(deltaY * mSpeed);
 		if (mOnMoveListener != null && mOnMoveListener.onMove(deltaX, deltaY))
 			return;
 
-		deltaX = (int) Math.round(deltaX * mSpeed);
-		deltaY = (int) Math.round(deltaY * mSpeed);
+		move(deltaX, deltaY);
+	}
+
+	public void move(int deltaX, int deltaY) {
 		int hLimit = getWidth() - mHorizontalPadding;
 		int vLimit = getHeight() - mVerticalPadding;
 
 		for (int i = 0; i < getChildCount(); ++i) {
 			View child = getChildAt(i);
 
-			int left = child.getLeft() - deltaX;
+			int left = child.getLeft() + deltaX;
 			left = clamp(left, hLimit);
-			int top = child.getTop() - deltaY;
+			int top = child.getTop() + deltaY;
 			top = clamp(top, vLimit);
 			child.layout(left, top, left + child.getWidth(),
 					top + child.getHeight());

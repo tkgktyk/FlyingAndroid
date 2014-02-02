@@ -287,7 +287,7 @@ public class FlyingView2 extends FrameLayout {
 			if (mIsBeingDragged) {
 				// Scroll to follow the motion event
 
-				onMove(deltaX, deltaY);
+				onMove(-deltaX, -deltaY);
 				mLastMotionX = x;
 				mLastMotionY = y;
 			}
@@ -350,11 +350,15 @@ public class FlyingView2 extends FrameLayout {
 	}
 
 	public void onMove(int deltaX, int deltaY) {
+		deltaX = (int) Math.round(deltaX * mSpeed);
+		deltaY = (int) Math.round(deltaY * mSpeed);
 		if (mOnMoveListener != null && mOnMoveListener.onMove(deltaX, deltaY))
 			return;
 
-		deltaX = (int) Math.round(deltaX * mSpeed);
-		deltaY = (int) Math.round(deltaY * mSpeed);
+		move(deltaX, deltaY);
+	}
+
+	public void move(int deltaX, int deltaY) {
 		int hLimit = getWidth() - mHorizontalPadding;
 		int vLimit = getHeight() - mVerticalPadding;
 
@@ -362,9 +366,9 @@ public class FlyingView2 extends FrameLayout {
 			View child = getChildAt(i);
 			ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) child
 					.getLayoutParams();
-			lp.leftMargin = clamp(lp.leftMargin - deltaX, hLimit);
+			lp.leftMargin = clamp(lp.leftMargin + deltaX, hLimit);
 			lp.rightMargin = -lp.leftMargin;
-			lp.topMargin = clamp(lp.topMargin - deltaY, vLimit);
+			lp.topMargin = clamp(lp.topMargin + deltaY, vLimit);
 			lp.bottomMargin = -lp.topMargin;
 			child.setLayoutParams(lp);
 		}

@@ -2,62 +2,37 @@ package jp.tkgktyk.flyingandroid;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 public class MainActivity extends PreferenceActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.settings_preference);
-		// scroll speed
-		ListPreference scrollSpeed = (ListPreference) findPreference(R.string.pref_key_speed);
-		scrollSpeed
-				.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-					@Override
-					public boolean onPreferenceChange(Preference preference,
-							Object newValue) {
-						setListSummary((ListPreference) preference,
-								(String) newValue);
-						return true;
-					}
-				});
-		setListSummary(scrollSpeed, getSharedString(R.string.pref_key_speed));
-		// width
-		EditTextPreference width = (EditTextPreference) findPreference(R.string.pref_key_drag_area_width_dp);
-		String w = getSharedString(R.string.pref_key_drag_area_width_dp);
-		VerticalDragDetectorView dragView = new VerticalDragDetectorView(this);
-		if (w == null) {
-			w = String.valueOf(dragView.getDetectionWidthDp());
-		}
-		width.setSummary(getString(R.string.Current_s1, w + "dp"));
-		final RelativeLayout dragAreaView = new RelativeLayout(this);
-		dragView.setDetectionWidthDp(Integer.parseInt(w));
-		resetDragAreaView(dragAreaView, dragView.getDetectionWidth());
-		addContentView(dragAreaView, new ViewGroup.LayoutParams(
-				ViewGroup.LayoutParams.MATCH_PARENT,
-				ViewGroup.LayoutParams.MATCH_PARENT));
-		width.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+		OnPreferenceChangeListener listChangeListener = new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference,
 					Object newValue) {
-				String w = (String) newValue;
-				preference.setSummary(getString(R.string.Current_s1, w + "dp"));
-				VerticalDragDetectorView dragView = new VerticalDragDetectorView(
-						MainActivity.this);
-				dragView.setDetectionWidthDp(Integer.parseInt(w));
-				resetDragAreaView(dragAreaView, dragView.getDetectionWidth());
+				setListSummary((ListPreference) preference, (String) newValue);
 				return true;
 			}
-		});
+		};
+		// scroll speed
+		ListPreference scrollSpeed = (ListPreference) findPreference(R.string.pref_key_speed);
+		scrollSpeed.setOnPreferenceChangeListener(listChangeListener);
+		setListSummary(scrollSpeed, getSharedString(R.string.pref_key_speed));
+		// takeoff position
+		ListPreference takeoff = (ListPreference) findPreference(R.string.pref_key_takeoff_position);
+		takeoff.setOnPreferenceChangeListener(listChangeListener);
+		setListSummary(takeoff,
+				getSharedString(R.string.pref_key_takeoff_position));
 		// black list
 		Preference blackList = findPreference(R.string.pref_key_black_list);
 		blackList.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -85,29 +60,6 @@ public class MainActivity extends PreferenceActivity {
 			entry = "default";
 		}
 		pref.setSummary(getString(R.string.Current_s1, entry));
-	}
-
-	private void resetDragAreaView(RelativeLayout container, int width) {
-		container.removeAllViews();
-		int background = this.getResources().getColor(R.color.drag_area);
-		// add left
-		final View left = new View(this);
-		left.setBackgroundColor(background);
-		final RelativeLayout.LayoutParams lpLeft = new RelativeLayout.LayoutParams(
-				width, ViewGroup.LayoutParams.WRAP_CONTENT);
-		lpLeft.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-		lpLeft.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-		left.setLayoutParams(lpLeft);
-		container.addView(left);
-		// add right
-		final View right = new View(this);
-		right.setBackgroundColor(background);
-		final RelativeLayout.LayoutParams lpRight = new RelativeLayout.LayoutParams(
-				width, ViewGroup.LayoutParams.WRAP_CONTENT);
-		lpRight.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-		lpRight.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-		right.setLayoutParams(lpRight);
-		container.addView(right);
 	}
 
 	// @Override

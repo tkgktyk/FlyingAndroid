@@ -14,6 +14,8 @@ public class ToggleActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// ignore exit animation
+		overridePendingTransition(0, 0);
 		finish();
 		Timer timer = new Timer(false);
 		timer.schedule(new TimerTask() {

@@ -3,23 +3,22 @@
 
     <string name="app_name">Flying Android</string>
     <string name="toggle_app_name">FA Toggle</string>
-    <string name="xposed_description">Gives wings to Android.</string>
+    <string name="xposed_description">Give wings to Android.</string>
 
     <!-- SharedPreferences -->
     <string name="Note">Note</string>
     <string name="summary_note">You may need to reboot for changes to take effect.</string>
     <string name="Settings">Settings</string>
-    <string name="Current_speed_f1">Current: x %1$.1f</string>
+    <string name="Current_s1">Current: %1$s</string>
     <string name="Speed">Speed</string>
     <string name="pref_key_speed">pref_key_speed</string>
-    <string name="Current_s1">Current: %1$s</string>
-    <string name="Width_of_drag_area">Width of drag area</string>
-    <string name="pref_key_drag_area_width_dp">pref_key_drag_area_width_dp</string>
-    <string name="Show_drag_area">Show drag area</string>
-    <string name="pref_key_show_drag_area">pref_key_show_drag_area</string>
-    <string name="summary_on_show_drag_area">Show drag area when start Activity.</string>
-    <string name="summary_off_show_drag_area">Not shown</string>
-    <string name="Black_list">Black list &#8230;</string>
+    <string name="Notify_flying">Notify flying</string>
+    <string name="pref_key_notify_flying">pref_key_notify_flying</string>
+    <string name="summary_on_notify_flying">Draw boundary when flying.</string>
+    <string name="summary_off_notify_flying">Not notified.</string>
+    <string name="Takeoff_position">Takeoff position</string>
+    <string name="pref_key_takeoff_position">pref_key_takeoff_position</string>
+    <string name="Black_list">Black list&#8230;</string>
     <string name="pref_key_black_list">pref_key_black_list</string>
     
     <!-- BlackList -->
