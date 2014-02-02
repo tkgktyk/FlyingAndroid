@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -107,7 +108,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 			}
 		}
 		if (flyingView != null) {
-			((ViewGroup) flyingView.getChildAt(0)).addView(child, layoutParams);
+			flyingView.addView(child, layoutParams);
 			return null;
 		} else {
 			final Context context = decor.getContext();
@@ -148,7 +149,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 						XposedBridge.log(t);
 					}
 				}
-				mFlyingView.getChildAt(0).setBackgroundDrawable(sEraseDrawable);
+				mFlyingView.getChildAt(mFlyingView.getChildCount() - 1)
+						.setBackgroundDrawable(sEraseDrawable);
 			} else {
 				text = "Fly";
 				switch (sTakeoffPosition) {
@@ -181,8 +183,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 							XposedBridge.log(t);
 						}
 					}
-					mFlyingView.getChildAt(0).setBackgroundDrawable(
-							sNotifyFlyingDrawable);
+					mFlyingView.getChildAt(mFlyingView.getChildCount() - 1)
+							.setBackgroundDrawable(sNotifyFlyingDrawable);
 				}
 			}
 			Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
