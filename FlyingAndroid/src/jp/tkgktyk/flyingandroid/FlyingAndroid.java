@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jp.tkgktyk.flyingandroid.FlyingView2.OnUnhandledClickListener;
+import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,8 +18,6 @@ import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -97,27 +96,45 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		return flyingView;
 	}
 
-	private View newChildView(FrameLayout decor, View child,
+	private View newChildView(ViewGroup decor, View child,
 			ViewGroup.LayoutParams layoutParams) throws Throwable {
 		ViewGroup flyingView = null;
 		for (int i = 0; i < decor.getChildCount(); ++i) {
 			final View v = decor.getChildAt(i);
-			if (v instanceof FlyingView2) {
-				flyingView = (FlyingView2) v;
+			if (v instanceof VerticalDragDetectorView) {
+				flyingView = (FlyingView2) ((ViewGroup) v).getChildAt(0);
 				break;
 			}
 		}
 		if (flyingView != null) {
-			flyingView.addView(child, layoutParams);
+			// add child at index excluded notifyFlyingView
+			flyingView.addView(child, flyingView.getChildCount() - 1,
+					layoutParams);
 			return null;
 		} else {
 			final Context context = decor.getContext();
 			flyingView = newFlyingView(context);
 			flyingView.addView(child, layoutParams);
 			// notify flying view
-			ViewGroup notifyFlyingView = new FrameLayout(context);
+			View notifyFlyingView = new View(context);
 			flyingView.addView(notifyFlyingView);
-			return flyingView;
+			// drag
+			VerticalDragDetectorView dragView = new VerticalDragDetectorView(
+					context);
+			dragView.setOnDraggedListener(new OnDraggedListener() {
+				@Override
+				public void onDragged(VerticalDragDetectorView v) {
+					XposedBridge.log("dragged");
+					final BroadcastReceiver receiver = new ToggleReceiver(
+							(FlyingView2) v.getChildAt(0));
+					receiver.onReceive(v.getContext(), null);
+				}
+			});
+			dragView.setLayoutParams(new ViewGroup.LayoutParams(
+					ViewGroup.LayoutParams.MATCH_PARENT,
+					ViewGroup.LayoutParams.MATCH_PARENT));
+			dragView.addView(flyingView);
+			return dragView;
 		}
 	}
 
@@ -222,7 +239,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 									callMethod(param.thisObject, "addView",
 											child, -1, layoutParams);
 								} else {
-									final FrameLayout decor = (FrameLayout) param.thisObject;
+									final ViewGroup decor = (ViewGroup) param.thisObject;
 									final View newChild = newChildView(decor,
 											child, layoutParams);
 									if (newChild != null) {
@@ -252,16 +269,30 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 								final Object r = getAdditionalInstanceField(
 										activity, "flyingAndroidReceiver");
 								if (r == null) {
-									final FlyingView2 flyingView = (FlyingView2) ((ViewGroup) activity
-											.getWindow().getDecorView())
-											.getChildAt(0);
-									final BroadcastReceiver receiver = new ToggleReceiver(
-											flyingView);
-									activity.registerReceiver(receiver,
-											new IntentFilter(ACTION_TOGGLE));
-									setAdditionalInstanceField(activity,
-											"flyingAndroidReceiver", receiver);
-									XposedBridge.log("register");
+									final ViewGroup decor = (ViewGroup) activity
+											.getWindow().getDecorView();
+									FlyingView2 flyingView = null;
+									for (int i = 0; i < decor.getChildCount(); ++i) {
+										final View v = decor.getChildAt(i);
+										if (v instanceof VerticalDragDetectorView) {
+											flyingView = (FlyingView2) ((ViewGroup) v)
+													.getChildAt(0);
+											break;
+										}
+									}
+									if (flyingView != null) {
+										final BroadcastReceiver receiver = new ToggleReceiver(
+												flyingView);
+										activity.registerReceiver(receiver,
+												new IntentFilter(ACTION_TOGGLE));
+										setAdditionalInstanceField(activity,
+												"flyingAndroidReceiver",
+												receiver);
+										XposedBridge.log("register");
+									} else {
+										XposedBridge
+												.log("FlyingView is not found.");
+									}
 								}
 							} catch (Throwable t) {
 								XposedBridge.log(t);
