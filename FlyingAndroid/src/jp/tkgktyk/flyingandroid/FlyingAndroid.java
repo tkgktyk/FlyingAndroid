@@ -117,9 +117,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 			flyingView.addView(child, layoutParams);
 			// notify flying view
 			View notifyFlyingView = new View(context);
-			flyingView.addView(notifyFlyingView, new ViewGroup.LayoutParams(
-					ViewGroup.LayoutParams.WRAP_CONTENT,
-					ViewGroup.LayoutParams.WRAP_CONTENT));
+			flyingView.addView(notifyFlyingView);
 			// drag
 			VerticalDragDetectorView dragView = new VerticalDragDetectorView(
 					context);
@@ -136,6 +134,10 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 					ViewGroup.LayoutParams.MATCH_PARENT,
 					ViewGroup.LayoutParams.MATCH_PARENT));
 			dragView.addView(flyingView);
+			View view = new View(context);
+			dragView.addView(view, new ViewGroup.LayoutParams(
+					ViewGroup.LayoutParams.WRAP_CONTENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT));
 			return dragView;
 		}
 	}
