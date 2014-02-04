@@ -11,6 +11,7 @@ import java.util.Set;
 import jp.tkgktyk.flyingandroid.FlyingView2.OnUnhandledClickListener;
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -101,8 +102,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		ViewGroup flyingView = null;
 		for (int i = 0; i < decor.getChildCount(); ++i) {
 			final View v = decor.getChildAt(i);
-			if (v instanceof VerticalDragDetectorView) {
-				flyingView = (FlyingView2) ((ViewGroup) v).getChildAt(0);
+			if (v instanceof FlyingView2) {
+				flyingView = (ViewGroup) v;
 				break;
 			}
 		}
@@ -115,30 +116,12 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 			final Context context = decor.getContext();
 			flyingView = newFlyingView(context);
 			flyingView.addView(child, layoutParams);
-			// notify flying view
+			// notify flying and vertical drag view
 			View notifyFlyingView = new View(context);
-			flyingView.addView(notifyFlyingView);
-			// drag
-			VerticalDragDetectorView dragView = new VerticalDragDetectorView(
-					context);
-			dragView.setOnDraggedListener(new OnDraggedListener() {
-				@Override
-				public void onDragged(VerticalDragDetectorView v) {
-					XposedBridge.log("dragged");
-					final BroadcastReceiver receiver = new ToggleReceiver(
-							(FlyingView2) v.getChildAt(0));
-					receiver.onReceive(v.getContext(), null);
-				}
-			});
-			dragView.setLayoutParams(new ViewGroup.LayoutParams(
+			flyingView.addView(notifyFlyingView, new ViewGroup.LayoutParams(
 					ViewGroup.LayoutParams.MATCH_PARENT,
 					ViewGroup.LayoutParams.MATCH_PARENT));
-			dragView.addView(flyingView);
-			View view = new View(context);
-			dragView.addView(view, new ViewGroup.LayoutParams(
-					ViewGroup.LayoutParams.WRAP_CONTENT,
-					ViewGroup.LayoutParams.WRAP_CONTENT));
-			return dragView;
+			return flyingView;
 		}
 	}
 
@@ -278,9 +261,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 									FlyingView2 flyingView = null;
 									for (int i = 0; i < decor.getChildCount(); ++i) {
 										final View v = decor.getChildAt(i);
-										if (v instanceof VerticalDragDetectorView) {
-											flyingView = (FlyingView2) ((ViewGroup) v)
-													.getChildAt(0);
+										if (v instanceof FlyingView2) {
+											flyingView = (FlyingView2) v;
 											break;
 										}
 									}
@@ -323,6 +305,56 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 							}
 						}
 					});
+			XC_MethodHook addVerticalDragView = new XC_MethodHook() {
+				@Override
+				protected void afterHookedMethod(MethodHookParam param)
+						throws Throwable {
+					final Dialog dialog = (Dialog) param.thisObject;
+					final Object r = getAdditionalInstanceField(dialog,
+							"addedVerticalDragView");
+					if (r == null) {
+						VerticalDragDetectorView dragView = new VerticalDragDetectorView(
+								dialog.getContext());
+						dragView.setOnDraggedListener(new OnDraggedListener() {
+							@Override
+							public void onDragged(VerticalDragDetectorView v) {
+								XposedBridge.log("dragged");
+								FlyingView2 flyingView = null;
+								ViewGroup decor = (ViewGroup) dialog
+										.getWindow().getDecorView();
+								for (int i = 0; i < decor.getChildCount(); ++i) {
+									View child = decor.getChildAt(i);
+									if (child instanceof FlyingView2) {
+										flyingView = (FlyingView2) child;
+									}
+								}
+								if (flyingView != null) {
+									final BroadcastReceiver receiver = new ToggleReceiver(
+											flyingView);
+									receiver.onReceive(v.getContext(), null);
+								} else {
+									XposedBridge
+											.log("FlyingView is not found.");
+								}
+							}
+						});
+						dialog.addContentView(dragView,
+								new ViewGroup.LayoutParams(
+										ViewGroup.LayoutParams.WRAP_CONTENT,
+										ViewGroup.LayoutParams.WRAP_CONTENT));
+						setAdditionalInstanceField(dialog,
+								"addedVerticalDragView", true);
+						XposedBridge.log("add vertical drag interface.");
+					}
+				}
+			};
+			// findAndHookMethod("android.app.Dialog", lpparam.classLoader,
+			// "setContentView", View.class, addVerticalDragView);
+			// findAndHookMethod("android.app.Dialog", lpparam.classLoader,
+			// "setContentView", int.class, addVerticalDragView);
+			// findAndHookMethod("android.app.Dialog", lpparam.classLoader,
+			// "setContentView", View.class, ViewGroup.LayoutParams.class,
+			// addVerticalDragView);
 		} catch (Throwable t) {
 			XposedBridge.log(t);
 		}

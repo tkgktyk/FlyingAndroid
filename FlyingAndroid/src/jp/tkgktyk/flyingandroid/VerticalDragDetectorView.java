@@ -45,8 +45,8 @@ public class VerticalDragDetectorView extends FrameLayout {
 		mIsBeginTouchedY = false;
 		mIsBeginTouchedX = false;
 		mIsBeginDragged = false;
-		mTouchSlopY = ViewConfiguration.get(getContext()).getScaledTouchSlop()*2;
-		mTouchSlopX = mTouchSlopY;
+		mTouchSlopY = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+		mTouchSlopX = mTouchSlopY * 2;
 		mDragSlop = mTouchSlopY * 4;
 		mDetectionWidth = Math.round(ViewConfiguration.get(getContext())
 				.getScaledEdgeSlop() * 1.5f);
