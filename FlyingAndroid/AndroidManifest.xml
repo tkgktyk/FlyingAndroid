@@ -37,7 +37,8 @@
         </activity>
         <activity
             android:name="jp.tkgktyk.flyingandroid.ToggleActivity"
-            android:label="@string/toggle_app_name" android:theme="@style/ToggleTheme">
+            android:label="@string/toggle_app_name"
+            android:theme="@style/ToggleTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
