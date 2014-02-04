@@ -23,14 +23,12 @@ public class VerticalDragDetectorView extends FrameLayout {
 	 */
 	private int mActivePointerId = INVALID_POINTER;
 	private int mTouchSlopX;
-	private int mTouchSlopY;
 	private int mDragSlop;
 	/**
 	 * True if the user is currently dragging this ScrollView around. This is
 	 * not the same as 'is being flinged', which can be checked by
 	 * mScroller.isFinished() (flinging begins when the user lifts his finger).
 	 */
-	private boolean mIsBeginTouchedY;
 	private boolean mIsBeginTouchedX;
 	private boolean mIsBeginDragged;
 	/**
@@ -42,12 +40,10 @@ public class VerticalDragDetectorView extends FrameLayout {
 	private int mDetectionWidth;
 
 	private void resetPrivateVariable() {
-		mIsBeginTouchedY = false;
 		mIsBeginTouchedX = false;
 		mIsBeginDragged = false;
-		mTouchSlopY = ViewConfiguration.get(getContext()).getScaledTouchSlop();
-		mTouchSlopX = mTouchSlopY * 2;
-		mDragSlop = mTouchSlopY * 4;
+		mTouchSlopX = ViewConfiguration.get(getContext()).getScaledTouchSlop() * 2;
+		mDragSlop = mTouchSlopX * 2;
 		mDetectionWidth = Math.round(ViewConfiguration.get(getContext())
 				.getScaledEdgeSlop() * 1.5f);
 	}
@@ -84,7 +80,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 		if (action == MotionEvent.ACTION_MOVE) {
 			if (mIsBeginTouchedX)
 				return false;
-			if (mIsBeginTouchedY)
+			if (mIsBeginDragged)
 				return true;
 		}
 
@@ -117,31 +113,21 @@ public class VerticalDragDetectorView extends FrameLayout {
 			final int x = (int) ev.getX(pointerIndex);
 			final int xDiff = Math.abs(x - mLastMotionX);
 			if (xDiff > mTouchSlopX) {
-				 XposedBridge.log("last x: " + mLastMotionX);
-				 XposedBridge.log("x: " + x);
-				 XposedBridge.log("touch slop: " + mTouchSlopX);
+				// XposedBridge.log("last x: " + mLastMotionX);
+				// XposedBridge.log("x: " + x);
+				// XposedBridge.log("touch slop: " + mTouchSlopX);
 				mIsBeginTouchedX = true;
 			}
 			final int y = (int) ev.getY(pointerIndex);
 			final int yDiff = Math.abs(y - mLastMotionY);
-			if (yDiff > mTouchSlopY) {
-				final ViewParent parent = getParent();
-				if (parent != null) {
-					parent.requestDisallowInterceptTouchEvent(true);
-				}
-				 XposedBridge.log("last y: " + mLastMotionY);
-				 XposedBridge.log("y: " + y);
-				 XposedBridge.log("touch slop: " + mTouchSlopY);
-				mIsBeginTouchedY = true;
-			}
 			if (yDiff > mDragSlop) {
 				final ViewParent parent = getParent();
 				if (parent != null) {
 					parent.requestDisallowInterceptTouchEvent(true);
 				}
-				 XposedBridge.log("last y: " + mLastMotionY);
-				 XposedBridge.log("y: " + y);
-				 XposedBridge.log("touch slop: " + mDragSlop);
+				// XposedBridge.log("last y: " + mLastMotionY);
+				// XposedBridge.log("y: " + y);
+				// XposedBridge.log("touch slop: " + mDragSlop);
 				mIsBeginDragged = true;
 				onDragged();
 			}
@@ -150,11 +136,11 @@ public class VerticalDragDetectorView extends FrameLayout {
 
 		case MotionEvent.ACTION_DOWN: {
 			final int x = (int) ev.getX();
-			 XposedBridge.log("left: " + getLeft());
-			 XposedBridge.log("right: " + getRight());
-			 XposedBridge.log("DetectionWidth: " + mDetectionWidth);
-			 XposedBridge.log("down at x: " + x);
-			 XposedBridge.log("down at y: " + ev.getY());
+			// XposedBridge.log("left: " + getLeft());
+			// XposedBridge.log("right: " + getRight());
+			// XposedBridge.log("DetectionWidth: " + mDetectionWidth);
+			// XposedBridge.log("down at x: " + x);
+			// XposedBridge.log("down at y: " + ev.getY());
 			if ((x >= getLeft() && x <= getLeft() + mDetectionWidth)
 					|| (x >= getRight() - mDetectionWidth && x <= getRight())) {
 				/*
@@ -178,7 +164,6 @@ public class VerticalDragDetectorView extends FrameLayout {
 
 			/* Release the drag */
 			mIsBeginTouchedX = false;
-			mIsBeginTouchedY = false;
 			mIsBeginDragged = false;
 			mActivePointerId = INVALID_POINTER;
 			break;
@@ -193,7 +178,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 		if (mIsBeginTouchedX)
 			return false;
 
-		return mIsBeginTouchedY;
+		return mIsBeginDragged;
 	};
 
 	@Override
@@ -211,11 +196,11 @@ public class VerticalDragDetectorView extends FrameLayout {
 			}
 
 			final int x = (int) ev.getX();
-			 XposedBridge.log("left: " + getLeft());
-			 XposedBridge.log("right: " + getRight());
-			 XposedBridge.log("DetectionWidth: " + mDetectionWidth);
-			 XposedBridge.log("down at x: " + x);
-			 XposedBridge.log("down at y: " + ev.getY());
+			// XposedBridge.log("left: " + getLeft());
+			// XposedBridge.log("right: " + getRight());
+			// XposedBridge.log("DetectionWidth: " + mDetectionWidth);
+			// XposedBridge.log("down at x: " + x);
+			// XposedBridge.log("down at y: " + ev.getY());
 			if ((x >= getLeft() && x <= getLeft() + mDetectionWidth)
 					|| (x >= getRight() - mDetectionWidth && x <= getRight())) {
 				// Remember where the motion event started
@@ -241,27 +226,17 @@ public class VerticalDragDetectorView extends FrameLayout {
 			final int x = (int) ev.getX(activePointerIndex);
 			int deltaX = mLastMotionX - x;
 			if (!isBeginAnything() && Math.abs(deltaX) > mTouchSlopX) {
-				 XposedBridge.log("last x: " + mLastMotionX);
-				 XposedBridge.log("x: " + x);
-				 XposedBridge.log("touch slop: " + mTouchSlopX);
+				// XposedBridge.log("last x: " + mLastMotionX);
+				// XposedBridge.log("x: " + x);
+				// XposedBridge.log("touch slop: " + mTouchSlopX);
 				mIsBeginTouchedX = true;
 			}
 			final int y = (int) ev.getY(activePointerIndex);
 			int deltaY = mLastMotionY - y;
-			if (!mIsBeginTouchedY && Math.abs(deltaY) > mTouchSlopY) {
-				 XposedBridge.log("last y: " + mLastMotionY);
-				 XposedBridge.log("y: " + y);
-				 XposedBridge.log("touch slop: " + mTouchSlopY);
-				mIsBeginTouchedY = true;
-				final ViewParent parent = getParent();
-				if (parent != null) {
-					parent.requestDisallowInterceptTouchEvent(true);
-				}
-			}
 			if (!mIsBeginDragged && Math.abs(deltaY) > mDragSlop) {
-				 XposedBridge.log("last y: " + mLastMotionY);
-				 XposedBridge.log("y: " + y);
-				 XposedBridge.log("touch slop: " + mDragSlop);
+				XposedBridge.log("last y: " + mLastMotionY);
+				XposedBridge.log("y: " + y);
+				XposedBridge.log("touch slop: " + mDragSlop);
 				mIsBeginDragged = true;
 				final ViewParent parent = getParent();
 				if (parent != null) {
@@ -276,7 +251,6 @@ public class VerticalDragDetectorView extends FrameLayout {
 			if (isBeginAnything()) {
 				mActivePointerId = INVALID_POINTER;
 				mIsBeginTouchedX = false;
-				mIsBeginTouchedY = false;
 				mIsBeginDragged = false;
 			}
 			break;
@@ -285,7 +259,6 @@ public class VerticalDragDetectorView extends FrameLayout {
 			if (isBeginAnything() && getChildCount() > 0) {
 				mActivePointerId = INVALID_POINTER;
 				mIsBeginTouchedX = false;
-				mIsBeginTouchedY = false;
 				mIsBeginDragged = false;
 			}
 			break;
@@ -306,7 +279,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 	}
 
 	private boolean isBeginAnything() {
-		return mIsBeginTouchedX || mIsBeginTouchedY || mIsBeginDragged;
+		return mIsBeginTouchedX || mIsBeginDragged;
 	}
 
 	private void onSecondaryPointerUp(MotionEvent ev) {
