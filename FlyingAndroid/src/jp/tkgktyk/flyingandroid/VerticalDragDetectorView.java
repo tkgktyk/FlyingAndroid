@@ -234,9 +234,9 @@ public class VerticalDragDetectorView extends FrameLayout {
 			final int y = (int) ev.getY(activePointerIndex);
 			int deltaY = mLastMotionY - y;
 			if (!mIsBeginDragged && Math.abs(deltaY) > mDragSlop) {
-				XposedBridge.log("last y: " + mLastMotionY);
-				XposedBridge.log("y: " + y);
-				XposedBridge.log("touch slop: " + mDragSlop);
+				// XposedBridge.log("last y: " + mLastMotionY);
+				// XposedBridge.log("y: " + y);
+				// XposedBridge.log("touch slop: " + mDragSlop);
 				mIsBeginDragged = true;
 				final ViewParent parent = getParent();
 				if (parent != null) {
