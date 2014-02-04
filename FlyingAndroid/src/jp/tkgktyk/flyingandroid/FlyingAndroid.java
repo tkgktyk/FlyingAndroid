@@ -117,7 +117,9 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 			flyingView.addView(child, layoutParams);
 			// notify flying view
 			View notifyFlyingView = new View(context);
-			flyingView.addView(notifyFlyingView);
+			flyingView.addView(notifyFlyingView, new ViewGroup.LayoutParams(
+					ViewGroup.LayoutParams.WRAP_CONTENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT));
 			// drag
 			VerticalDragDetectorView dragView = new VerticalDragDetectorView(
 					context);
