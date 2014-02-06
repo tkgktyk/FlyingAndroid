@@ -36,6 +36,8 @@ public class VerticalDragDetectorView extends FrameLayout {
 	 */
 	private int mLastMotionX;
 	private int mLastMotionY;
+	
+	private boolean mIgnoreTouchEvent;
 
 	private int mDetectionWidth;
 
@@ -44,6 +46,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 		mIsBeginDragged = false;
 		mTouchSlopX = ViewConfiguration.get(getContext()).getScaledTouchSlop() * 2;
 		mDragSlop = mTouchSlopX * 2;
+		mIgnoreTouchEvent = false;
 		mDetectionWidth = Math.round(ViewConfiguration.get(getContext())
 				.getScaledEdgeSlop() * 1.5f);
 	}
@@ -64,8 +67,20 @@ public class VerticalDragDetectorView extends FrameLayout {
 		resetPrivateVariable();
 	}
 
+	public void setIgnoreTouchEvent(boolean ignore) {
+		mIgnoreTouchEvent = ignore;
+	}
+
+	public boolean getIgnoreTouchEvent() {
+		return mIgnoreTouchEvent;
+	}
+
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
+		if (!isBeginAnything() && mIgnoreTouchEvent) {
+			return false;
+		}
+
 		/*
 		 * This method JUST determines whether we want to intercept the motion.
 		 * If we return true, onMotionEvent will be called and we do the actual
@@ -183,6 +198,10 @@ public class VerticalDragDetectorView extends FrameLayout {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
+		if (!isBeginAnything() && mIgnoreTouchEvent) {
+			return false;
+		}
+
 		final int action = ev.getAction();
 		if (action == MotionEvent.ACTION_MOVE) {
 			if (mIsBeginTouchedX)
