@@ -15,6 +15,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -53,7 +54,6 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 	 */
 	public static void reloadPreferences() {
 		final XSharedPreferences pref = new XSharedPreferences(PACKAGE_NAME);
-
 		sSpeed = Float.parseFloat(pref.getString("pref_key_speed", "1.5"));
 		sNotifyFlying = pref.getBoolean("pref_key_notify_flying", true);
 		sTakeoffPosition = Integer.parseInt(pref.getString(
@@ -215,8 +215,9 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 	public void handleLoadPackage(final LoadPackageParam lpparam)
 			throws Throwable {
 		try {
-			if (sBlackSet.contains(lpparam.packageName))
+			if (sBlackSet.contains(lpparam.packageName)) {
 				return;
+			}
 
 			// XposedBridge.log("Loaded app: " + lpparam.packageName);
 			// XposedBridge.log("is first app: " + lpparam.isFirstApplication);
@@ -326,6 +327,41 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 									setAdditionalInstanceField(activity,
 											"flyingAndroidReceiver", null);
 									XposedBridge.log("unregister");
+								}
+							} catch (Throwable t) {
+								XposedBridge.log(t);
+							}
+						}
+					});
+			findAndHookMethod("android.app.Activity", lpparam.classLoader,
+					"onConfigurationChanged", Configuration.class,
+					new XC_MethodHook() {
+						@Override
+						protected void afterHookedMethod(MethodHookParam param)
+								throws Throwable {
+							try {
+								Activity activity = (Activity) param.thisObject;
+								final ViewGroup decor = (ViewGroup) activity
+										.getWindow().getDecorView();
+								FlyingView2 flyingView = null;
+								for (int i = 0; i < decor.getChildCount(); ++i) {
+									final View v = decor.getChildAt(i);
+									if (v instanceof VerticalDragDetectorView) {
+										flyingView = (FlyingView2) ((ViewGroup) v)
+												.getChildAt(0);
+										break;
+									}
+								}
+								if (flyingView != null) {
+									Configuration newConfig = (Configuration) param.args[0];
+									if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+										flyingView.rotate();
+									} else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+										flyingView.rotate();
+									}
+								} else {
+									XposedBridge
+											.log("FlyingView is not found.");
 								}
 							} catch (Throwable t) {
 								XposedBridge.log(t);

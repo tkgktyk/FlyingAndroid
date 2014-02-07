@@ -2,7 +2,6 @@ package jp.tkgktyk.flyingandroid;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -11,6 +10,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
 public class MainActivity extends PreferenceActivity {
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,13 +61,6 @@ public class MainActivity extends PreferenceActivity {
 		}
 		pref.setSummary(getString(R.string.Current_s1, entry));
 	}
-
-	// @Override
-	// protected void onDestroy() {
-	// super.onDestroy();
-	//
-	// FlyingAndroid.reloadPreferences();
-	// }
 
 	protected Preference findPreference(int id) {
 		return findPreference(getString(id));

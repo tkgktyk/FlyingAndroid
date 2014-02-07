@@ -1,6 +1,7 @@
 package jp.tkgktyk.flyingandroid;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -369,6 +370,21 @@ public class FlyingView2 extends FrameLayout {
 			lp.leftMargin = clamp(lp.leftMargin + deltaX, hLimit);
 			lp.rightMargin = -lp.leftMargin;
 			lp.topMargin = clamp(lp.topMargin + deltaY, vLimit);
+			lp.bottomMargin = -lp.topMargin;
+			child.setLayoutParams(lp);
+		}
+	}
+
+	public void rotate() {
+		for (int i = 0; i < getChildCount(); ++i) {
+			View child = getChildAt(i);
+			ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) child
+					.getLayoutParams();
+			lp.leftMargin = Math.round(lp.leftMargin * 1f / getWidth()
+					* getHeight());
+			lp.rightMargin = -lp.leftMargin;
+			lp.topMargin = Math.round(lp.topMargin * 1f / getHeight()
+					* getHeight());
 			lp.bottomMargin = -lp.topMargin;
 			child.setLayoutParams(lp);
 		}
