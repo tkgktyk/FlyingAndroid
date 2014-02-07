@@ -1,7 +1,6 @@
 package jp.tkgktyk.flyingandroid;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
