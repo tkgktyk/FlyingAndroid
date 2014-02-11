@@ -166,8 +166,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 				mLastMotionY = (int) ev.getY();
 				mActivePointerId = ev.getPointerId(0);
 			} else {
-				if (BuildConfig.DEBUG)
-					XposedBridge.log("this touch event is ignored.");
+				// XposedBridge.log("this touch event is ignored.");
 				// ignore this touch event
 				mIsBeginTouchedX = true;
 			}
@@ -228,8 +227,7 @@ public class VerticalDragDetectorView extends FrameLayout {
 				mLastMotionY = (int) ev.getY();
 				mActivePointerId = ev.getPointerId(0);
 			} else {
-				if (BuildConfig.DEBUG)
-					XposedBridge.log("this touch event is ignored.");
+				// XposedBridge.log("this touch event is ignored.");
 				// ignore this touch event
 				mIsBeginTouchedX = true;
 			}

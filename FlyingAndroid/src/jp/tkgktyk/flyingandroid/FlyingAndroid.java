@@ -61,7 +61,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		sBlackSet = pref.getStringSet("pref_key_black_list",
 				new HashSet<String>());
 	}
-	
+
 	private void log(String text) {
 		if (BuildConfig.DEBUG) {
 			XposedBridge.log(text);
@@ -96,7 +96,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 					inside = (inside && in);
 				}
 				if (!inside) {
-					log("unhandled outside click");
+					// log("unhandled outside click");
 					final BroadcastReceiver receiver = new ToggleReceiver(v);
 					receiver.onReceive(v.getContext(), null);
 				}
@@ -133,7 +133,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 			dragView.setOnDraggedListener(new OnDraggedListener() {
 				@Override
 				public void onDragged(VerticalDragDetectorView v) {
-					log("dragged");
+					// log("dragged");
 					final BroadcastReceiver receiver = new ToggleReceiver(
 							(FlyingView2) v.getChildAt(0));
 					receiver.onReceive(v.getContext(), null);
@@ -158,7 +158,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			log("toggle");
+			// log("toggle");
 			final boolean next = !mFlyingView.getIgnoreTouchEvent();
 			mFlyingView.setIgnoreTouchEvent(next);
 			String text = null;
@@ -308,7 +308,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 										setAdditionalInstanceField(activity,
 												"flyingAndroidReceiver",
 												receiver);
-										log("register");
+										// log("register");
 									} else {
 										log("FlyingView is not found.");
 									}
@@ -331,7 +331,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 									activity.unregisterReceiver((BroadcastReceiver) r);
 									setAdditionalInstanceField(activity,
 											"flyingAndroidReceiver", null);
-									log("unregister");
+									// log("unregister");
 								}
 							} catch (Throwable t) {
 								XposedBridge.log(t);
