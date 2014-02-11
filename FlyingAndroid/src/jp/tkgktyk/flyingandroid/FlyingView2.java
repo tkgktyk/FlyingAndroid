@@ -383,7 +383,7 @@ public class FlyingView2 extends FrameLayout {
 					* getHeight());
 			lp.rightMargin = -lp.leftMargin;
 			lp.topMargin = Math.round(lp.topMargin * 1f / getHeight()
-					* getHeight());
+					* getWidth());
 			lp.bottomMargin = -lp.topMargin;
 			child.setLayoutParams(lp);
 		}
