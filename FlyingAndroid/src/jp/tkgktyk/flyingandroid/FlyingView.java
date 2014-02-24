@@ -5,12 +5,11 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 
-public class FlyingView extends FrameLayout {
+public abstract class FlyingView extends FrameLayout {
 	private static final String TAG = "FlyingView";
 
 	private static final float DEFAULT_SPEED = 1.0f;
@@ -339,7 +338,7 @@ public class FlyingView extends FrameLayout {
 		}
 	}
 
-	private int clamp(int src, int limit) {
+	protected int clamp(int src, int limit) {
 		if (src > limit) {
 			return limit;
 		} else if (src < -limit) {
@@ -351,35 +350,18 @@ public class FlyingView extends FrameLayout {
 	public void onMove(int deltaX, int deltaY) {
 		deltaX = (int) Math.round(deltaX * mSpeed);
 		deltaY = (int) Math.round(deltaY * mSpeed);
-		if (mOnMoveListener != null && mOnMoveListener.onMove(deltaX, deltaY))
+		if (mOnMoveListener != null
+				&& mOnMoveListener.onMove(this, deltaX, deltaY))
 			return;
 
 		move(deltaX, deltaY);
 	}
 
-	public void move(int deltaX, int deltaY) {
-		int hLimit = getWidth() - mHorizontalPadding;
-		int vLimit = getHeight() - mVerticalPadding;
+	public abstract void move(int deltaX, int deltaY);
 
-		for (int i = 0; i < getChildCount(); ++i) {
-			View child = getChildAt(i);
+	public abstract void returnToHome();
 
-			int left = child.getLeft() + deltaX;
-			left = clamp(left, hLimit);
-			int top = child.getTop() + deltaY;
-			top = clamp(top, vLimit);
-			child.layout(left, top, left + child.getWidth(),
-					top + child.getHeight());
-		}
-	}
-
-	public void returnToHome() {
-		for (int i = 0; i < getChildCount(); ++i) {
-			View child = getChildAt(i);
-			child.layout(0, 0, child.getWidth(), child.getHeight());
-			// TODO: store/restore children's first position
-		}
-	}
+	public abstract void rotate();
 
 	public void onUnhandledClick(MotionEvent ev) {
 		final int x = (int) ev.getX();
@@ -399,7 +381,7 @@ public class FlyingView extends FrameLayout {
 		 *         return false if did not handle or would like to execute
 		 *         original behavior.
 		 */
-		public boolean onMove(int deltaX, int deltaY);
+		public boolean onMove(FlyingView v, int deltaX, int deltaY);
 	}
 
 	private OnMoveListener mOnMoveListener = null;

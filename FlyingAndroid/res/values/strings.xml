@@ -7,17 +7,19 @@
 
     <!-- SharedPreferences -->
     <string name="Note">Note</string>
-    <string name="summary_note">You may need to reboot for changes to take effect.</string>
+    <string name="summary_note">Need to reboot for changes to take effect.</string>
     <string name="Settings">Settings</string>
     <string name="Current_s1">Current: %1$s</string>
     <string name="Speed">Speed</string>
     <string name="pref_key_speed">pref_key_speed</string>
-    <string name="Notify_flying">Notify flying</string>
-    <string name="pref_key_notify_flying">pref_key_notify_flying</string>
-    <string name="summary_on_notify_flying">Draw boundary when flying.</string>
-    <string name="summary_off_notify_flying">Not notified.</string>
     <string name="Takeoff_position">Takeoff position</string>
     <string name="pref_key_takeoff_position">pref_key_takeoff_position</string>
+    <string name="Show_toast">Show toast</string>
+    <string name="pref_key_show_toast">pref_key_show_toast</string>
+    <string name="summary_show_toast">Show toast when mode is changed.</string>
+    <string name="Notify_flying">Notify flying</string>
+    <string name="pref_key_notify_flying">pref_key_notify_flying</string>
+    <string name="summary_notify_flying">Draw boundary while flying.</string>
     <string name="Black_list">Black list&#8230;</string>
     <string name="pref_key_black_list">pref_key_black_list</string>
     

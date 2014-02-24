@@ -14,20 +14,25 @@
             android:key="@string/pref_key_speed"
             android:title="@string/Speed" />
 
-        <CheckBoxPreference
-            android:summaryOff="@string/summary_off_notify_flying"
-            android:summaryOn="@string/summary_on_notify_flying"
-            android:defaultValue="true"
-            android:key="@string/pref_key_notify_flying"
-            android:title="@string/Notify_flying" />
-
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/takeoffPositions"
             android:entryValues="@array/takeoffPositionValues"
             android:key="@string/pref_key_takeoff_position"
             android:title="@string/Takeoff_position" />
+        
+        <CheckBoxPreference
+            android:summary="@string/summary_notify_flying"
+            android:defaultValue="true"
+            android:key="@string/pref_key_notify_flying"
+            android:title="@string/Notify_flying" />
 
+        <CheckBoxPreference
+            android:summary="@string/summary_show_toast"
+            android:defaultValue="true"
+            android:key="@string/pref_key_show_toast"
+            android:title="@string/Show_toast" />
+        
         <Preference
             android:key="@string/pref_key_black_list"
             android:title="@string/Black_list" />

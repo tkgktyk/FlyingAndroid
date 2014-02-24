@@ -5,10 +5,10 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.getAdditionalInstanceField;
 import static de.robv.android.xposed.XposedHelpers.setAdditionalInstanceField;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
-import jp.tkgktyk.flyingandroid.FlyingView2.OnUnhandledClickListener;
+import jp.tkgktyk.flyingandroid.FlyingView.OnUnhandledClickListener;
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -36,9 +36,11 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 			.getName();
 	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
 
+	private static XSharedPreferences sPref;
 	private static float sSpeed;
-	private static boolean sNotifyFlying;
 	private static int sTakeoffPosition;
+	private static boolean sShowToast;
+	private static boolean sNotifyFlying;
 	private static Set<String> sBlackSet;
 
 	private static Drawable sEraseDrawable;
@@ -46,34 +48,56 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 
 	@Override
 	public void initZygote(StartupParam startupParam) {
+		sPref = new XSharedPreferences(PACKAGE_NAME);
 		reloadPreferences();
 	}
 
 	/**
 	 * cannot call static functions from other process such as MainActivity.
 	 */
-	public static void reloadPreferences() {
-		final XSharedPreferences pref = new XSharedPreferences(PACKAGE_NAME);
-		sSpeed = Float.parseFloat(pref.getString("pref_key_speed", "1.5"));
-		sNotifyFlying = pref.getBoolean("pref_key_notify_flying", true);
-		sTakeoffPosition = Integer.parseInt(pref.getString(
+	public void reloadPreferences() {
+		sPref.reload();
+		sSpeed = Float.parseFloat(sPref.getString("pref_key_speed", "1.5"));
+		sTakeoffPosition = Integer.parseInt(sPref.getString(
 				"pref_key_takeoff_position", "0"));
-		sBlackSet = pref.getStringSet("pref_key_black_list",
-				new HashSet<String>());
+		sShowToast = sPref.getBoolean("pref_key_show_toast", true);
+		sNotifyFlying = sPref.getBoolean("pref_key_notify_flying", true);
+		sBlackSet = sPref.getStringSet("pref_key_black_list",
+				Collections.<String> emptySet());
+	}
+
+	private float getSpeed() {
+		return sSpeed;
+	}
+
+	private int getTakeoffPosition() {
+		return sTakeoffPosition;
+	}
+
+	private boolean getShowToast() {
+		return sShowToast;
+	}
+
+	private boolean getNotifyFlying() {
+		return sNotifyFlying;
+	}
+
+	private Set<String> getBlackSet() {
+		return sBlackSet;
 	}
 
 	private void log(String text) {
 		if (BuildConfig.DEBUG) {
-			XposedBridge.log(text);
+			XposedBridge.log("FA: " + text);
 		}
 	}
 
 	private ViewGroup newFlyingView(Context context) throws Throwable {
-		final FlyingView2 flyingView = new FlyingView2(context);
+		final FlyingView flyingView = new FlyingView2(context);
 		flyingView.setLayoutParams(new ViewGroup.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT));
-		flyingView.setSpeed(sSpeed);
+		flyingView.setSpeed(getSpeed());
 		final Context flyContext = context.createPackageContext(PACKAGE_NAME,
 				Context.CONTEXT_IGNORE_SECURITY);
 		final int padding = flyContext.getResources().getDimensionPixelSize(
@@ -83,7 +107,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		flyingView.setIgnoreTouchEvent(true);
 		flyingView.setOnUnhandledClickListener(new OnUnhandledClickListener() {
 			@Override
-			public void onUnhandledClick(FlyingView2 v, int x, int y) {
+			public void onUnhandledClick(FlyingView v, int x, int y) {
 				boolean inside = false;
 				for (int i = 0; i < v.getChildCount(); ++i) {
 					boolean in = false;
@@ -112,7 +136,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		for (int i = 0; i < decor.getChildCount(); ++i) {
 			final View v = decor.getChildAt(i);
 			if (v instanceof VerticalDragDetectorView) {
-				flyingView = (FlyingView2) ((ViewGroup) v).getChildAt(0);
+				flyingView = (FlyingView) ((ViewGroup) v).getChildAt(0);
 				break;
 			}
 		}
@@ -135,7 +159,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 				public void onDragged(VerticalDragDetectorView v) {
 					// log("dragged");
 					final BroadcastReceiver receiver = new ToggleReceiver(
-							(FlyingView2) v.getChildAt(0));
+							(FlyingView) v.getChildAt(0));
 					receiver.onReceive(v.getContext(), null);
 				}
 			});
@@ -149,13 +173,14 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 	}
 
 	private class ToggleReceiver extends BroadcastReceiver {
-		private final FlyingView2 mFlyingView;
+		private final FlyingView mFlyingView;
 
-		public ToggleReceiver(FlyingView2 flyingView) {
+		public ToggleReceiver(FlyingView flyingView) {
 			super();
 			mFlyingView = flyingView;
 		}
 
+		@SuppressWarnings("deprecation")
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// log("toggle");
@@ -180,7 +205,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 						.setBackgroundDrawable(sEraseDrawable);
 			} else {
 				text = "Fly";
-				switch (sTakeoffPosition) {
+				switch (getTakeoffPosition()) {
 				case 0: // center
 					// do noting
 					break;
@@ -198,7 +223,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 							Math.round(mFlyingView.getHeight() / 2.0f));
 					break;
 				}
-				if (sNotifyFlying) {
+				if (getNotifyFlying()) {
 					if (sNotifyFlyingDrawable == null) {
 						try {
 							final Context flyContext = context
@@ -214,14 +239,17 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 							.setBackgroundDrawable(sNotifyFlyingDrawable);
 				}
 			}
-			Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+			if (getShowToast())
+				Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
 		}
 	};
 
 	public void handleLoadPackage(final LoadPackageParam lpparam)
 			throws Throwable {
 		try {
-			if (sBlackSet.contains(lpparam.packageName)) {
+//			reloadPreferences();
+
+			if (getBlackSet().contains(lpparam.packageName)) {
 				return;
 			}
 
@@ -291,11 +319,11 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 								if (r == null) {
 									final ViewGroup decor = (ViewGroup) activity
 											.getWindow().getDecorView();
-									FlyingView2 flyingView = null;
+									FlyingView flyingView = null;
 									for (int i = 0; i < decor.getChildCount(); ++i) {
 										final View v = decor.getChildAt(i);
 										if (v instanceof VerticalDragDetectorView) {
-											flyingView = (FlyingView2) ((ViewGroup) v)
+											flyingView = (FlyingView) ((ViewGroup) v)
 													.getChildAt(0);
 											break;
 										}
@@ -348,11 +376,11 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 								Activity activity = (Activity) param.thisObject;
 								final ViewGroup decor = (ViewGroup) activity
 										.getWindow().getDecorView();
-								FlyingView2 flyingView = null;
+								FlyingView flyingView = null;
 								for (int i = 0; i < decor.getChildCount(); ++i) {
 									final View v = decor.getChildAt(i);
 									if (v instanceof VerticalDragDetectorView) {
-										flyingView = (FlyingView2) ((ViewGroup) v)
+										flyingView = (FlyingView) ((ViewGroup) v)
 												.getChildAt(0);
 										break;
 									}
