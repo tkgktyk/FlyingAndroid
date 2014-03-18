@@ -15,12 +15,6 @@ public class BlackListActivity extends Activity {
 	private ViewHolder mViewHolder;
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		getLoaderManager().destroyLoader(0);
-	}
-
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_black_list);
