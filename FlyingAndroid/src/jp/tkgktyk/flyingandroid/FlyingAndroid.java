@@ -92,7 +92,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		}
 	}
 
-	private ViewGroup newFlyingView(Context context) throws Throwable {
+	private FlyingView newFlyingView(Context context) throws Throwable {
 		final FlyingView flyingView = new FlyingView2(context);
 		flyingView.setLayoutParams(new ViewGroup.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
@@ -117,7 +117,7 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 							in = true;
 						}
 					}
-					inside = (inside && in);
+					inside = (inside || in);
 				}
 				if (!inside) {
 					// log("unhandled outside click");
@@ -129,10 +129,12 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		return flyingView;
 	}
 
-	private View newChildView(ViewGroup decor, View child,
-			ViewGroup.LayoutParams layoutParams, boolean verticalDrag)
-			throws Throwable {
-		ViewGroup flyingView = null;
+	private FlyingView findFlyingView(Activity activity) {
+		return findFlyingView((ViewGroup) activity.getWindow().getDecorView());
+	}
+
+	private FlyingView findFlyingView(ViewGroup decor) {
+		FlyingView flyingView = null;
 		for (int i = 0; i < decor.getChildCount(); ++i) {
 			final View v = decor.getChildAt(i);
 			if (v instanceof VerticalDragDetectorView) {
@@ -140,18 +142,32 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 				break;
 			}
 		}
+		return flyingView;
+	}
+
+	private ViewGroup getContainer(FlyingView flyingView) {
+		return (ViewGroup) flyingView.getChildAt(0);
+	}
+
+	private View newChildView(ViewGroup decor, View child,
+			ViewGroup.LayoutParams layoutParams, boolean verticalDrag)
+			throws Throwable {
+		FlyingView flyingView = findFlyingView(decor);
 		if (flyingView != null) {
 			// add child at index excluded notifyFlyingView
-			flyingView.addView(child, flyingView.getChildCount() - 1,
+			ViewGroup container = getContainer(flyingView);
+			container.addView(child, container.getChildCount() - 1,
 					layoutParams);
 			return null;
 		} else {
 			final Context context = decor.getContext();
 			flyingView = newFlyingView(context);
-			flyingView.addView(child, layoutParams);
+			ViewGroup container = new FrameLayout(context);
+			flyingView.addView(container);
+			container.addView(child, layoutParams);
 			// notify flying and vertical drag view
 			View notifyFlyingView = new FrameLayout(context);
-			flyingView.addView(notifyFlyingView);
+			container.addView(notifyFlyingView);
 			VerticalDragDetectorView dragView = new VerticalDragDetectorView(
 					context);
 			dragView.setOnDraggedListener(new OnDraggedListener() {
@@ -201,7 +217,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 						XposedBridge.log(t);
 					}
 				}
-				mFlyingView.getChildAt(mFlyingView.getChildCount() - 1)
+				ViewGroup container = getContainer(mFlyingView);
+				container.getChildAt(container.getChildCount() - 1)
 						.setBackgroundDrawable(sEraseDrawable);
 			} else {
 				text = "Fly";
@@ -235,7 +252,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 							XposedBridge.log(t);
 						}
 					}
-					mFlyingView.getChildAt(mFlyingView.getChildCount() - 1)
+					ViewGroup container = getContainer(mFlyingView);
+					container.getChildAt(container.getChildCount() - 1)
 							.setBackgroundDrawable(sNotifyFlyingDrawable);
 				}
 			}
@@ -247,17 +265,14 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 	public void handleLoadPackage(final LoadPackageParam lpparam)
 			throws Throwable {
 		try {
-//			reloadPreferences();
+			// reloadPreferences();
 
 			if (getBlackSet().contains(lpparam.packageName)) {
 				return;
 			}
 
-			// XposedBridge.log("Loaded app: " + lpparam.packageName);
-			// XposedBridge.log("is first app: " + lpparam.isFirstApplication);
-			findAndHookMethod("android.view.ViewGroup", lpparam.classLoader,
-					"addView", View.class, ViewGroup.LayoutParams.class,
-					new XC_MethodReplacement() {
+			findAndHookMethod(ViewGroup.class, "addView", View.class,
+					ViewGroup.LayoutParams.class, new XC_MethodReplacement() {
 						@Override
 						protected Object replaceHookedMethod(
 								MethodHookParam param) {
@@ -297,8 +312,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 												newChild, -1,
 												newChild.getLayoutParams());
 									} else {
-										// already exists newChild and child
-										// have been added to newChild.
+										// already exists newChild and child has
+										// been added to newChild.
 									}
 								}
 							} catch (Throwable t) {
@@ -307,84 +322,60 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 							return null;
 						}
 					});
-			findAndHookMethod("android.app.Activity", lpparam.classLoader,
-					"onResume", new XC_MethodHook() {
-						@Override
-						protected void afterHookedMethod(MethodHookParam param)
-								throws Throwable {
-							try {
-								final Activity activity = (Activity) param.thisObject;
-								final Object r = getAdditionalInstanceField(
-										activity, "flyingAndroidReceiver");
-								if (r == null) {
-									final ViewGroup decor = (ViewGroup) activity
-											.getWindow().getDecorView();
-									FlyingView flyingView = null;
-									for (int i = 0; i < decor.getChildCount(); ++i) {
-										final View v = decor.getChildAt(i);
-										if (v instanceof VerticalDragDetectorView) {
-											flyingView = (FlyingView) ((ViewGroup) v)
-													.getChildAt(0);
-											break;
-										}
-									}
-									if (flyingView != null) {
-										final BroadcastReceiver receiver = new ToggleReceiver(
-												flyingView);
-										activity.registerReceiver(receiver,
-												new IntentFilter(ACTION_TOGGLE));
-										setAdditionalInstanceField(activity,
-												"flyingAndroidReceiver",
-												receiver);
-										// log("register");
-									} else {
-										log("FlyingView is not found.");
-									}
-								}
-							} catch (Throwable t) {
-								XposedBridge.log(t);
+			findAndHookMethod(Activity.class, "onResume", new XC_MethodHook() {
+				@Override
+				protected void afterHookedMethod(MethodHookParam param)
+						throws Throwable {
+					try {
+						final Activity activity = (Activity) param.thisObject;
+						final Object r = getAdditionalInstanceField(activity,
+								"flyingAndroidReceiver");
+						if (r == null) {
+							FlyingView flyingView = findFlyingView(activity);
+							if (flyingView != null) {
+								final BroadcastReceiver receiver = new ToggleReceiver(
+										flyingView);
+								activity.registerReceiver(receiver,
+										new IntentFilter(ACTION_TOGGLE));
+								setAdditionalInstanceField(activity,
+										"flyingAndroidReceiver", receiver);
+								// log("register");
+							} else {
+								log("FlyingView is not found.");
 							}
 						}
-					});
-			findAndHookMethod("android.app.Activity", lpparam.classLoader,
-					"onPause", new XC_MethodHook() {
-						@Override
-						protected void afterHookedMethod(MethodHookParam param)
-								throws Throwable {
-							try {
-								final Activity activity = (Activity) param.thisObject;
-								final Object r = getAdditionalInstanceField(
-										activity, "flyingAndroidReceiver");
-								if (r != null) {
-									activity.unregisterReceiver((BroadcastReceiver) r);
-									setAdditionalInstanceField(activity,
-											"flyingAndroidReceiver", null);
-									// log("unregister");
-								}
-							} catch (Throwable t) {
-								XposedBridge.log(t);
-							}
+					} catch (Throwable t) {
+						XposedBridge.log(t);
+					}
+				}
+			});
+			findAndHookMethod(Activity.class, "onPause", new XC_MethodHook() {
+				@Override
+				protected void afterHookedMethod(MethodHookParam param)
+						throws Throwable {
+					try {
+						final Activity activity = (Activity) param.thisObject;
+						final Object r = getAdditionalInstanceField(activity,
+								"flyingAndroidReceiver");
+						if (r != null) {
+							activity.unregisterReceiver((BroadcastReceiver) r);
+							setAdditionalInstanceField(activity,
+									"flyingAndroidReceiver", null);
+							// log("unregister");
 						}
-					});
-			findAndHookMethod("android.app.Activity", lpparam.classLoader,
-					"onConfigurationChanged", Configuration.class,
-					new XC_MethodHook() {
+					} catch (Throwable t) {
+						XposedBridge.log(t);
+					}
+				}
+			});
+			findAndHookMethod(Activity.class, "onConfigurationChanged",
+					Configuration.class, new XC_MethodHook() {
 						@Override
 						protected void afterHookedMethod(MethodHookParam param)
 								throws Throwable {
 							try {
 								Activity activity = (Activity) param.thisObject;
-								final ViewGroup decor = (ViewGroup) activity
-										.getWindow().getDecorView();
-								FlyingView flyingView = null;
-								for (int i = 0; i < decor.getChildCount(); ++i) {
-									final View v = decor.getChildAt(i);
-									if (v instanceof VerticalDragDetectorView) {
-										flyingView = (FlyingView) ((ViewGroup) v)
-												.getChildAt(0);
-										break;
-									}
-								}
+								FlyingView flyingView = findFlyingView(activity);
 								if (flyingView != null) {
 									Configuration newConfig = (Configuration) param.args[0];
 									if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {

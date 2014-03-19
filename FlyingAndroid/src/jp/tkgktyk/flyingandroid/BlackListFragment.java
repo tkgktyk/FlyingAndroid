@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -48,14 +49,15 @@ public class BlackListFragment extends ListFragment implements
 		}
 
 		class ViewHolder {
+			ImageView icon;
 			TextView text;
 		}
 
 		private View createView(ViewGroup parent) {
-			View view = mInflater.inflate(
-					android.R.layout.simple_list_item_multiple_choice, parent,
+			View view = mInflater.inflate(R.layout.view_selectable_app, parent,
 					false);
 			ViewHolder holder = new ViewHolder();
+			holder.icon = (ImageView) view.findViewById(android.R.id.icon);
 			holder.text = (TextView) view.findViewById(android.R.id.text1);
 			view.setTag(holder);
 
@@ -71,9 +73,8 @@ public class BlackListFragment extends ListFragment implements
 
 			Entry entry = getItem(position);
 			//
+			holder.icon.setImageDrawable(entry.icon);
 			holder.text.setText(entry.appName);
-			holder.text.setCompoundDrawablesWithIntrinsicBounds(entry.icon,
-					null, null, null);
 
 			return view;
 		}
