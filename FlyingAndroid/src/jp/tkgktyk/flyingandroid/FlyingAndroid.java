@@ -17,11 +17,18 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
@@ -42,14 +49,19 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 	private static boolean sShowToast;
 	private static boolean sNotifyFlying;
 	private static Set<String> sBlackSet;
+	private static int sPinPosition;
 
-	private static Drawable sEraseDrawable;
-	private static Drawable sNotifyFlyingDrawable;
+	private static final int TAKE_OFF_POSITION_CENTER = 0;
+	private static final int TAKE_OFF_POSITION_BOTTOM = 1;
+	private static final int TAKE_OFF_POSITION_LOWER_LEFT = 2;
+	private static final int TAKE_OFF_POSITION_LOWER_RIGHT = 3;
 
 	@Override
 	public void initZygote(StartupParam startupParam) {
 		sPref = new XSharedPreferences(PACKAGE_NAME);
 		reloadPreferences();
+
+		//
 	}
 
 	/**
@@ -64,6 +76,8 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		sNotifyFlying = sPref.getBoolean("pref_key_notify_flying", true);
 		sBlackSet = sPref.getStringSet("pref_key_black_list",
 				Collections.<String> emptySet());
+		sPinPosition = Integer.parseInt(sPref.getString(
+				"pref_key_pin_position", "0"));
 	}
 
 	private float getSpeed() {
@@ -86,14 +100,23 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		return sBlackSet;
 	}
 
+	private int getPinPosition() {
+		return sPinPosition;
+	}
+
 	private void log(String text) {
 		if (BuildConfig.DEBUG) {
 			XposedBridge.log("FA: " + text);
 		}
 	}
 
-	private FlyingView newFlyingView(Context context) throws Throwable {
-		final FlyingView flyingView = new FlyingView2(context);
+	private ToggleHelper getToggleHelper(FlyingView flyingView) {
+		return (ToggleHelper) flyingView.getTag();
+	}
+
+	private FlyingView createFlyingView(Context context, boolean useOverlay)
+			throws Throwable {
+		final FlyingView flyingView = new FlyingView1(context);
 		flyingView.setLayoutParams(new ViewGroup.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT));
@@ -105,24 +128,26 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 		flyingView.setHorizontalPadding(padding);
 		flyingView.setVerticalPadding(padding);
 		flyingView.setIgnoreTouchEvent(true);
+		final ToggleHelper helper = new ToggleHelper(flyingView, useOverlay);
+		flyingView.setTag(helper);
 		flyingView.setOnUnhandledClickListener(new OnUnhandledClickListener() {
 			@Override
 			public void onUnhandledClick(FlyingView v, int x, int y) {
 				boolean inside = false;
-				for (int i = 0; i < v.getChildCount(); ++i) {
-					boolean in = false;
-					View child = v.getChildAt(i);
-					if (x >= child.getLeft() && x <= child.getRight()) {
-						if (y >= child.getTop() && y <= child.getBottom()) {
-							in = true;
-						}
+				// for (int i = 0; i < v.getChildCount(); ++i) {
+				boolean in = false;
+				// View child = v.getChildAt(i);
+				View child = v.getChildAt(0);
+				if (x >= child.getLeft() && x <= child.getRight()) {
+					if (y >= child.getTop() && y <= child.getBottom()) {
+						in = true;
 					}
-					inside = (inside || in);
 				}
+				inside = (inside || in);
+				// }
 				if (!inside) {
 					// log("unhandled outside click");
-					final BroadcastReceiver receiver = new ToggleReceiver(v);
-					receiver.onReceive(v.getContext(), null);
+					helper.toggle();
 				}
 			}
 		});
@@ -134,133 +159,243 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 	}
 
 	private FlyingView findFlyingView(ViewGroup decor) {
-		FlyingView flyingView = null;
 		for (int i = 0; i < decor.getChildCount(); ++i) {
-			final View v = decor.getChildAt(i);
-			if (v instanceof VerticalDragDetectorView) {
-				flyingView = (FlyingView) ((ViewGroup) v).getChildAt(0);
-				break;
+			View v = decor.getChildAt(i);
+			if (v instanceof FlyingView) {
+				return (FlyingView) v;
+			}
+			if (v instanceof ViewGroup) {
+				return findFlyingView((ViewGroup) v);
 			}
 		}
+		return null;
+	}
+
+	private FrameLayout getContainer(FlyingView flyingView) {
+		return (FrameLayout) flyingView.getChildAt(0);
+	}
+
+	private VerticalDragDetectorView createDragView(Context context,
+			final ToggleHelper helper, boolean verticalDrag) {
+		VerticalDragDetectorView dragView = new VerticalDragDetectorView(
+				context);
+		dragView.setOnDraggedListener(new OnDraggedListener() {
+			@Override
+			public void onDragged(VerticalDragDetectorView v) {
+				// log("dragged");
+				helper.toggle();
+			}
+		});
+		dragView.setIgnoreTouchEvent(!verticalDrag);
+
+		return dragView;
+	}
+
+	private View createNewChildView(Context context, boolean verticalDrag,
+			boolean useOverlay) throws Throwable {
+		// create FlyingView
+		FlyingView flyingView = createFlyingView(context, useOverlay);
+		ToggleHelper helper = getToggleHelper(flyingView);
+		// add dragView as FlyingView's container
+		ViewGroup container = createDragView(context, helper, verticalDrag);
+		flyingView.addView(container);
+
 		return flyingView;
 	}
 
-	private ViewGroup getContainer(FlyingView flyingView) {
-		return (ViewGroup) flyingView.getChildAt(0);
+	private void addViewToFlyingView(FlyingView flyingView, View child,
+			ViewGroup.LayoutParams layoutParams) {
+		getContainer(flyingView).addView(child, layoutParams);
 	}
 
-	private View newChildView(ViewGroup decor, View child,
-			ViewGroup.LayoutParams layoutParams, boolean verticalDrag)
-			throws Throwable {
-		FlyingView flyingView = findFlyingView(decor);
-		if (flyingView != null) {
-			// add child at index excluded notifyFlyingView
-			ViewGroup container = getContainer(flyingView);
-			container.addView(child, container.getChildCount() - 1,
-					layoutParams);
-			return null;
-		} else {
-			final Context context = decor.getContext();
-			flyingView = newFlyingView(context);
-			ViewGroup container = new FrameLayout(context);
-			flyingView.addView(container);
-			container.addView(child, layoutParams);
-			// notify flying and vertical drag view
-			View notifyFlyingView = new FrameLayout(context);
-			container.addView(notifyFlyingView);
-			VerticalDragDetectorView dragView = new VerticalDragDetectorView(
-					context);
-			dragView.setOnDraggedListener(new OnDraggedListener() {
-				@Override
-				public void onDragged(VerticalDragDetectorView v) {
-					// log("dragged");
-					final BroadcastReceiver receiver = new ToggleReceiver(
-							(FlyingView) v.getChildAt(0));
-					receiver.onReceive(v.getContext(), null);
-				}
-			});
-			dragView.setLayoutParams(new ViewGroup.LayoutParams(
-					ViewGroup.LayoutParams.MATCH_PARENT,
-					ViewGroup.LayoutParams.MATCH_PARENT));
-			dragView.addView(flyingView);
-			dragView.setIgnoreTouchEvent(verticalDrag);
-			return dragView;
-		}
-	}
-
-	private class ToggleReceiver extends BroadcastReceiver {
+	private class ToggleHelper {
 		private final FlyingView mFlyingView;
+		private final Drawable mNotifyFlyingDrawable;
+		private final boolean mUseOverlay;
 
-		public ToggleReceiver(FlyingView flyingView) {
-			super();
+		private boolean mFlying = false;
+		private boolean mWindowPinned = false;
+		private boolean mOverlayShown = false;
+		private boolean mBoundaryShown = false;
+
+		public ToggleHelper(FlyingView flyingView, boolean useOverlay)
+				throws Throwable {
 			mFlyingView = flyingView;
+			mUseOverlay = useOverlay;
+
+			if (!getNotifyFlying()) {
+				mNotifyFlyingDrawable = null;
+			} else {
+				final Context context = mFlyingView.getContext();
+				Context flyContext = null;
+				try {
+					flyContext = context.createPackageContext(PACKAGE_NAME,
+							Context.CONTEXT_IGNORE_SECURITY);
+				} catch (Throwable t) {
+					XposedBridge.log(t);
+				}
+				if (flyContext != null) {
+					mNotifyFlyingDrawable = flyContext.getResources()
+							.getDrawable(R.drawable.notify_flying);
+				} else {
+					mNotifyFlyingDrawable = null;
+				}
+			}
 		}
 
-		@SuppressWarnings("deprecation")
-		@Override
-		public void onReceive(Context context, Intent intent) {
+		private View createOverlayView(int pinPosition) {
+			final Context context = mFlyingView.getContext();
+			if (pinPosition == 0) {
+				return new View(context);
+			}
+
+			View overlay;
+			try {
+				final Context flyContext = context.createPackageContext(
+						PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
+				overlay = LayoutInflater.from(flyContext).inflate(
+						R.layout.view_overlay, null);
+				ToggleButton button = (ToggleButton) overlay
+						.findViewById(R.id.button);
+				button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						setWindowPinned(isChecked);
+					}
+				});
+				LinearLayout container = (LinearLayout) overlay
+						.findViewById(R.id.container);
+				switch (pinPosition) {
+				case 1:
+					container
+							.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+					break;
+				case 2:
+					container.setGravity(Gravity.CENTER_VERTICAL
+							| Gravity.RIGHT);
+					break;
+				case 3:
+					container.setGravity(Gravity.BOTTOM | Gravity.LEFT);
+					break;
+				case 4:
+					container.setGravity(Gravity.BOTTOM | Gravity.RIGHT);
+					break;
+				}
+			} catch (Throwable t) {
+				XposedBridge.log(t);
+				overlay = new View(context);
+			}
+
+			return overlay;
+		}
+
+		private void setWindowPinned(boolean pinned) {
+			if (mWindowPinned == pinned) {
+				return;
+			}
+			mWindowPinned = pinned;
+
+			String text;
+			if (pinned) {
+				text = "pin";
+				mFlyingView.setIgnoreTouchEvent(true);
+				setBoundaryShown(false);
+			} else {
+				text = "Unpin";
+				mFlyingView.setIgnoreTouchEvent(false);
+				setBoundaryShown(true);
+			}
+			if (getShowToast()) {
+				Toast.makeText(mFlyingView.getContext(), text,
+						Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		private void setOverlayShown(boolean shown) {
+			if (mOverlayShown == shown) {
+				return;
+			}
+			mOverlayShown = shown;
+
+			if (mUseOverlay && getPinPosition() != 0) {
+				if (shown) {
+					mFlyingView.addView(createOverlayView(getPinPosition()));
+				} else {
+					mFlyingView.removeViewAt(mFlyingView.getChildCount() - 1);
+				}
+			}
+		}
+
+		private void setBoundaryShown(boolean shown) {
+			if (mBoundaryShown == shown) {
+				return;
+			}
+			mBoundaryShown = shown;
+
+			if (getNotifyFlying()) {
+				FrameLayout container = getContainer(mFlyingView);
+				if (shown) {
+					container.setForeground(mNotifyFlyingDrawable);
+				} else {
+					container.setForeground(null);
+				}
+			}
+		}
+
+		private void toggle() {
 			// log("toggle");
-			final boolean next = !mFlyingView.getIgnoreTouchEvent();
-			mFlyingView.setIgnoreTouchEvent(next);
+			mFlying = !mFlying;
+			mFlyingView.setIgnoreTouchEvent(!mFlying);
 			String text = null;
-			if (next) {
+			if (!mFlying) {
 				text = "Rest";
 				mFlyingView.returnToHome();
-				if (sEraseDrawable == null) {
-					try {
-						final Context flyContext = context
-								.createPackageContext(PACKAGE_NAME,
-										Context.CONTEXT_IGNORE_SECURITY);
-						sEraseDrawable = flyContext.getResources().getDrawable(
-								R.drawable.erase_flying_notification);
-					} catch (Throwable t) {
-						XposedBridge.log(t);
-					}
-				}
-				ViewGroup container = getContainer(mFlyingView);
-				container.getChildAt(container.getChildCount() - 1)
-						.setBackgroundDrawable(sEraseDrawable);
+				setBoundaryShown(false);
+				setOverlayShown(false);
 			} else {
 				text = "Fly";
 				switch (getTakeoffPosition()) {
-				case 0: // center
+				case TAKE_OFF_POSITION_CENTER:
 					// do noting
 					break;
-				case 1: // bottom
+				case TAKE_OFF_POSITION_BOTTOM:
 					mFlyingView.move(0,
 							Math.round(mFlyingView.getHeight() / 2.0f));
 					break;
-				case 2: // lower left
+				case TAKE_OFF_POSITION_LOWER_LEFT:
 					mFlyingView.move(
 							Math.round(-mFlyingView.getWidth() / 2.0f),
 							Math.round(mFlyingView.getHeight() / 2.0f));
 					break;
-				case 3: // lower right
+				case TAKE_OFF_POSITION_LOWER_RIGHT:
 					mFlyingView.move(Math.round(mFlyingView.getWidth() / 2.0f),
 							Math.round(mFlyingView.getHeight() / 2.0f));
 					break;
 				}
-				if (getNotifyFlying()) {
-					if (sNotifyFlyingDrawable == null) {
-						try {
-							final Context flyContext = context
-									.createPackageContext(PACKAGE_NAME,
-											Context.CONTEXT_IGNORE_SECURITY);
-							sNotifyFlyingDrawable = flyContext.getResources()
-									.getDrawable(R.drawable.notify_flying);
-						} catch (Throwable t) {
-							XposedBridge.log(t);
-						}
-					}
-					ViewGroup container = getContainer(mFlyingView);
-					container.getChildAt(container.getChildCount() - 1)
-							.setBackgroundDrawable(sNotifyFlyingDrawable);
-				}
+				mWindowPinned = false;
+				setBoundaryShown(true);
+				setOverlayShown(true);
 			}
-			if (getShowToast())
-				Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+			if (getShowToast()) {
+				Toast.makeText(mFlyingView.getContext(), text,
+						Toast.LENGTH_SHORT).show();
+			}
 		}
-	};
+
+		private final BroadcastReceiver mToggleReceiver = new BroadcastReceiver() {
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				// log("toggle");
+				toggle();
+			}
+		};
+
+		private BroadcastReceiver getToggleReceiver() {
+			return mToggleReceiver;
+		}
+	}
 
 	public void handleLoadPackage(final LoadPackageParam lpparam)
 			throws Throwable {
@@ -294,32 +429,59 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 											child, -1, layoutParams);
 								} else {
 									final ViewGroup decor = (ViewGroup) param.thisObject;
-									// vertical drag interface is enabled on
-									// floating window only.
-									TypedArray a = decor
-											.getContext()
-											.getTheme()
-											.obtainStyledAttributes(
-													new int[] { android.R.attr.windowIsFloating });
-									final View newChild = newChildView(decor,
-											child, layoutParams,
-											!a.getBoolean(0, false));
-									a.recycle();
-									if (newChild != null) {
+									FlyingView flyingView = findFlyingView(decor);
+									if (flyingView == null) {
+										// vertical drag interface is enabled on
+										// floating window only.
+										TypedArray a = decor
+												.getContext()
+												.getTheme()
+												.obtainStyledAttributes(
+														new int[] { android.R.attr.windowIsFloating });
+										boolean floating = a.getBoolean(0,
+												false);
+										final View newChild = createNewChildView(
+												decor.getContext(), floating,
+												!floating);
+										a.recycle();
 										// to avoid stack overflow (recursive),
 										// call addView(View, int, LayoutParams)
 										callMethod(param.thisObject, "addView",
 												newChild, -1,
 												newChild.getLayoutParams());
-									} else {
-										// already exists newChild and child has
-										// been added to newChild.
+										flyingView = findFlyingView(decor);
 									}
+									addViewToFlyingView(flyingView, child,
+											layoutParams);
 								}
 							} catch (Throwable t) {
 								XposedBridge.log(t);
 							}
 							return null;
+						}
+					});
+			findAndHookMethod(Activity.class, "onPostCreate", Bundle.class,
+					new XC_MethodHook() {
+						@Override
+						protected void afterHookedMethod(MethodHookParam param)
+								throws Throwable {
+							// for clear background
+							Activity activity = (Activity) param.thisObject;
+							activity.getWindow().setBackgroundDrawable(
+									new ColorDrawable(0));
+							TypedArray a = activity
+									.getTheme()
+									.obtainStyledAttributes(
+											new int[] { android.R.attr.windowBackground });
+							int background = a.getResourceId(0, 0);
+							a.recycle();
+							FlyingView flyingView = findFlyingView(activity);
+							if (flyingView != null) {
+								getContainer(flyingView).setBackgroundResource(
+										background);
+							} else {
+								log("FlyingView is not found.");
+							}
 						}
 					});
 			findAndHookMethod(Activity.class, "onResume", new XC_MethodHook() {
@@ -333,8 +495,9 @@ public class FlyingAndroid implements IXposedHookLoadPackage,
 						if (r == null) {
 							FlyingView flyingView = findFlyingView(activity);
 							if (flyingView != null) {
-								final BroadcastReceiver receiver = new ToggleReceiver(
-										flyingView);
+								final ToggleHelper helper = getToggleHelper(flyingView);
+								final BroadcastReceiver receiver = helper
+										.getToggleReceiver();
 								activity.registerReceiver(receiver,
 										new IntentFilter(ACTION_TOGGLE));
 								setAdditionalInstanceField(activity,

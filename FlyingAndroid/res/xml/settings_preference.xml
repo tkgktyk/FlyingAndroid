@@ -13,29 +13,53 @@
             android:entryValues="@array/speedValues"
             android:key="@string/pref_key_speed"
             android:title="@string/Speed" />
-
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/takeoffPositions"
             android:entryValues="@array/takeoffPositionValues"
             android:key="@string/pref_key_takeoff_position"
             android:title="@string/Takeoff_position" />
-        
-        <CheckBoxPreference
-            android:summary="@string/summary_notify_flying"
-            android:defaultValue="true"
-            android:key="@string/pref_key_notify_flying"
-            android:title="@string/Notify_flying" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pinPositions"
+            android:entryValues="@array/pinPositionValues"
+            android:key="@string/pref_key_pin_position"
+            android:title="@string/Pin_position" />
 
         <CheckBoxPreference
-            android:summary="@string/summary_show_toast"
+            android:defaultValue="true"
+            android:key="@string/pref_key_notify_flying"
+            android:summary="@string/summary_notify_flying"
+            android:title="@string/Notify_flying" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_key_show_toast"
+            android:summary="@string/summary_show_toast"
             android:title="@string/Show_toast" />
-        
+
         <Preference
             android:key="@string/pref_key_black_list"
             android:title="@string/Black_list" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/Informations" >
+        <Preference
+            android:summary="@string/summary_developer"
+            android:title="@string/Developer" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://sites.google.com/site/tkgktyk/android/flying-android" />
+        </Preference>
+        <Preference
+            android:summary="@string/summary_donate"
+            android:title="@string/Donate" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="market://details?id=jp.tkgktyk.donatetotkgktyk" />
+        </Preference>
+        <Preference
+            android:summary="@string/summary_acknowledgement"
+            android:title="@string/Acknowledgement"
+            />
     </PreferenceCategory>
 
 </PreferenceScreen>

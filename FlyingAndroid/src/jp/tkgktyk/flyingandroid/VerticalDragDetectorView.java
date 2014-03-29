@@ -7,7 +7,6 @@ import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
-import de.robv.android.xposed.XposedBridge;
 
 public class VerticalDragDetectorView extends FrameLayout {
 	private static final String TAG = "VerticalDragDetectorView";
@@ -58,13 +57,11 @@ public class VerticalDragDetectorView extends FrameLayout {
 	}
 
 	public VerticalDragDetectorView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		resetPrivateVariable();
+		this(context, attrs, 0);
 	}
 
 	public VerticalDragDetectorView(Context context) {
-		super(context);
-		resetPrivateVariable();
+		this(context, null);
 	}
 
 	public void setIgnoreTouchEvent(boolean ignore) {

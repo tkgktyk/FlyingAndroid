@@ -22,6 +22,15 @@
     <string name="summary_notify_flying">Draw boundary while flying.</string>
     <string name="Black_list">Black list&#8230;</string>
     <string name="pref_key_black_list">pref_key_black_list</string>
+    <string name="Pin_position">Pin position</string>
+    <string name="pref_key_pin_position">pref_key_pin_position</string>
+    <string name="Informations">Informations</string>
+    <string name="Developer">Developer</string>
+    <string name="summary_developer">Flying Android is coded by tkgktyk. Touch to open site on Google Sites.</string>
+    <string name="Donate">Donate</string>
+    <string name="summary_donate">Touch to open donation app\'s page on Google Play. (Please donate via donation app.)</string>
+    <string name="Acknowledgement">Acknowledgement</string>
+    <string name="summary_acknowledgement">Flying Android is made ​​up of the following\n  - Android\n  - Xposed Framework (rovo89@XDA)\nand refers to\n  - Advanced Power Menu (kennethso168@XDA)\n  - GravityBox (C3C076@XDA)\n  - SwipeBack (PeterCxy@XDA)</string>
     
     <!-- BlackList -->
     <string name="Show_only_black">Show only black</string>

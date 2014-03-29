@@ -25,25 +25,10 @@ public class MainActivity extends Activity {
 			super.onCreate(savedInstanceState);
 			addPreferencesFromResource(R.xml.settings_preference);
 
-			OnPreferenceChangeListener listChangeListener = new OnPreferenceChangeListener() {
-				@Override
-				public boolean onPreferenceChange(Preference preference,
-						Object newValue) {
-					setListSummary((ListPreference) preference,
-							(String) newValue);
-					return true;
-				}
-			};
 			// scroll speed
-			ListPreference scrollSpeed = (ListPreference) findPreference(R.string.pref_key_speed);
-			scrollSpeed.setOnPreferenceChangeListener(listChangeListener);
-			setListSummary(scrollSpeed,
-					getSharedString(R.string.pref_key_speed));
+			showListSummary(R.string.pref_key_speed);
 			// takeoff position
-			ListPreference takeoff = (ListPreference) findPreference(R.string.pref_key_takeoff_position);
-			takeoff.setOnPreferenceChangeListener(listChangeListener);
-			setListSummary(takeoff,
-					getSharedString(R.string.pref_key_takeoff_position));
+			showListSummary(R.string.pref_key_takeoff_position);
 			// black list
 			Preference blackList = findPreference(R.string.pref_key_black_list);
 			blackList
@@ -56,11 +41,28 @@ public class MainActivity extends Activity {
 							return true;
 						}
 					});
+			// pin position
+			showListSummary(R.string.pref_key_pin_position);
 		}
 
 		private String getSharedString(int keyId) {
 			return PreferenceManager.getDefaultSharedPreferences(getActivity())
 					.getString(getString(keyId), null);
+		}
+
+		private final OnPreferenceChangeListener mListChangeListener = new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference,
+					Object newValue) {
+				setListSummary((ListPreference) preference, (String) newValue);
+				return true;
+			}
+		};
+
+		private void showListSummary(int id) {
+			ListPreference takeoff = (ListPreference) findPreference(id);
+			takeoff.setOnPreferenceChangeListener(mListChangeListener);
+			setListSummary(takeoff, getSharedString(id));
 		}
 
 		private void setListSummary(ListPreference pref, String value) {

@@ -45,10 +45,11 @@ public abstract class FlyingView extends FrameLayout {
 	private int mVerticalPadding;
 	private boolean mIgnoreTouchEvent;
 
-	private void fetchAttribute(Context context, AttributeSet attrs) {
+	private void fetchAttribute(Context context, AttributeSet attrs,
+			int defStyle) {
 		// get attributes specified in XML
 		TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
-				R.styleable.FlyingView, 0, 0);
+				R.styleable.FlyingView, defStyle, 0);
 		try {
 			setSpeed(a.getFloat(R.styleable.FlyingView_speed, DEFAULT_SPEED));
 			setHorizontalPadding(a.getDimensionPixelSize(
@@ -69,24 +70,23 @@ public abstract class FlyingView extends FrameLayout {
 		super(context, attrs, defStyle);
 		mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
-		fetchAttribute(context, attrs);
+		fetchAttribute(context, attrs, defStyle);
 	}
 
 	public FlyingView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-
-		fetchAttribute(context, attrs);
+		this(context, attrs, 0);
 	}
 
 	public FlyingView(Context context) {
-		super(context);
-		mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+		this(context, null, 0);
 
-		setSpeed(DEFAULT_SPEED);
-		setHorizontalPadding(DEFAULT_HORIZONTAL_PADDING);
-		setVerticalPadding(DEFAULT_VERTICAL_PADDING);
-		setIgnoreTouchEvent(DEFAULT_IGNORE_TOUCH_EVENT);
+		// super(context);
+		// mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+		//
+		// setSpeed(DEFAULT_SPEED);
+		// setHorizontalPadding(DEFAULT_HORIZONTAL_PADDING);
+		// setVerticalPadding(DEFAULT_VERTICAL_PADDING);
+		// setIgnoreTouchEvent(DEFAULT_IGNORE_TOUCH_EVENT);
 	}
 
 	public void setSpeed(float speed) {
@@ -226,10 +226,6 @@ public abstract class FlyingView extends FrameLayout {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		if (!mIsBeingDragged && mIgnoreTouchEvent) {
-			return false;
-		}
-
 		final int action = ev.getAction();
 
 		switch (action & MotionEvent.ACTION_MASK) {
@@ -245,6 +241,10 @@ public abstract class FlyingView extends FrameLayout {
 			break;
 		}
 		case MotionEvent.ACTION_MOVE: {
+			if (!mIsBeingDragged && mIgnoreTouchEvent) {
+				return false;
+			}
+
 			final int activePointerIndex = ev
 					.findPointerIndex(mActivePointerId);
 			if (activePointerIndex == -1) {
@@ -258,7 +258,7 @@ public abstract class FlyingView extends FrameLayout {
 			final int x = (int) ev.getX(activePointerIndex);
 			int deltaX = mLastMotionX - x;
 			if (!mIsBeingDragged && Math.abs(deltaX) > mTouchSlop) {
-				mIsBeingDragged = true;
+				isBeingDraggedX = true;
 				if (deltaX > 0) {
 					deltaX -= mTouchSlop;
 				} else {
@@ -268,7 +268,7 @@ public abstract class FlyingView extends FrameLayout {
 			final int y = (int) ev.getY(activePointerIndex);
 			int deltaY = mLastMotionY - y;
 			if (!mIsBeingDragged && Math.abs(deltaY) > mTouchSlop) {
-				mIsBeingDragged = true;
+				isBeingDraggedY = true;
 				if (deltaY > 0) {
 					deltaY -= mTouchSlop;
 				} else {
