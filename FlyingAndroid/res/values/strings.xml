@@ -26,7 +26,7 @@
     <string name="pref_key_pin_position">pref_key_pin_position</string>
     <string name="Informations">Informations</string>
     <string name="Developer">Developer</string>
-    <string name="summary_developer">Flying Android is coded by tkgktyk. Touch to open site on Google Sites.</string>
+    <string name="summary_developer">Flying Android is coded by tkgktyk. Touch to open Flying Android\'s site on Google Sites.</string>
     <string name="Donate">Donate</string>
     <string name="summary_donate">Touch to open donation app\'s page on Google Play. (Please donate via donation app.)</string>
     <string name="Acknowledgement">Acknowledgement</string>

@@ -57,11 +57,13 @@ public class VerticalDragDetectorView extends FrameLayout {
 	}
 
 	public VerticalDragDetectorView(Context context, AttributeSet attrs) {
-		this(context, attrs, 0);
+		super(context, attrs);
+		resetPrivateVariable();
 	}
 
 	public VerticalDragDetectorView(Context context) {
-		this(context, null);
+		super(context);
+		resetPrivateVariable();
 	}
 
 	public void setIgnoreTouchEvent(boolean ignore) {

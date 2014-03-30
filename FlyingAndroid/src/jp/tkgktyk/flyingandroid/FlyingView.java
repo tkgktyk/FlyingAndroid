@@ -78,15 +78,13 @@ public abstract class FlyingView extends FrameLayout {
 	}
 
 	public FlyingView(Context context) {
-		this(context, null, 0);
+		super(context);
+		mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
-		// super(context);
-		// mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-		//
-		// setSpeed(DEFAULT_SPEED);
-		// setHorizontalPadding(DEFAULT_HORIZONTAL_PADDING);
-		// setVerticalPadding(DEFAULT_VERTICAL_PADDING);
-		// setIgnoreTouchEvent(DEFAULT_IGNORE_TOUCH_EVENT);
+		setSpeed(DEFAULT_SPEED);
+		setHorizontalPadding(DEFAULT_HORIZONTAL_PADDING);
+		setVerticalPadding(DEFAULT_VERTICAL_PADDING);
+		setIgnoreTouchEvent(DEFAULT_IGNORE_TOUCH_EVENT);
 	}
 
 	public void setSpeed(float speed) {
