@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -54,10 +55,11 @@ public class BlackListFragment extends ListFragment implements
 		}
 
 		private View createView(ViewGroup parent) {
-			View view = mInflater.inflate(R.layout.view_selectable_app, parent,
+			View view = mInflater.inflate(
+					android.R.layout.simple_list_item_multiple_choice, parent,
 					false);
 			ViewHolder holder = new ViewHolder();
-			holder.icon = (ImageView) view.findViewById(android.R.id.icon);
+			// holder.icon = (ImageView) view.findViewById(android.R.id.icon);
 			holder.text = (TextView) view.findViewById(android.R.id.text1);
 			view.setTag(holder);
 
@@ -73,8 +75,10 @@ public class BlackListFragment extends ListFragment implements
 
 			Entry entry = getItem(position);
 			//
-			holder.icon.setImageDrawable(entry.icon);
+			// holder.icon.setImageDrawable(entry.icon);
 			holder.text.setText(entry.appName);
+			holder.text.setCompoundDrawablesWithIntrinsicBounds(entry.icon,
+					null, null, null);
 
 			return view;
 		}
@@ -111,6 +115,7 @@ public class BlackListFragment extends ListFragment implements
 
 	public void setShowOnlyBlack(boolean only) {
 		if (only != mShowOnlyBlack) {
+			saveBlackList();
 			mShowOnlyBlack = only;
 			setListShown(false);
 			getLoaderManager().initLoader(0, null, this);

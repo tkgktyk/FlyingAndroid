@@ -1,12 +1,8 @@
 package jp.tkgktyk.flyingandroid;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 public class ToggleActivity extends Activity {
 	private static final String TAG = ToggleActivity.class.getSimpleName();
