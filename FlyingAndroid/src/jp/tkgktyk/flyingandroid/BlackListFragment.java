@@ -6,21 +6,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import android.app.ListFragment;
-import android.app.LoaderManager;
+import jp.tkgktyk.flyingandroid.util.forGB;
 import android.content.Context;
-import android.content.Loader;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -145,9 +144,9 @@ public class BlackListFragment extends ListFragment implements
 		List<Entry> deliverer = new ArrayList<Entry>();
 		Adapter adapter = new Adapter(getActivity(), deliverer);
 		setListAdapter(adapter);
-		Set<String> blackSet = PreferenceManager.getDefaultSharedPreferences(
-				getActivity()).getStringSet(
-				getString(R.string.pref_key_black_list), new HashSet<String>());
+
+		Set<String> blackSet = forGB.getStringSet(getActivity(),
+				R.string.pref_key_black_list);
 		for (Entry entry : entries) {
 			boolean black = blackSet.contains(entry.packageName);
 			if (!mShowOnlyBlack || black) {
@@ -204,10 +203,6 @@ public class BlackListFragment extends ListFragment implements
 				blackSet.add(entry.packageName);
 			}
 		}
-		PreferenceManager
-				.getDefaultSharedPreferences(getActivity())
-				.edit()
-				.putStringSet(getString(R.string.pref_key_black_list), blackSet)
-				.apply();
+		forGB.putStringSet(getActivity(), R.string.pref_key_black_list, blackSet);
 	}
 }

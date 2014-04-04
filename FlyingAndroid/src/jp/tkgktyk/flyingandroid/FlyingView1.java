@@ -8,8 +8,15 @@ import android.view.Gravity;
 import android.view.View;
 
 public class FlyingView1 extends FlyingView {
-	private static final int DEFAULT_CHILD_GRAVITY = Gravity.TOP
-			| Gravity.START;
+	private static int DEFAULT_CHILD_GRAVITY;
+
+	static {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			DEFAULT_CHILD_GRAVITY = Gravity.TOP | Gravity.START;
+		} else {
+			DEFAULT_CHILD_GRAVITY = Gravity.TOP;
+		}
+	}
 
 	public FlyingView1(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);

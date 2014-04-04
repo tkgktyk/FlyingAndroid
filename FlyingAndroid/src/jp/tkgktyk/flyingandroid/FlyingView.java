@@ -10,7 +10,7 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 public abstract class FlyingView extends FrameLayout {
-	private static final String TAG = "FlyingView";
+	private static final String TAG = FlyingView.class.getSimpleName();
 
 	private static final float DEFAULT_SPEED = 1.0f;
 	private static final int DEFAULT_HORIZONTAL_PADDING = 0;
@@ -291,6 +291,7 @@ public abstract class FlyingView extends FrameLayout {
 		}
 		case MotionEvent.ACTION_UP: {
 			if (mIsBeingDragged) {
+				onMoveFinished();
 				mActivePointerId = INVALID_POINTER;
 				mIsBeingDragged = false;
 			} else {
@@ -300,6 +301,7 @@ public abstract class FlyingView extends FrameLayout {
 		}
 		case MotionEvent.ACTION_CANCEL:
 			if (mIsBeingDragged && getChildCount() > 0) {
+				onMoveFinished();
 				mActivePointerId = INVALID_POINTER;
 				mIsBeingDragged = false;
 			} else if (!mIsBeingDragged) {
@@ -348,9 +350,10 @@ public abstract class FlyingView extends FrameLayout {
 	public void onMove(int deltaX, int deltaY) {
 		deltaX = (int) Math.round(deltaX * mSpeed);
 		deltaY = (int) Math.round(deltaY * mSpeed);
-		if (mOnMoveListener != null
-				&& mOnMoveListener.onMove(this, deltaX, deltaY))
+		if (mOnFlyingEventListener != null
+				&& mOnFlyingEventListener.onMove(this, deltaX, deltaY)) {
 			return;
+		}
 
 		move(deltaX, deltaY);
 	}
@@ -365,11 +368,18 @@ public abstract class FlyingView extends FrameLayout {
 		final int x = (int) ev.getX();
 		final int y = (int) ev.getY();
 
-		if (mOnUnhandledClickListener != null)
-			mOnUnhandledClickListener.onUnhandledClick(this, x, y);
+		if (mOnFlyingEventListener != null) {
+			mOnFlyingEventListener.onClickUnhandled(this, x, y);
+		}
 	}
 
-	public interface OnMoveListener {
+	public void onMoveFinished() {
+		if (mOnFlyingEventListener != null) {
+			mOnFlyingEventListener.onMoveFinished(this);
+		}
+	}
+
+	public interface OnFlyingEventListener {
 		/**
 		 * callback when onMove event.
 		 * 
@@ -380,28 +390,27 @@ public abstract class FlyingView extends FrameLayout {
 		 *         original behavior.
 		 */
 		public boolean onMove(FlyingView v, int deltaX, int deltaY);
-	}
 
-	private OnMoveListener mOnMoveListener = null;
-
-	public void setOnMoveListener(OnMoveListener listener) {
-		mOnMoveListener = listener;
-	}
-
-	public interface OnUnhandledClickListener {
 		/**
-		 * callback when happen unhandled click event.
+		 * callback when a moving event is finished.
+		 * 
+		 * @param v
+		 */
+		public void onMoveFinished(FlyingView v);
+
+		/**
+		 * callback when happen click event is unhandled.
 		 * 
 		 * @param v
 		 * @param x
 		 * @param y
 		 */
-		public void onUnhandledClick(FlyingView v, int x, int y);
+		public void onClickUnhandled(FlyingView v, int x, int y);
 	}
 
-	private OnUnhandledClickListener mOnUnhandledClickListener = null;
+	private OnFlyingEventListener mOnFlyingEventListener = null;
 
-	public void setOnUnhandledClickListener(OnUnhandledClickListener listener) {
-		mOnUnhandledClickListener = listener;
+	public void setOnFlyingEventListener(OnFlyingEventListener listener) {
+		mOnFlyingEventListener = listener;
 	}
 }

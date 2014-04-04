@@ -1,11 +1,11 @@
 package jp.tkgktyk.flyingandroid;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-public class BlackListActivity extends Activity {
+public class BlackListActivity extends FragmentActivity {
 
 	private class ViewHolder {
 		CheckBox onlyExcluded;
@@ -21,7 +21,7 @@ public class BlackListActivity extends Activity {
 
 		mViewHolder = new ViewHolder();
 		mViewHolder.onlyExcluded = (CheckBox) findViewById(R.id.only_black_check);
-		mViewHolder.blackList = (BlackListFragment) getFragmentManager()
+		mViewHolder.blackList = (BlackListFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.black_list);
 
 		mViewHolder.onlyExcluded
