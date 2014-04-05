@@ -113,6 +113,9 @@ public class FlyingHelper {
 			LinearLayout container = (LinearLayout) overlay
 					.findViewById(R.id.container);
 			switch (mSettings.pinPosition) {
+			case Settings.PIN_POSITION_NONE:
+				button.setVisibility(View.GONE);
+				break;
 			case Settings.PIN_POSITION_CENTER_LEFT:
 				container.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
 				break;
@@ -124,9 +127,6 @@ public class FlyingHelper {
 				break;
 			case Settings.PIN_POSITION_LOWER_RIGHT:
 				container.setGravity(Gravity.BOTTOM | Gravity.RIGHT);
-				break;
-			default:
-				container.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
 				break;
 			}
 		} catch (Throwable t) {
@@ -162,6 +162,9 @@ public class FlyingHelper {
 		mSettings = settings.clone();
 		if (isFloating) {
 			mSettings.takeoffPosition = Settings.TAKEOFF_POSITION_CENTER;
+			mSettings.autoPin = false;
+		}
+		if (mSettings.pinPosition == Settings.PIN_POSITION_NONE) {
 			mSettings.autoPin = false;
 		}
 		mUseOverlay = !isFloating;

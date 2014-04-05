@@ -29,6 +29,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit {
 		public static final int TAKEOFF_POSITION_LOWER_LEFT = 2;
 		public static final int TAKEOFF_POSITION_LOWER_RIGHT = 3;
 
+		public static final int PIN_POSITION_NONE = 0;
 		public static final int PIN_POSITION_CENTER_LEFT = 1;
 		public static final int PIN_POSITION_CENTER_RIGHT = 2;
 		public static final int PIN_POSITION_LOWER_LEFT = 3;
@@ -293,5 +294,4 @@ public class FlyingAndroid implements IXposedHookZygoteInit {
 			XposedBridge.log("FA: " + text);
 		}
 	}
-
 }
