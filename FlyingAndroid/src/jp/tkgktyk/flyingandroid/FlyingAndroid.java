@@ -297,7 +297,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit {
 
 	private void log(String text) {
 		if (BuildConfig.DEBUG) {
-			XposedBridge.log("FA: " + text);
+			XposedBridge.log("FA [DEBUG]: " + text);
 		}
 	}
 }
