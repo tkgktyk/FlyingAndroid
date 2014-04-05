@@ -1,6 +1,7 @@
 package jp.tkgktyk.flyingandroid;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import android.app.Activity;
@@ -72,6 +73,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit {
 	}
 
 	private static XSharedPreferences sPref;
+	private static Set<String> sIgnoreSet;
 
 	private static String FA_HELPER = "FA_helper";
 
@@ -88,6 +90,8 @@ public class FlyingAndroid implements IXposedHookZygoteInit {
 	public void initZygote(StartupParam startupParam) {
 		sPref = new XSharedPreferences(PACKAGE_NAME);
 		sPref.makeWorldReadable();
+		sIgnoreSet = new HashSet<String>();
+		sIgnoreSet.add(PACKAGE_NAME);
 
 		try {
 			XposedHelpers.findAndHookMethod(ViewGroup.class, "addView",
@@ -104,14 +108,16 @@ public class FlyingAndroid implements IXposedHookZygoteInit {
 								// "com.android.internal.policy.impl.PhoneWindow$DecorView"
 								// class.getCanonicalName() equals
 								// "com.android.internal.policy.impl.PhoneWindow.DecorView"
+								// NOTICE: getCanonicalName() returns null in
+								// Galaxy's InCall.
 								if (param.thisObject
 										.getClass()
-										.getCanonicalName()
-										.equals("com.android.internal.policy.impl.PhoneWindow.DecorView")) {
+										.getName()
+										.equals("com.android.internal.policy.impl.PhoneWindow$DecorView")) {
 									final ViewGroup decor = (ViewGroup) param.thisObject;
 									String packageName = decor.getContext()
 											.getPackageName();
-									if (!packageName.equals(PACKAGE_NAME)) {
+									if (!sIgnoreSet.contains(packageName)) {
 										Settings settings = new Settings(sPref);
 										log("reload settings at " + packageName);
 										if (!settings.blackSet
