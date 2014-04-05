@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import android.widget.ListView;
 
 public class BlackListFragment extends ListFragment implements
 		LoaderManager.LoaderCallbacks<List<BlackListFragment.Entry>> {
+	private static final String TAG = BlackListFragment.class.getSimpleName();
 
 	public static class Entry {
 		public final Drawable icon;
@@ -109,6 +111,8 @@ public class BlackListFragment extends ListFragment implements
 		adapter.notifyDataSetChanged();
 
 		mSave = true;
+		
+		log(entry.packageName);
 	}
 
 	public void setShowOnlyBlack(boolean only) {
@@ -183,6 +187,7 @@ public class BlackListFragment extends ListFragment implements
 				String appName = (String) pm.getApplicationLabel(info);
 				String packageName = info.packageName;
 				ret.add(new Entry(icon, appName, packageName));
+				log(packageName);
 			}
 			return ret;
 		}
@@ -202,5 +207,11 @@ public class BlackListFragment extends ListFragment implements
 		forGB.putStringSet(getActivity(), R.string.pref_key_black_list,
 				blackSet);
 		mSave = false;
+	}
+
+	private static void log(String text) {
+		if (BuildConfig.DEBUG) {
+			Log.d(TAG, text);
+		}
 	}
 }
