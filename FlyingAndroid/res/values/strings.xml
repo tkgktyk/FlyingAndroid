@@ -3,6 +3,7 @@
 
     <string name="app_name">Flying Android</string>
     <string name="toggle_app_name">FA Toggle</string>
+    <string name="shortcut_app_name">FA Toggle</string>
     <string name="xposed_description">Move the Activity\'s window.\nDeveloped by tkgktyk</string>
 
     <!-- SharedPreferences -->
