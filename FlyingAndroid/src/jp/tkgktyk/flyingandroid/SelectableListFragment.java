@@ -20,20 +20,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
-public class BlackListFragment extends ListFragment implements
-		LoaderManager.LoaderCallbacks<List<BlackListFragment.Entry>> {
-	private static final String TAG = BlackListFragment.class.getSimpleName();
+public class SelectableListFragment extends ListFragment implements
+		LoaderManager.LoaderCallbacks<List<SelectableListFragment.Entry>> {
+	private static final String TAG = SelectableListFragment.class
+			.getSimpleName();
 
 	public static class Entry {
 		public final Drawable icon;
 		public final String appName;
 		public final String packageName;
 
-		public boolean black = false;
+		public boolean selected = false;
 
 		public Entry(Drawable icon, String appName, String packageName) {
 			this.icon = icon;
@@ -53,16 +55,20 @@ public class BlackListFragment extends ListFragment implements
 
 		class ViewHolder {
 			ImageView icon;
-			CheckedTextView text;
+			TextView appName;
+			TextView packageName;
+			CheckBox checkbox;
 		}
 
 		private View createView(ViewGroup parent) {
 			View view = mInflater.inflate(R.layout.view_selectable_app, parent,
 					false);
 			ViewHolder holder = new ViewHolder();
-			holder.icon = (ImageView) view.findViewById(android.R.id.icon);
-			holder.text = (CheckedTextView) view
-					.findViewById(android.R.id.text1);
+			holder.icon = (ImageView) view.findViewById(R.id.icon);
+			holder.appName = (TextView) view.findViewById(R.id.app_name);
+			holder.packageName = (TextView) view
+					.findViewById(R.id.package_name);
+			holder.checkbox = (CheckBox) view.findViewById(R.id.checkbox);
 			view.setTag(holder);
 
 			return view;
@@ -78,21 +84,28 @@ public class BlackListFragment extends ListFragment implements
 			Entry entry = getItem(position);
 			//
 			holder.icon.setImageDrawable(entry.icon);
-			holder.text.setText(entry.appName);
-			holder.text.setChecked(entry.black);
+			holder.appName.setText(entry.appName);
+			holder.packageName.setText(entry.packageName);
+			holder.checkbox.setChecked(entry.selected);
 
 			return view;
 		}
 	}
 
-	private boolean mShowOnlyBlack;
+	private boolean mShowOnlySelected;
 	private boolean mSave = false;
+
+	private String mPrefKey;
 
 	/**
 	 * Mandatory empty constructor for the fragment manager to instantiate the
 	 * fragment (e.g. upon screen orientation changes).
 	 */
-	public BlackListFragment() {
+	public SelectableListFragment() {
+	}
+
+	public void setPrefKey(String key) {
+		mPrefKey = key;
 	}
 
 	@Override
@@ -107,18 +120,18 @@ public class BlackListFragment extends ListFragment implements
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Adapter adapter = (Adapter) getListAdapter();
 		Entry entry = adapter.getItem(position);
-		entry.black = !entry.black;
+		entry.selected = !entry.selected;
 		adapter.notifyDataSetChanged();
 
 		mSave = true;
-		
+
 		log(entry.packageName);
 	}
 
-	public void setShowOnlyBlack(boolean only) {
-		if (only != mShowOnlyBlack) {
-			saveBlackList();
-			mShowOnlyBlack = only;
+	public void setShowOnlySelected(boolean only) {
+		if (only != mShowOnlySelected) {
+			saveSelectedList();
+			mShowOnlySelected = only;
 			getLoaderManager().initLoader(0, null, this);
 		}
 	}
@@ -126,7 +139,7 @@ public class BlackListFragment extends ListFragment implements
 	@Override
 	public void onPause() {
 		super.onPause();
-		saveBlackList();
+		saveSelectedList();
 	}
 
 	@Override
@@ -138,7 +151,7 @@ public class BlackListFragment extends ListFragment implements
 	@Override
 	public Loader<List<Entry>> onCreateLoader(int id, Bundle bundle) {
 		setListShown(false);
-		return new BlackListLoader(getActivity());
+		return new SelectedListLoader(getActivity());
 	}
 
 	@Override
@@ -147,11 +160,10 @@ public class BlackListFragment extends ListFragment implements
 		Adapter adapter = new Adapter(getActivity(), deliverer);
 		setListAdapter(adapter);
 
-		Set<String> blackSet = forGB.getStringSet(getActivity(),
-				R.string.pref_key_black_list);
+		Set<String> selectedSet = forGB.getStringSet(getActivity(), mPrefKey);
 		for (Entry entry : entries) {
-			entry.black = blackSet.contains(entry.packageName);
-			if (!mShowOnlyBlack || entry.black) {
+			entry.selected = selectedSet.contains(entry.packageName);
+			if (!mShowOnlySelected || entry.selected) {
 				deliverer.add(entry);
 			}
 		}
@@ -165,9 +177,10 @@ public class BlackListFragment extends ListFragment implements
 		// TODO do nothing?
 	}
 
-	public static class BlackListLoader extends MyAsyncTaskLoader<List<Entry>> {
+	public static class SelectedListLoader extends
+			MyAsyncTaskLoader<List<Entry>> {
 
-		public BlackListLoader(Context context) {
+		public SelectedListLoader(Context context) {
 			super(context);
 		}
 
@@ -187,25 +200,24 @@ public class BlackListFragment extends ListFragment implements
 				String appName = (String) pm.getApplicationLabel(info);
 				String packageName = info.packageName;
 				ret.add(new Entry(icon, appName, packageName));
-				log(packageName);
+				// log(packageName);
 			}
 			return ret;
 		}
 	}
 
-	public void saveBlackList() {
+	public void saveSelectedList() {
 		if (!mSave)
 			return;
-		Set<String> blackSet = new HashSet<String>();
+		Set<String> selectedSet = new HashSet<String>();
 		Adapter adapter = (Adapter) getListAdapter();
 		for (int i = 0; i < adapter.getCount(); ++i) {
 			Entry entry = adapter.getItem(i);
-			if (entry.black) {
-				blackSet.add(entry.packageName);
+			if (entry.selected) {
+				selectedSet.add(entry.packageName);
 			}
 		}
-		forGB.putStringSet(getActivity(), R.string.pref_key_black_list,
-				blackSet);
+		forGB.putStringSet(getActivity(), mPrefKey, selectedSet);
 		mSave = false;
 	}
 

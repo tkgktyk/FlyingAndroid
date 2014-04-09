@@ -6,7 +6,7 @@
         android:summary="@string/summary_note"
         android:title="@string/Note" />
 
-    <PreferenceCategory android:title="@string/Settings" >
+    <PreferenceCategory android:title="@string/Flying" >
         <ListPreference
             android:defaultValue="1.5"
             android:entries="@array/speeds"
@@ -19,18 +19,7 @@
             android:entryValues="@array/takeoffPositionValues"
             android:key="@string/pref_key_takeoff_position"
             android:title="@string/Takeoff_position" />
-        <ListPreference
-            android:defaultValue="0"
-            android:entries="@array/pinPositions"
-            android:entryValues="@array/pinPositionValues"
-            android:key="@string/pref_key_pin_position"
-            android:title="@string/Pin_position" />
 
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/pref_key_auto_pin"
-            android:summary="@string/summary_auto_pin"
-            android:title="@string/Auto_pin" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_key_notify_flying"
@@ -45,6 +34,32 @@
         <Preference
             android:key="@string/pref_key_black_list"
             android:title="@string/Black_list" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/Pinning" >
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pinPositions"
+            android:entryValues="@array/pinPositionValues"
+            android:key="@string/pref_key_pin_position"
+            android:title="@string/Pin_position" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_key_auto_pin"
+            android:summary="@string/summary_auto_pin"
+            android:title="@string/Auto_pin" />
+
+        <Preference
+            android:key="@string/pref_key_white_list"
+            android:summary="@string/summary_white_list"
+            android:title="@string/White_list" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/Imperfect_functions" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_key_flying_status_bar"
+            android:summary="@string/summary_flying_status_bar"
+            android:title="@string/Flying_status_bar" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/Informations" >
         <Preference
@@ -63,8 +78,7 @@
         </Preference>
         <Preference
             android:summary="@string/summary_acknowledgement"
-            android:title="@string/Acknowledgement"
-            />
+            android:title="@string/Acknowledgement" />
     </PreferenceCategory>
 
 </PreferenceScreen>

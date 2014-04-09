@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.tkgktyk.flyingandroid"
-    android:versionCode="18"
-    android:versionName="0.6.4" >
+    android:versionCode="19"
+    android:versionName="0.6.5" >
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -32,7 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="jp.tkgktyk.flyingandroid.BlackListActivity" >
+        <activity android:name="jp.tkgktyk.flyingandroid.SelectableListActivity" >
         </activity>
         <activity
             android:name="jp.tkgktyk.flyingandroid.ToggleActivity"

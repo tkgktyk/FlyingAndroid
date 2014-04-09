@@ -156,20 +156,40 @@ public class FlyingHelper {
 	}
 
 	private final boolean mUseOverlay;
+	private final boolean mAlwaysShowPin;
 
-	public FlyingHelper(Settings settings, Context context, boolean isFloating)
-			throws Throwable {
+	public FlyingHelper(Settings settings, Context context, boolean isFloating,
+			boolean usePin, boolean alwaysShowPin) throws Throwable {
 		mSettings = settings.clone();
 		if (isFloating) {
 			mSettings.takeoffPosition = Settings.TAKEOFF_POSITION_CENTER;
 			mSettings.autoPin = false;
+			usePin = false;
+		}
+		if (!usePin) {
+			mSettings.pinPosition = Settings.PIN_POSITION_NONE;
+			mSettings.autoPin = false;
+			alwaysShowPin = false;
 		}
 		if (mSettings.pinPosition == Settings.PIN_POSITION_NONE) {
 			mSettings.autoPin = false;
+			alwaysShowPin = false;
 		}
-		mUseOverlay = !isFloating;
+		if (alwaysShowPin) {
+			mSettings.takeoffPosition = Settings.TAKEOFF_POSITION_CENTER;
+		}
+		mUseOverlay = usePin;
+		mAlwaysShowPin = alwaysShowPin;
 		// create FlyingView
 		installFlyingView(context, isFloating);
+
+		if (mAlwaysShowPin) {
+			if (mPinButton.isChecked()) {
+				mPinButton.setChecked(false);
+			}
+			mPinButton.setChecked(true);
+			mToggleHelper.setOverlayShown(true);
+		}
 	}
 
 	public Settings getSettings() {
@@ -228,16 +248,18 @@ public class FlyingHelper {
 			}
 		}
 
-		public void setWindowPinned(boolean pinned) {
+		private void setWindowPinned(boolean pinned) {
 			// String text;
 			if (pinned) {
 				// text = "pin";
 				mFlyingView.setIgnoreTouchEvent(true);
 				setBoundaryShown(false);
+				// mFlying = false;
 			} else {
 				// text = "Unpin";
 				mFlyingView.setIgnoreTouchEvent(false);
 				setBoundaryShown(true);
+				mFlying = true;
 			}
 		}
 
@@ -245,7 +267,7 @@ public class FlyingHelper {
 			if (mUseOverlay) {
 				if (shown) {
 					getOverlay().setVisibility(View.VISIBLE);
-				} else {
+				} else if (!mAlwaysShowPin) {
 					getOverlay().setVisibility(View.GONE);
 				}
 			}

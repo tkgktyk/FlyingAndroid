@@ -19,15 +19,15 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingLeft="6dip"
-        android:paddingRight="6dip" >
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:paddingRight="?android:attr/listPreferredItemPaddingRight" >
 
         <TextView
             android:id="@+id/app_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="app name"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceListItemSmall" />
 
         <TextView
             android:id="@+id/package_name"

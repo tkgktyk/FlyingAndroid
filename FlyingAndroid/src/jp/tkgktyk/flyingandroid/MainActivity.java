@@ -24,18 +24,18 @@ public class MainActivity extends PreferenceActivity {
 		// takeoff position
 		showListSummary(R.string.pref_key_takeoff_position);
 		// black list
-		Preference blackList = findPreference(R.string.pref_key_black_list);
-		blackList.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				Intent activity = new Intent(preference.getContext(),
-						BlackListActivity.class);
-				startActivity(activity);
-				return true;
-			}
-		});
+		openSelectorOnClick(R.string.pref_key_black_list,
+				R.string.Show_only_black);
 		// pin position
 		showListSummary(R.string.pref_key_pin_position);
+		// white list
+		openSelectorOnClick(R.string.pref_key_white_list,
+				R.string.Show_only_white);
+	}
+
+	@SuppressWarnings("deprecation")
+	protected Preference findPreference(int id) {
+		return findPreference(getString(id));
 	}
 
 	private String getSharedString(int keyId) {
@@ -52,9 +52,9 @@ public class MainActivity extends PreferenceActivity {
 	};
 
 	private void showListSummary(int id) {
-		ListPreference takeoff = (ListPreference) findPreference(id);
-		takeoff.setOnPreferenceChangeListener(mListChangeListener);
-		setListSummary(takeoff, getSharedString(id));
+		ListPreference list = (ListPreference) findPreference(id);
+		list.setOnPreferenceChangeListener(mListChangeListener);
+		setListSummary(list, getSharedString(id));
 	}
 
 	private void setListSummary(ListPreference pref, String value) {
@@ -68,8 +68,20 @@ public class MainActivity extends PreferenceActivity {
 		pref.setSummary(getString(R.string.Current_s1, entry));
 	}
 
-	@SuppressWarnings("deprecation")
-	protected Preference findPreference(int id) {
-		return findPreference(getString(id));
+	private void openSelectorOnClick(int id, final int textId) {
+		Preference pref = findPreference(id);
+		pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent activity = new Intent(preference.getContext(),
+						SelectableListActivity.class);
+				activity.putExtra(SelectableListActivity.EXTRA_PREF_KEY_STRING,
+						preference.getKey());
+				activity.putExtra(SelectableListActivity.EXTRA_ONLY_TEXT_ID,
+						textId);
+				startActivity(activity);
+				return true;
+			}
+		});
 	}
 }

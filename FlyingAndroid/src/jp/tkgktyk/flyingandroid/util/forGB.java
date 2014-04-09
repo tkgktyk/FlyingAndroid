@@ -18,10 +18,15 @@ import android.util.Log;
 public class forGB {
 	private static final String TAG = forGB.class.getSimpleName();
 
-	@SuppressLint("NewApi")
 	public static Set<String> getStringSet(Context context, int keyId) {
-		Set<String> result = null;
 		String key = context.getString(keyId);
+		return getStringSet(context, key);
+	}
+
+	@SuppressWarnings("unchecked")
+	@SuppressLint("NewApi")
+	public static Set<String> getStringSet(Context context, String key) {
+		Set<String> result = null;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			result = PreferenceManager.getDefaultSharedPreferences(context)
 					.getStringSet(key, Collections.<String> emptySet());
@@ -47,9 +52,15 @@ public class forGB {
 		return result;
 	}
 
-	@SuppressLint("NewApi")
-	public static void putStringSet(Context context, int keyId, Set<String> value) {
+	public static void putStringSet(Context context, int keyId,
+			Set<String> value) {
 		String key = context.getString(keyId);
+		putStringSet(context, key, value);
+	}
+
+	@SuppressLint("NewApi")
+	public static void putStringSet(Context context, String key,
+			Set<String> value) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			PreferenceManager.getDefaultSharedPreferences(context).edit()
 					.putStringSet(key, value).apply();

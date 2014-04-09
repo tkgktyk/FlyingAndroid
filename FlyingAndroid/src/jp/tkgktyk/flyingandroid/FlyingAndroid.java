@@ -1,25 +1,33 @@
 package jp.tkgktyk.flyingandroid;
 
+import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
-public class FlyingAndroid implements IXposedHookZygoteInit {
+public class FlyingAndroid implements IXposedHookZygoteInit,
+		IXposedHookLoadPackage {
 	public static final String PACKAGE_NAME = FlyingAndroid.class.getPackage()
 			.getName();
 	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
@@ -36,27 +44,39 @@ public class FlyingAndroid implements IXposedHookZygoteInit {
 		public static final int PIN_POSITION_LOWER_LEFT = 3;
 		public static final int PIN_POSITION_LOWER_RIGHT = 4;
 
+		// for flying
 		public float speed;
 		public int takeoffPosition;
 		public boolean notifyFlying;
-		public Set<String> blackSet;
-		public int pinPosition;
 		public boolean forceSetWindowBackground;
+		public Set<String> blackSet;
+		// for pinning
+		public int pinPosition;
 		public boolean autoPin;
+		public Set<String> whiteSet;
+		// for imperfect function
+		public boolean flyingStatusBar;
 
 		public Settings(XSharedPreferences pref) {
 			pref.reload();
+			// for flying
 			speed = Float.parseFloat(pref.getString("pref_key_speed", "1.5"));
 			takeoffPosition = Integer.parseInt(pref.getString(
 					"pref_key_takeoff_position", "0"));
 			notifyFlying = pref.getBoolean("pref_key_notify_flying", true);
-			blackSet = pref.getStringSet("pref_key_black_list",
-					Collections.<String> emptySet());
-			pinPosition = Integer.parseInt(pref.getString(
-					"pref_key_pin_position", "0"));
 			forceSetWindowBackground = pref.getBoolean(
 					"pref_key_force_set_window_background", false);
+			blackSet = pref.getStringSet("pref_key_black_list",
+					Collections.<String> emptySet());
+			// for pinning
+			pinPosition = Integer.parseInt(pref.getString(
+					"pref_key_pin_position", "0"));
 			autoPin = pref.getBoolean("pref_key_auto_pin", false);
+			whiteSet = pref.getStringSet("pref_key_white_list",
+					Collections.<String> emptySet());
+			// for imperfect function
+			flyingStatusBar = pref.getBoolean("pref_key_flying_status_bar",
+					false);
 		}
 
 		@Override
@@ -77,13 +97,47 @@ public class FlyingAndroid implements IXposedHookZygoteInit {
 
 	private static String FA_HELPER = "FA_helper";
 
+	/**
+	 * I want to FlyingHelper attaches to a DecorView, but some Window has
+	 * multiple DecorViews (e.g. when including TagHost). If attach to a
+	 * DecorView directly, FlyingHelper is created a number of DecorViews
+	 * (TabHosts). This is undesirable behavior. Here attach to a RootView of
+	 * DecorView as workaround.
+	 * 
+	 * @param decor
+	 * @param helper
+	 */
+	private void setFlyingHelper(ViewGroup decor, FlyingHelper helper) {
+		// I want to a FlyingHelper attaches to a DecorView, but some Window has
+		// multiple DecorViews (e.g. TagHost). To avoid it, attach to RootView
+		// of DecorView.
+		XposedHelpers.setAdditionalInstanceField(decor.getRootView(),
+				FA_HELPER, helper);
+	}
+
+	/**
+	 * Find a FlyingHelper attached to a DecorView by
+	 * {@link FlyingAndroid#setFlyingHelper(ViewGroup, FlyingHelper)} and return
+	 * it.
+	 * 
+	 * @param activity
+	 * @return
+	 */
 	private FlyingHelper getFlyingHelper(Activity activity) {
 		return getFlyingHelper((ViewGroup) activity.getWindow().peekDecorView());
 	}
 
+	/**
+	 * Find a FlyingHelper attached to a DecorView by
+	 * {@link FlyingAndroid#setFlyingHelper(ViewGroup, FlyingHelper)} and return
+	 * it.
+	 * 
+	 * @param activity
+	 * @return
+	 */
 	private FlyingHelper getFlyingHelper(ViewGroup decor) {
-		return (FlyingHelper) XposedHelpers.getAdditionalInstanceField(decor,
-				FA_HELPER);
+		return (FlyingHelper) XposedHelpers.getAdditionalInstanceField(
+				decor.getRootView(), FA_HELPER);
 	}
 
 	@Override
@@ -135,10 +189,14 @@ public class FlyingAndroid implements IXposedHookZygoteInit {
 												boolean floating = a
 														.getBoolean(0, false);
 												a.recycle();
+												boolean usePin = settings.whiteSet
+														.isEmpty()
+														|| settings.whiteSet
+																.contains(packageName);
 												helper = new FlyingHelper(
 														settings, decor
 																.getContext(),
-														floating);
+														floating, usePin, false);
 												View newChild = helper
 														.getFlyingRootView();
 												// to avoid stack overflow
@@ -152,18 +210,10 @@ public class FlyingAndroid implements IXposedHookZygoteInit {
 														-1,
 														newChild.getLayoutParams());
 												//
-												helper.addViewToFlyingView(
-														child, layoutParams);
-												//
-												XposedHelpers
-														.setAdditionalInstanceField(
-																decor,
-																FA_HELPER,
-																helper);
-											} else {
-												helper.addViewToFlyingView(
-														child, layoutParams);
+												setFlyingHelper(decor, helper);
 											}
+											helper.addViewToFlyingView(child,
+													layoutParams);
 											handled = true;
 										}
 									}
@@ -199,9 +249,13 @@ public class FlyingAndroid implements IXposedHookZygoteInit {
 														new int[] { android.R.attr.windowBackground });
 										int background = a.getResourceId(0, 0);
 										a.recycle();
-										activity.getWindow()
-												.setBackgroundDrawableResource(
-														background);
+										if (background != 0) {
+											activity.getWindow()
+													.setBackgroundDrawableResource(
+															background);
+										} else {
+											log("window background is 0.");
+										}
 									}
 								} else {
 									log("FlyingHelper is not found.");
@@ -298,6 +352,55 @@ public class FlyingAndroid implements IXposedHookZygoteInit {
 	private void log(String text) {
 		if (BuildConfig.DEBUG) {
 			XposedBridge.log("FA [DEBUG]: " + text);
+		}
+	}
+
+	@Override
+	public void handleLoadPackage(LoadPackageParam lpparam) throws Throwable {
+		try {
+			if (!lpparam.packageName.equals("com.android.systemui")) {
+				return;
+			}
+			findAndHookMethod(
+					"com.android.systemui.statusbar.phone.PhoneStatusBar",
+					lpparam.classLoader, "makeStatusBarView",
+					new XC_MethodHook() {
+						@Override
+						protected void afterHookedMethod(MethodHookParam param)
+								throws Throwable {
+							try {
+								Settings settings = new Settings(sPref);
+								if (settings.flyingStatusBar) {
+									Context context = (Context) XposedHelpers
+											.getObjectField(param.thisObject,
+													"mContext");
+									ViewGroup panel = (ViewGroup) XposedHelpers
+											.getObjectField(param.thisObject,
+													"mNotificationPanel");
+									FlyingHelper helper = new FlyingHelper(
+											settings, context, false, true,
+											true);
+									ViewGroup newContents = helper
+											.getFlyingRootView();
+									List<View> contents = new ArrayList<View>();
+									for (int i = 0; i < panel.getChildCount(); ++i) {
+										contents.add(panel.getChildAt(i));
+									}
+									log("children: " + panel.getChildCount());
+									panel.removeAllViews();
+									for (View v : contents) {
+										helper.addViewToFlyingView(v,
+												v.getLayoutParams());
+									}
+									panel.addView(newContents);
+								}
+							} catch (Throwable t) {
+								XposedBridge.log(t);
+							}
+						}
+					});
+		} catch (Throwable t) {
+			XposedBridge.log(t);
 		}
 	}
 }
