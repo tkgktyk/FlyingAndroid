@@ -19,6 +19,7 @@ public class FlyingView2 extends FlyingView {
 		super(context);
 	}
 
+	@Override
 	public void move(int deltaX, int deltaY) {
 		int hLimit = getWidth() - getHorizontalPadding();
 		int vLimit = getHeight() - getVerticalPadding();
@@ -39,7 +40,8 @@ public class FlyingView2 extends FlyingView {
 		// }
 	}
 
-	public void returnToHome() {
+	@Override
+	public void goHome() {
 		// for (int i = 0; i < getChildCount(); ++i) {
 		View child = getChildAt(0);
 		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) child
@@ -51,7 +53,16 @@ public class FlyingView2 extends FlyingView {
 		child.setLayoutParams(lp);
 		// }
 	}
+	
+	@Override
+	public boolean staysHome() {
+		View child = getChildAt(0);
+		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) child
+				.getLayoutParams();
+		return lp.leftMargin == 0 && lp.topMargin == 0;
+	}
 
+	@Override
 	public void rotate() {
 		// for (int i = 0; i < getChildCount(); ++i) {
 		View child = getChildAt(0);

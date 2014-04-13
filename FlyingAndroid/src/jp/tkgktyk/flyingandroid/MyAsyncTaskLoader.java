@@ -1,7 +1,7 @@
 package jp.tkgktyk.flyingandroid;
 
+import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.support.v4.content.AsyncTaskLoader;
 
 public abstract class MyAsyncTaskLoader<D> extends AsyncTaskLoader<D> {
 	

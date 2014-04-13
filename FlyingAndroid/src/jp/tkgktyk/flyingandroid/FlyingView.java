@@ -360,7 +360,9 @@ public abstract class FlyingView extends FrameLayout {
 
 	public abstract void move(int deltaX, int deltaY);
 
-	public abstract void returnToHome();
+	public abstract void goHome();
+
+	public abstract boolean staysHome();
 
 	public abstract void rotate();
 
@@ -412,5 +414,9 @@ public abstract class FlyingView extends FrameLayout {
 
 	public void setOnFlyingEventListener(OnFlyingEventListener listener) {
 		mOnFlyingEventListener = listener;
+	}
+
+	public OnFlyingEventListener getOnFlyingEventListener() {
+		return mOnFlyingEventListener;
 	}
 }

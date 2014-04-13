@@ -3,7 +3,6 @@ package jp.tkgktyk.flyingandroid;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,66 +31,6 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			.getName();
 	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
 
-	public class Settings implements Cloneable {
-		public static final int TAKEOFF_POSITION_CENTER = 0;
-		public static final int TAKEOFF_POSITION_BOTTOM = 1;
-		public static final int TAKEOFF_POSITION_LOWER_LEFT = 2;
-		public static final int TAKEOFF_POSITION_LOWER_RIGHT = 3;
-
-		public static final int PIN_POSITION_NONE = 0;
-		public static final int PIN_POSITION_CENTER_LEFT = 1;
-		public static final int PIN_POSITION_CENTER_RIGHT = 2;
-		public static final int PIN_POSITION_LOWER_LEFT = 3;
-		public static final int PIN_POSITION_LOWER_RIGHT = 4;
-
-		// for flying
-		public float speed;
-		public int takeoffPosition;
-		public boolean notifyFlying;
-		public boolean forceSetWindowBackground;
-		public Set<String> blackSet;
-		// for pinning
-		public int pinPosition;
-		public boolean autoPin;
-		public Set<String> whiteSet;
-		// for imperfect function
-		public boolean flyingStatusBar;
-
-		public Settings(XSharedPreferences pref) {
-			pref.reload();
-			// for flying
-			speed = Float.parseFloat(pref.getString("pref_key_speed", "1.5"));
-			takeoffPosition = Integer.parseInt(pref.getString(
-					"pref_key_takeoff_position", "0"));
-			notifyFlying = pref.getBoolean("pref_key_notify_flying", true);
-			forceSetWindowBackground = pref.getBoolean(
-					"pref_key_force_set_window_background", false);
-			blackSet = pref.getStringSet("pref_key_black_list",
-					Collections.<String> emptySet());
-			// for pinning
-			pinPosition = Integer.parseInt(pref.getString(
-					"pref_key_pin_position", "0"));
-			autoPin = pref.getBoolean("pref_key_auto_pin", false);
-			whiteSet = pref.getStringSet("pref_key_white_list",
-					Collections.<String> emptySet());
-			// for imperfect function
-			flyingStatusBar = pref.getBoolean("pref_key_flying_status_bar",
-					false);
-		}
-
-		@Override
-		public Settings clone() {
-			Settings ret = null;
-			try {
-				ret = (Settings) super.clone();
-			} catch (CloneNotSupportedException e) {
-				XposedBridge.log(e);
-			}
-			return ret;
-		}
-
-	}
-
 	private static XSharedPreferences sPref;
 	private static Set<String> sIgnoreSet;
 
@@ -113,6 +52,8 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 		// of DecorView.
 		XposedHelpers.setAdditionalInstanceField(decor.getRootView(),
 				FA_HELPER, helper);
+		XposedHelpers.setAdditionalInstanceField(decor.getRootView(),
+				"FA_attached", true);
 	}
 
 	/**
@@ -172,33 +113,35 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 									String packageName = decor.getContext()
 											.getPackageName();
 									if (!sIgnoreSet.contains(packageName)) {
-										Settings settings = new Settings(sPref);
+										FlyingAndroidSettings settings = new FlyingAndroidSettings(
+												sPref);
 										log("reload settings at " + packageName);
 										if (!settings.blackSet
 												.contains(packageName)) {
 											FlyingHelper helper = getFlyingHelper(decor);
 											if (helper == null) {
+												helper = new FlyingHelper(
+														settings);
 												// vertical drag interface is
 												// enabled on
 												// floating window only.
-												TypedArray a = decor
-														.getContext()
+												Context context = decor
+														.getContext();
+												TypedArray a = context
 														.getTheme()
 														.obtainStyledAttributes(
 																new int[] { android.R.attr.windowIsFloating });
 												boolean floating = a
 														.getBoolean(0, false);
 												a.recycle();
-												boolean usePin = settings.whiteSet
-														.isEmpty()
-														|| settings.whiteSet
-																.contains(packageName);
-												helper = new FlyingHelper(
-														settings, decor
-																.getContext(),
-														floating, usePin, false);
+												if (floating) {
+													helper.installForFloatingWindow(context);
+												} else {
+													settings.overwriteUsePinByWhiteList(packageName);
+													helper.install(context);
+												}
 												View newChild = helper
-														.getFlyingRootView();
+														.getFlyingView();
 												// to avoid stack overflow
 												// (recursive),
 												// call addView(View, int,
@@ -212,6 +155,11 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 												//
 												setFlyingHelper(decor, helper);
 											}
+											log("FA_attached = "
+													+ (Boolean) XposedHelpers
+															.getAdditionalInstanceField(
+																	decor,
+																	"FA_attached"));
 											helper.addViewToFlyingView(child,
 													layoutParams);
 											handled = true;
@@ -271,17 +219,15 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 						protected void afterHookedMethod(MethodHookParam param)
 								throws Throwable {
 							try {
-								final Activity activity = (Activity) param.thisObject;
-								final FlyingHelper helper = getFlyingHelper(activity);
+								Activity activity = (Activity) param.thisObject;
+								FlyingHelper helper = getFlyingHelper(activity);
 								if (helper != null) {
-									final FlyingHelper.ToggleHelper toggleHelper = helper
-											.getToggleHelper();
-									if (!toggleHelper.receiverRegistered()) {
-										final BroadcastReceiver receiver = toggleHelper
+									if (!helper.receiverRegistered()) {
+										BroadcastReceiver receiver = helper
 												.getToggleReceiver();
 										activity.registerReceiver(receiver,
 												new IntentFilter(ACTION_TOGGLE));
-										toggleHelper.onReceiverRegistered();
+										helper.onReceiverRegistered();
 										log("register");
 									}
 								} else {
@@ -298,16 +244,14 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 						protected void afterHookedMethod(MethodHookParam param)
 								throws Throwable {
 							try {
-								final Activity activity = (Activity) param.thisObject;
-								final FlyingHelper helper = getFlyingHelper(activity);
+								Activity activity = (Activity) param.thisObject;
+								FlyingHelper helper = getFlyingHelper(activity);
 								if (helper != null) {
-									final FlyingHelper.ToggleHelper toggleHelper = helper
-											.getToggleHelper();
-									if (toggleHelper.receiverRegistered()) {
-										final BroadcastReceiver receiver = toggleHelper
+									if (helper.receiverRegistered()) {
+										BroadcastReceiver receiver = helper
 												.getToggleReceiver();
 										activity.unregisterReceiver(receiver);
-										toggleHelper.onReceiverUnregistered();
+										helper.onReceiverUnregistered();
 										log("unregister");
 									}
 								} else {
@@ -326,9 +270,9 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 								throws Throwable {
 							try {
 								Activity activity = (Activity) param.thisObject;
-								final FlyingHelper helper = getFlyingHelper(activity);
+								FlyingHelper helper = getFlyingHelper(activity);
 								if (helper != null) {
-									final FlyingView flyingView = helper
+									FlyingView flyingView = helper
 											.getFlyingView();
 									Configuration newConfig = (Configuration) param.args[0];
 									if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -369,8 +313,9 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 						protected void afterHookedMethod(MethodHookParam param)
 								throws Throwable {
 							try {
-								Settings settings = new Settings(sPref);
-								if (settings.flyingStatusBar) {
+								FlyingAndroidSettings settings = new FlyingAndroidSettings(
+										sPref);
+								if (settings.useFlyingStatusBar()) {
 									Context context = (Context) XposedHelpers
 											.getObjectField(param.thisObject,
 													"mContext");
@@ -378,10 +323,10 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 											.getObjectField(param.thisObject,
 													"mNotificationPanel");
 									FlyingHelper helper = new FlyingHelper(
-											settings, context, false, true,
-											true);
+											settings);
+									helper.installWithPinShownAlways(context);
 									ViewGroup newContents = helper
-											.getFlyingRootView();
+											.getFlyingView();
 									List<View> contents = new ArrayList<View>();
 									for (int i = 0; i < panel.getChildCount(); ++i) {
 										contents.add(panel.getChildAt(i));

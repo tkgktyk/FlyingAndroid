@@ -1,6 +1,5 @@
 package jp.tkgktyk.flyingandroid;
 
-import jp.tkgktyk.flyingandroid.FlyingAndroid.Settings;
 import jp.tkgktyk.flyingandroid.FlyingView.OnFlyingEventListener;
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
 import android.content.BroadcastReceiver;
@@ -21,27 +20,26 @@ public class FlyingHelper {
 	public static final String PACKAGE_NAME = FlyingAndroid.class.getPackage()
 			.getName();
 
-	private final Settings mSettings;
-	private ToggleHelper mToggleHelper;
+	private final FlyingAndroidSettings mSettings;
 	private FlyingView mFlyingView;
-	private View mOverlay;
+	private FrameLayout mContainerView;
+	private View mOverlayView;
 	private ToggleButton mPinButton;
 
 	private void installFlyingView(Context context, boolean verticalDrag)
 			throws Throwable {
-		// prepare ToggleHelper
-		mToggleHelper = new ToggleHelper(context);
+		// prepare boundary
+		prepareBoundary(context);
 
 		// prepare dragView as FlyingView's container
-		ViewGroup container = createDragView(context, verticalDrag);
+		prepareContainerView(context, verticalDrag);
 		// prepare overlay
-		installOverlayView(context);
-		mOverlay.setVisibility(View.GONE);
+		prepareOverlayView(context);
 
 		// setup view hierarchy
 		mFlyingView = new FlyingView1(context);
-		mFlyingView.addView(container);
-		mFlyingView.addView(mOverlay);
+		mFlyingView.addView(mContainerView);
+		mFlyingView.addView(mOverlayView);
 
 		// setup FlyingView
 		mFlyingView.setLayoutParams(new ViewGroup.LayoutParams(
@@ -72,7 +70,7 @@ public class FlyingHelper {
 				// }
 				if (!inside) {
 					// log("unhandled outside click");
-					mToggleHelper.toggle();
+					toggle();
 				}
 			}
 
@@ -84,17 +82,14 @@ public class FlyingHelper {
 
 			@Override
 			public void onMoveFinished(FlyingView v) {
-				if (mSettings.autoPin) {
-					if (mPinButton.isChecked()) {
-						mPinButton.setChecked(false);
-					}
-					mPinButton.setChecked(true);
+				if (mSettings.autoPin()) {
+					pin();
 				}
 			}
 		});
 	}
 
-	private void installOverlayView(Context context) {
+	private void prepareOverlayView(Context context) {
 		View overlay;
 		ToggleButton button;
 		try {
@@ -107,26 +102,30 @@ public class FlyingHelper {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView,
 						boolean isChecked) {
-					mToggleHelper.setWindowPinned(isChecked);
+					if (isChecked) {
+						unfly();
+					} else {
+						fly();
+					}
 				}
 			});
 			LinearLayout container = (LinearLayout) overlay
 					.findViewById(R.id.container);
 			switch (mSettings.pinPosition) {
-			case Settings.PIN_POSITION_NONE:
-				button.setVisibility(View.GONE);
-				break;
-			case Settings.PIN_POSITION_CENTER_LEFT:
+			case FlyingAndroidSettings.PIN_POSITION_CENTER_LEFT:
 				container.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
 				break;
-			case Settings.PIN_POSITION_CENTER_RIGHT:
+			case FlyingAndroidSettings.PIN_POSITION_CENTER_RIGHT:
 				container.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
 				break;
-			case Settings.PIN_POSITION_LOWER_LEFT:
+			case FlyingAndroidSettings.PIN_POSITION_LOWER_LEFT:
 				container.setGravity(Gravity.BOTTOM | Gravity.LEFT);
 				break;
-			case Settings.PIN_POSITION_LOWER_RIGHT:
+			case FlyingAndroidSettings.PIN_POSITION_LOWER_RIGHT:
 				container.setGravity(Gravity.BOTTOM | Gravity.RIGHT);
+				break;
+			default:
+				container.setGravity(Gravity.BOTTOM | Gravity.LEFT);
 				break;
 			}
 		} catch (Throwable t) {
@@ -135,64 +134,86 @@ public class FlyingHelper {
 			button = new ToggleButton(context);
 		}
 
-		mOverlay = overlay;
+		mOverlayView = overlay;
 		mPinButton = button;
+
+		mOverlayView.setVisibility(View.GONE);
+		if (!mSettings.usePin) {
+			mPinButton.setVisibility(View.GONE);
+		}
 	}
 
-	private VerticalDragDetectorView createDragView(Context context,
-			boolean verticalDrag) {
+	private void prepareContainerView(Context context, boolean verticalDrag) {
 		VerticalDragDetectorView dragView = new VerticalDragDetectorView(
 				context);
 		dragView.setOnDraggedListener(new OnDraggedListener() {
 			@Override
 			public void onDragged(VerticalDragDetectorView v) {
 				// log("dragged");
-				mToggleHelper.toggle();
+				toggle();
 			}
 		});
 		dragView.setIgnoreTouchEvent(!verticalDrag);
 
-		return dragView;
+		mContainerView = dragView;
 	}
 
-	private final boolean mUseOverlay;
-	private final boolean mAlwaysShowPin;
+	private boolean mAlwaysShowPin;
 
-	public FlyingHelper(Settings settings, Context context, boolean isFloating,
-			boolean usePin, boolean alwaysShowPin) throws Throwable {
+	public FlyingHelper(FlyingAndroidSettings settings) {
 		mSettings = settings.clone();
-		if (isFloating) {
-			mSettings.takeoffPosition = Settings.TAKEOFF_POSITION_CENTER;
-			mSettings.autoPin = false;
-			usePin = false;
-		}
-		if (!usePin) {
-			mSettings.pinPosition = Settings.PIN_POSITION_NONE;
-			mSettings.autoPin = false;
-			alwaysShowPin = false;
-		}
-		if (mSettings.pinPosition == Settings.PIN_POSITION_NONE) {
-			mSettings.autoPin = false;
-			alwaysShowPin = false;
-		}
-		if (alwaysShowPin) {
-			mSettings.takeoffPosition = Settings.TAKEOFF_POSITION_CENTER;
-		}
-		mUseOverlay = usePin;
-		mAlwaysShowPin = alwaysShowPin;
-		// create FlyingView
-		installFlyingView(context, isFloating);
-
-		if (mAlwaysShowPin) {
-			if (mPinButton.isChecked()) {
-				mPinButton.setChecked(false);
-			}
-			mPinButton.setChecked(true);
-			mToggleHelper.setOverlayShown(true);
-		}
 	}
 
-	public Settings getSettings() {
+	/**
+	 * Install FlyingView under following conditions.
+	 * <ul>
+	 * <li>enable vertical dragging on the screen edge</li>
+	 * <li>disable takeoff position</li>
+	 * <li>without pin</li>
+	 * </ul>
+	 * 
+	 * @param context
+	 * @throws Throwable
+	 */
+	public void installForFloatingWindow(Context context) throws Throwable {
+		mSettings.takeoffPosition = FlyingAndroidSettings.TAKEOFF_POSITION_CENTER;
+		mSettings.usePin = false;
+		// create FlyingView
+		installFlyingView(context, true);
+	}
+
+	/**
+	 * Install FlyingView following settings.
+	 * 
+	 * @param context
+	 * @throws Throwable
+	 */
+	public void install(Context context) throws Throwable {
+		mAlwaysShowPin = false;
+		// create FlyingView
+		installFlyingView(context, false);
+	}
+
+	/**
+	 * Install FlyingView with pin shown always.
+	 * 
+	 * @param context
+	 * @throws Throwable
+	 */
+	public void installWithPinShownAlways(Context context) throws Throwable {
+		if (!mSettings.usePin) {
+			throw new IllegalStateException("usePin should be true.");
+		}
+		mSettings.takeoffPosition = FlyingAndroidSettings.TAKEOFF_POSITION_CENTER;
+		mAlwaysShowPin = true;
+		// create FlyingView
+		installFlyingView(context, false);
+
+		pin();
+		setOverlayShown(true);
+	}
+
+	public FlyingAndroidSettings getSettings() {
 		return mSettings;
 	}
 
@@ -200,162 +221,140 @@ public class FlyingHelper {
 		return mFlyingView;
 	}
 
-	public ViewGroup getFlyingRootView() {
-		return mFlyingView;
-	}
-
-	public ToggleHelper getToggleHelper() {
-		return mToggleHelper;
-	}
-
-	private FrameLayout getContainer() {
-		return (FrameLayout) mFlyingView.getChildAt(0);
-	}
-
 	public void addViewToFlyingView(View child,
 			ViewGroup.LayoutParams layoutParams) {
-		getContainer().addView(child, layoutParams);
+		mContainerView.addView(child, layoutParams);
 	}
 
-	private View getOverlay() {
-		return mFlyingView.getChildAt(mFlyingView.getChildCount() - 1);
+	private Drawable mBoundaryDrawable;
+
+	private boolean mReceiverRegistered = false;
+
+	private boolean mFlying = false;
+
+	public void prepareBoundary(Context context) {
+		if (!mSettings.notifyFlying) {
+			mBoundaryDrawable = null;
+		} else {
+			Context flyContext = null;
+			try {
+				flyContext = context.createPackageContext(PACKAGE_NAME,
+						Context.CONTEXT_IGNORE_SECURITY);
+			} catch (Throwable t) {
+				XposedBridge.log(t);
+			}
+			if (flyContext != null) {
+				mBoundaryDrawable = flyContext.getResources().getDrawable(
+						R.drawable.notify_flying);
+			} else {
+				mBoundaryDrawable = null;
+			}
+		}
 	}
 
-	public class ToggleHelper {
-		private final Drawable mNotifyFlyingDrawable;
+	private void setOverlayShown(boolean shown) {
+		if (shown) {
+			mOverlayView.setVisibility(View.VISIBLE);
+		} else if (!mAlwaysShowPin) {
+			mOverlayView.setVisibility(View.GONE);
+		}
+	}
 
-		private boolean mReceiverRegistered = false;
-
-		private boolean mFlying = false;
-
-		public ToggleHelper(Context context) throws Throwable {
-			if (!mSettings.notifyFlying) {
-				mNotifyFlyingDrawable = null;
+	private void setBoundaryShown(boolean shown) {
+		if (mSettings.notifyFlying) {
+			if (shown) {
+				mContainerView.setForeground(mBoundaryDrawable);
 			} else {
-				Context flyContext = null;
-				try {
-					flyContext = context.createPackageContext(PACKAGE_NAME,
-							Context.CONTEXT_IGNORE_SECURITY);
-				} catch (Throwable t) {
-					XposedBridge.log(t);
-				}
-				if (flyContext != null) {
-					mNotifyFlyingDrawable = flyContext.getResources()
-							.getDrawable(R.drawable.notify_flying);
-				} else {
-					mNotifyFlyingDrawable = null;
-				}
+				mContainerView.setForeground(null);
 			}
 		}
+	}
 
-		private void setWindowPinned(boolean pinned) {
-			// String text;
-			if (pinned) {
-				// text = "pin";
-				mFlyingView.setIgnoreTouchEvent(true);
-				setBoundaryShown(false);
-				// mFlying = false;
+	private void pin() {
+		if (mPinButton.isChecked()) {
+			mPinButton.setChecked(false);
+		}
+		mPinButton.setChecked(true);
+	}
+
+	private void unpin() {
+		if (!mPinButton.isChecked()) {
+			mPinButton.setChecked(true);
+		}
+		mPinButton.setChecked(false);
+	}
+
+	private void unfly() {
+		mFlyingView.setIgnoreTouchEvent(true);
+		setBoundaryShown(false);
+		mFlying = false;
+	}
+
+	private void fly() {
+		mFlyingView.setIgnoreTouchEvent(false);
+		setBoundaryShown(true);
+		mFlying = true;
+	}
+
+	public void toggle() {
+		if (mFlyingView.staysHome() && !mFlying) {
+			// take off
+			setOverlayShown(true);
+			boolean moved = false;
+			switch (mSettings.takeoffPosition) {
+			case FlyingAndroidSettings.TAKEOFF_POSITION_CENTER:
+				// do noting
+				break;
+			case FlyingAndroidSettings.TAKEOFF_POSITION_BOTTOM:
+				mFlyingView.move(0, Math.round(mFlyingView.getHeight() / 2.0f));
+				moved = true;
+				break;
+			case FlyingAndroidSettings.TAKEOFF_POSITION_LOWER_LEFT:
+				mFlyingView.move(Math.round(-mFlyingView.getWidth() / 2.0f),
+						Math.round(mFlyingView.getHeight() / 2.0f));
+				moved = true;
+				break;
+			case FlyingAndroidSettings.TAKEOFF_POSITION_LOWER_RIGHT:
+				mFlyingView.move(Math.round(mFlyingView.getWidth() / 2.0f),
+						Math.round(mFlyingView.getHeight() / 2.0f));
+				moved = true;
+				break;
+			}
+			if (mSettings.autoPin() && moved) {
+				pin();
 			} else {
-				// text = "Unpin";
-				mFlyingView.setIgnoreTouchEvent(false);
-				setBoundaryShown(true);
-				mFlying = true;
+				unpin();
 			}
+		} else {
+			// go home and unfly
+			setOverlayShown(false);
+			mFlyingView.goHome();
+			pin();
 		}
+	}
 
-		private void setOverlayShown(boolean shown) {
-			if (mUseOverlay) {
-				if (shown) {
-					getOverlay().setVisibility(View.VISIBLE);
-				} else if (!mAlwaysShowPin) {
-					getOverlay().setVisibility(View.GONE);
-				}
-			}
-		}
+	private final BroadcastReceiver mToggleReceiver = new BroadcastReceiver() {
 
-		private void setBoundaryShown(boolean shown) {
-			if (mSettings.notifyFlying) {
-				FrameLayout container = getContainer();
-				if (shown) {
-					container.setForeground(mNotifyFlyingDrawable);
-				} else {
-					container.setForeground(null);
-				}
-			}
-		}
-
-		public void toggle() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
 			// log("toggle");
-			mFlying = !mFlying;
-			mFlyingView.setIgnoreTouchEvent(!mFlying);
-			String text = null;
-			if (!mFlying) {
-				text = "Rest";
-				mFlyingView.returnToHome();
-				setBoundaryShown(false);
-				setOverlayShown(false);
-			} else {
-				text = "Fly";
-				boolean moved = false;
-				switch (mSettings.takeoffPosition) {
-				case Settings.TAKEOFF_POSITION_CENTER:
-					// do noting
-					break;
-				case Settings.TAKEOFF_POSITION_BOTTOM:
-					mFlyingView.move(0,
-							Math.round(mFlyingView.getHeight() / 2.0f));
-					moved = true;
-					break;
-				case Settings.TAKEOFF_POSITION_LOWER_LEFT:
-					mFlyingView.move(
-							Math.round(-mFlyingView.getWidth() / 2.0f),
-							Math.round(mFlyingView.getHeight() / 2.0f));
-					moved = true;
-					break;
-				case Settings.TAKEOFF_POSITION_LOWER_RIGHT:
-					mFlyingView.move(Math.round(mFlyingView.getWidth() / 2.0f),
-							Math.round(mFlyingView.getHeight() / 2.0f));
-					moved = true;
-					break;
-				}
-				if (mSettings.autoPin && moved) {
-					if (mPinButton.isChecked()) {
-						mPinButton.setChecked(false);
-					}
-					mPinButton.setChecked(true);
-				} else {
-					if (!mPinButton.isChecked()) {
-						mPinButton.setChecked(true);
-					}
-					mPinButton.setChecked(false);
-				}
-				setOverlayShown(true);
-			}
+			toggle();
 		}
+	};
 
-		private final BroadcastReceiver mToggleReceiver = new BroadcastReceiver() {
+	public BroadcastReceiver getToggleReceiver() {
+		return mToggleReceiver;
+	}
 
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				// log("toggle");
-				toggle();
-			}
-		};
+	public boolean receiverRegistered() {
+		return mReceiverRegistered;
+	}
 
-		public BroadcastReceiver getToggleReceiver() {
-			return mToggleReceiver;
-		}
+	public void onReceiverRegistered() {
+		mReceiverRegistered = true;
+	}
 
-		public boolean receiverRegistered() {
-			return mReceiverRegistered;
-		}
-
-		public void onReceiverRegistered() {
-			mReceiverRegistered = true;
-		}
-
-		public void onReceiverUnregistered() {
-			mReceiverRegistered = false;
-		}
+	public void onReceiverUnregistered() {
+		mReceiverRegistered = false;
 	}
 }

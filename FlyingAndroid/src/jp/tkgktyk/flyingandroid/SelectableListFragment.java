@@ -6,15 +6,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jp.tkgktyk.flyingandroid.util.forGB;
+import android.app.ListFragment;
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.Loader;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,6 +96,7 @@ public class SelectableListFragment extends ListFragment implements
 	private boolean mSave = false;
 
 	private String mPrefKey;
+	private Set<String> mSelectedSet;
 
 	/**
 	 * Mandatory empty constructor for the fragment manager to instantiate the
@@ -160,9 +161,13 @@ public class SelectableListFragment extends ListFragment implements
 		Adapter adapter = new Adapter(getActivity(), deliverer);
 		setListAdapter(adapter);
 
-		Set<String> selectedSet = forGB.getStringSet(getActivity(), mPrefKey);
+		if (mSelectedSet == null) {
+			mSelectedSet = PreferenceManager.getDefaultSharedPreferences(
+					getActivity()).getStringSet(mPrefKey,
+					Collections.<String> emptySet());
+		}
 		for (Entry entry : entries) {
-			entry.selected = selectedSet.contains(entry.packageName);
+			entry.selected = mSelectedSet.contains(entry.packageName);
 			if (!mShowOnlySelected || entry.selected) {
 				deliverer.add(entry);
 			}
@@ -209,15 +214,16 @@ public class SelectableListFragment extends ListFragment implements
 	public void saveSelectedList() {
 		if (!mSave)
 			return;
-		Set<String> selectedSet = new HashSet<String>();
+		mSelectedSet = new HashSet<String>();
 		Adapter adapter = (Adapter) getListAdapter();
 		for (int i = 0; i < adapter.getCount(); ++i) {
 			Entry entry = adapter.getItem(i);
 			if (entry.selected) {
-				selectedSet.add(entry.packageName);
+				mSelectedSet.add(entry.packageName);
 			}
 		}
-		forGB.putStringSet(getActivity(), mPrefKey, selectedSet);
+		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
+				.putStringSet(mPrefKey, mSelectedSet).apply();
 		mSave = false;
 	}
 

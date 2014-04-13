@@ -8,15 +8,7 @@ import android.view.Gravity;
 import android.view.View;
 
 public class FlyingView1 extends FlyingView {
-	private static int DEFAULT_CHILD_GRAVITY;
-
-	static {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			DEFAULT_CHILD_GRAVITY = Gravity.TOP | Gravity.START;
-		} else {
-			DEFAULT_CHILD_GRAVITY = Gravity.TOP;
-		}
-	}
+	private static int DEFAULT_CHILD_GRAVITY = Gravity.TOP | Gravity.START;
 
 	public FlyingView1(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
@@ -126,11 +118,16 @@ public class FlyingView1 extends FlyingView {
 	}
 
 	@Override
-	public void returnToHome() {
+	public void goHome() {
 		mOffsetX = 0;
 		mOffsetY = 0;
 
 		requestLayout();
+	}
+	
+	@Override
+	public boolean staysHome() {
+		return mOffsetX == 0 && mOffsetY == 0;
 	}
 
 	@Override

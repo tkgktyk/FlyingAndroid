@@ -1,12 +1,12 @@
 package jp.tkgktyk.flyingandroid;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-public class SelectableListActivity extends FragmentActivity {
+public class SelectableListActivity extends Activity {
 
 	public static String EXTRA_PREF_KEY_STRING = "PREF_KEY_STRING";
 	public static String EXTRA_ONLY_TEXT_ID = "ONLY_TEXT_ID";
@@ -33,7 +33,7 @@ public class SelectableListActivity extends FragmentActivity {
 
 		mViewHolder = new ViewHolder();
 		mViewHolder.onlySelected = (CheckBox) findViewById(R.id.only_selected_check);
-		mViewHolder.selectableList = (SelectableListFragment) getSupportFragmentManager()
+		mViewHolder.selectableList = (SelectableListFragment) getFragmentManager()
 				.findFragmentById(R.id.selectable_list);
 
 		mViewHolder.onlySelected.setText(onlyTextId);
