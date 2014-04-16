@@ -4,12 +4,12 @@
     <string name="app_name">Flying Android</string>
     <string name="toggle_app_name">FA Toggle</string>
     <string name="shortcut_app_name">FA Toggle</string>
-    <string name="xposed_description">Move the Activity\'s window.\nDeveloped by tkgktyk</string>
+    <string name="xposed_description">Move the window.\nDeveloped by tkgktyk</string>
 
     <!-- SharedPreferences -->
     <!-- Note -->
     <string name="Note">Note</string>
-    <string name="summary_note">Need to recreate Activity for changes to take effect.</string>
+    <string name="summary_note">Need to recreate window for changes to take effect.</string>
 
     <!-- Settings -->
     <string name="Current_s1">Current: %1$s</string>
@@ -33,7 +33,11 @@
     <!-- Blask list -->
     <string name="Black_list">Black list&#8230;</string>
     <string name="pref_key_black_list">pref_key_black_list</string>
-
+    <!-- Flying dialog -->
+    <string name="Flying_dialog">Flying dialog</string>
+    <string name="pref_key_flying_dialog">pref_key_flying_dialog</string>
+    <string name="summary_flying_dialog">Dialogs can fly by dragging vertically on the edge of them. Note that IME is also dialog.</string>
+    
     <!-- Pin -->
     <string name="Pinning">Pinning</string>
     <!-- Use pin -->
@@ -54,18 +58,19 @@
     <string name="Flying_status_bar">Flying status bar</string>
     <string name="pref_key_flying_status_bar">pref_key_flying_status_bar</string>
     <string name="summary_flying_status_bar">Show pin in the expanded status bar. If use this, you might not be able to close the expanded status bar by swiping up. Then press back key to close it.</string>
+    <!-- Reset when status bar is collapsed -->
+    <string name="Reset_when_collapsed">Reset when collapsed</string>
+    <string name="pref_key_reset_when_collapsed">pref_key_reset_when_collapsed</string>
+    <string name="summary_reset_when_collapsed">Reset flying state when status bar is collapsed. Requires Android 4.2 or later.</string>
 
     <!-- Informations -->
     <string name="Informations">Informations</string>
     <!-- Developer -->
     <string name="Developer">Developer</string>
-    <string name="summary_developer">Flying Android is coded by tkgktyk. Touch to open Flying Android\'s site on Google Sites.</string>
+    <string name="summary_developer">Flying Android is coded by tkgktyk. Touch to open a thread on XDA.</string>
     <!-- Donate -->
     <string name="Donate">Donate</string>
     <string name="summary_donate">Touch to open donation app\'s page on Google Play. (Please donate via donation app.)</string>
-    <!-- Special thanks -->
-    <string name="Acknowledgement">Acknowledgement</string>
-    <string name="summary_acknowledgement">Flying Android is made ​​up of the following\n  - Xposed Framework (rovo89@XDA)\nand refers to\n  - Advanced Power Menu (kennethso168@XDA)\n  - GravityBox (C3C076@XDA)\n  - SwipeBack (PeterCxy@XDA)</string>
 
     <!-- SelectableListActivity -->
     <string name="Show_only_black">Show only black</string>

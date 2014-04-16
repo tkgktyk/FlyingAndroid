@@ -95,7 +95,7 @@ public class FlyingView1 extends FlyingView {
 					childTop = parentTop + lp.topMargin;
 				}
 
-				if (i == 0) {
+				if (!getUseContainer() || i == 0) {
 					child.layout(childLeft + mOffsetX, childTop + mOffsetY,
 							childLeft + width + mOffsetX, childTop + height
 									+ mOffsetY);
@@ -124,7 +124,7 @@ public class FlyingView1 extends FlyingView {
 
 		requestLayout();
 	}
-	
+
 	@Override
 	public boolean staysHome() {
 		return mOffsetX == 0 && mOffsetY == 0;

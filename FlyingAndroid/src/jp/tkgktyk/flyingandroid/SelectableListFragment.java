@@ -96,7 +96,6 @@ public class SelectableListFragment extends ListFragment implements
 	private boolean mSave = false;
 
 	private String mPrefKey;
-	private Set<String> mSelectedSet;
 
 	/**
 	 * Mandatory empty constructor for the fragment manager to instantiate the
@@ -161,13 +160,11 @@ public class SelectableListFragment extends ListFragment implements
 		Adapter adapter = new Adapter(getActivity(), deliverer);
 		setListAdapter(adapter);
 
-		if (mSelectedSet == null) {
-			mSelectedSet = PreferenceManager.getDefaultSharedPreferences(
-					getActivity()).getStringSet(mPrefKey,
-					Collections.<String> emptySet());
-		}
+		Set<String> selectedSet = PreferenceManager
+				.getDefaultSharedPreferences(getActivity()).getStringSet(
+						mPrefKey, Collections.<String> emptySet());
 		for (Entry entry : entries) {
-			entry.selected = mSelectedSet.contains(entry.packageName);
+			entry.selected = selectedSet.contains(entry.packageName);
 			if (!mShowOnlySelected || entry.selected) {
 				deliverer.add(entry);
 			}
@@ -214,16 +211,17 @@ public class SelectableListFragment extends ListFragment implements
 	public void saveSelectedList() {
 		if (!mSave)
 			return;
-		mSelectedSet = new HashSet<String>();
+		Set<String> selectedSet = new HashSet<String>();
 		Adapter adapter = (Adapter) getListAdapter();
 		for (int i = 0; i < adapter.getCount(); ++i) {
 			Entry entry = adapter.getItem(i);
 			if (entry.selected) {
-				mSelectedSet.add(entry.packageName);
+				selectedSet.add(entry.packageName);
 			}
 		}
 		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-				.putStringSet(mPrefKey, mSelectedSet).apply();
+				.putStringSet(mPrefKey, selectedSet).apply();
+
 		mSave = false;
 	}
 

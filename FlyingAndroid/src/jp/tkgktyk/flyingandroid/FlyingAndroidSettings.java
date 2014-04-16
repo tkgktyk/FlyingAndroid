@@ -22,6 +22,7 @@ public class FlyingAndroidSettings implements Cloneable {
 	public int takeoffPosition;
 	public boolean notifyFlying;
 	public boolean forceSetWindowBackground;
+	public boolean flyingDialog;
 	public Set<String> blackSet;
 	// for pinning
 	public boolean usePin;
@@ -29,6 +30,7 @@ public class FlyingAndroidSettings implements Cloneable {
 	private boolean autoPin;
 	public Set<String> whiteSet;
 	private boolean flyingStatusBar;
+	public boolean resetWhenCollapsed;
 
 	public FlyingAndroidSettings(XSharedPreferences pref) {
 		pref.reload();
@@ -39,6 +41,7 @@ public class FlyingAndroidSettings implements Cloneable {
 		notifyFlying = pref.getBoolean("pref_key_notify_flying", true);
 		forceSetWindowBackground = pref.getBoolean(
 				"pref_key_force_set_window_background", false);
+		flyingDialog = pref.getBoolean("pref_key_flying_dialog", false);
 		blackSet = pref.getStringSet("pref_key_black_list",
 				Collections.<String> emptySet());
 		// for pinning
@@ -49,6 +52,8 @@ public class FlyingAndroidSettings implements Cloneable {
 		whiteSet = pref.getStringSet("pref_key_white_list",
 				Collections.<String> emptySet());
 		flyingStatusBar = pref.getBoolean("pref_key_flying_status_bar", false);
+		resetWhenCollapsed = pref.getBoolean("pref_key_reset_when_collapsed",
+				false);
 	}
 
 	public void overwriteUsePinByWhiteList(String packageName) {

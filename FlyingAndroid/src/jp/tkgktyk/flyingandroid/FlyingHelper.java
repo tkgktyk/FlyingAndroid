@@ -1,5 +1,8 @@
 package jp.tkgktyk.flyingandroid;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jp.tkgktyk.flyingandroid.FlyingView.OnFlyingEventListener;
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
 import android.content.BroadcastReceiver;
@@ -10,11 +13,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 
 public class FlyingHelper {
 	public static final String PACKAGE_NAME = FlyingAndroid.class.getPackage()
@@ -53,6 +58,7 @@ public class FlyingHelper {
 		mFlyingView.setHorizontalPadding(padding);
 		mFlyingView.setVerticalPadding(padding);
 		mFlyingView.setIgnoreTouchEvent(true);
+		mFlyingView.setUseContainer(true);
 		mFlyingView.setOnFlyingEventListener(new OnFlyingEventListener() {
 			@Override
 			public void onClickUnhandled(FlyingView v, int x, int y) {
@@ -175,11 +181,13 @@ public class FlyingHelper {
 	 * @param context
 	 * @throws Throwable
 	 */
-	public void installForFloatingWindow(Context context) throws Throwable {
+	public void installForFloatingWindow(ViewGroup target) throws Throwable {
 		mSettings.takeoffPosition = FlyingAndroidSettings.TAKEOFF_POSITION_CENTER;
 		mSettings.usePin = false;
 		// create FlyingView
-		installFlyingView(context, true);
+		installFlyingView(target.getContext(), true);
+
+		installToViewGroup(target);
 	}
 
 	/**
@@ -188,10 +196,12 @@ public class FlyingHelper {
 	 * @param context
 	 * @throws Throwable
 	 */
-	public void install(Context context) throws Throwable {
+	public void install(ViewGroup target) throws Throwable {
 		mAlwaysShowPin = false;
 		// create FlyingView
-		installFlyingView(context, false);
+		installFlyingView(target.getContext(), false);
+
+		installToViewGroup(target);
 	}
 
 	/**
@@ -200,17 +210,61 @@ public class FlyingHelper {
 	 * @param context
 	 * @throws Throwable
 	 */
-	public void installWithPinShownAlways(Context context) throws Throwable {
+	public void installWithPinShownAlways(ViewGroup target) throws Throwable {
 		if (!mSettings.usePin) {
 			throw new IllegalStateException("usePin should be true.");
 		}
 		mSettings.takeoffPosition = FlyingAndroidSettings.TAKEOFF_POSITION_CENTER;
 		mAlwaysShowPin = true;
 		// create FlyingView
-		installFlyingView(context, false);
+		installFlyingView(target.getContext(), false);
 
 		pin();
 		setOverlayShown(true);
+
+		installToViewGroup(target);
+	}
+
+	private void installToViewGroup(ViewGroup target) {
+		List<View> contents = new ArrayList<View>();
+		for (int i = 0; i < target.getChildCount(); ++i) {
+			contents.add(target.getChildAt(i));
+		}
+		log("children: " + target.getChildCount());
+		target.removeAllViews();
+		for (View v : contents) {
+			addViewToFlyingView(v, v.getLayoutParams());
+		}
+		target.addView(mFlyingView);
+		XposedHelpers.setAdditionalInstanceField(target.getRootView(),
+				FA_HELPER, this);
+	}
+
+	private static String FA_HELPER = "FA_helper";
+
+	/**
+	 * Find a FlyingHelper attached to a DecorView by
+	 * {@link FlyingAndroid#setFlyingHelper(ViewGroup, FlyingHelper)} and return
+	 * it.
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public static FlyingHelper getFrom(Window target) {
+		return getFrom(target.peekDecorView());
+	}
+
+	/**
+	 * Find a FlyingHelper attached to a DecorView by
+	 * {@link FlyingAndroid#setFlyingHelper(ViewGroup, FlyingHelper)} and return
+	 * it.
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public static FlyingHelper getFrom(View target) {
+		return (FlyingHelper) XposedHelpers.getAdditionalInstanceField(
+				target.getRootView(), FA_HELPER);
 	}
 
 	public FlyingAndroidSettings getSettings() {
@@ -333,6 +387,13 @@ public class FlyingHelper {
 		}
 	}
 
+	public void resetState() {
+		// go home and unfly
+		setOverlayShown(false);
+		mFlyingView.goHome();
+		pin();
+	}
+
 	private final BroadcastReceiver mToggleReceiver = new BroadcastReceiver() {
 
 		@Override
@@ -357,4 +418,11 @@ public class FlyingHelper {
 	public void onReceiverUnregistered() {
 		mReceiverRegistered = false;
 	}
+
+	private void log(String text) {
+		if (BuildConfig.DEBUG) {
+			XposedBridge.log("FAH [DEBUG]: " + text);
+		}
+	}
+
 }

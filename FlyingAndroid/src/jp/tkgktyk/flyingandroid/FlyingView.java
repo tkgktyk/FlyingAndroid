@@ -16,6 +16,7 @@ public abstract class FlyingView extends FrameLayout {
 	private static final int DEFAULT_HORIZONTAL_PADDING = 0;
 	private static final int DEFAULT_VERTICAL_PADDING = 0;
 	private static final boolean DEFAULT_IGNORE_TOUCH_EVENT = false;
+	private static final boolean DEFAULT_USE_CONTAINER = false;
 
 	/**
 	 * Sentinel value for no current active pointer. Used by
@@ -44,6 +45,7 @@ public abstract class FlyingView extends FrameLayout {
 	private int mHorizontalPadding;
 	private int mVerticalPadding;
 	private boolean mIgnoreTouchEvent;
+	private boolean mUseContainer;
 
 	private void fetchAttribute(Context context, AttributeSet attrs,
 			int defStyle) {
@@ -61,6 +63,9 @@ public abstract class FlyingView extends FrameLayout {
 			setIgnoreTouchEvent(a.getBoolean(
 					R.styleable.FlyingView_ignoreTouchEvent,
 					DEFAULT_IGNORE_TOUCH_EVENT));
+			setUseContainer(a.getBoolean(
+					R.styleable.FlyingView_useContainer,
+					DEFAULT_USE_CONTAINER));
 		} finally {
 			a.recycle();
 		}
@@ -117,6 +122,14 @@ public abstract class FlyingView extends FrameLayout {
 
 	public boolean getIgnoreTouchEvent() {
 		return mIgnoreTouchEvent;
+	}
+
+	public void setUseContainer(boolean use) {
+		mUseContainer = use;
+	}
+
+	public boolean getUseContainer() {
+		return mUseContainer;
 	}
 
 	@Override

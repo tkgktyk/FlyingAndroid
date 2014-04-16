@@ -7,8 +7,7 @@
         <attr name="horizontalPadding" format="dimension" />
         <attr name="verticalPadding" format="dimension" />
         <attr name="ignoreTouchEvent" format="boolean" />
-        <attr name="drawBoundary" format="boolean" />
-        <attr name="boundaryColor" format="color" />
+        <attr name="useContainer" format="boolean" />
     </declare-styleable>
 
 </resources>
