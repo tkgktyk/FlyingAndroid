@@ -1,4 +1,4 @@
-package jp.tkgktyk.flyingandroid;
+package jp.tkgktyk.flyingandroid.app;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;

@@ -10,7 +10,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:showDividers="middle"
-    tools:context=".SelectableListActivity" >
+    tools:context=".app.SelectableListActivity" >
 
     <CheckBox
         android:id="@+id/only_selected_check"
@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/selectable_list"
-        android:name="jp.tkgktyk.flyingandroid.SelectableListFragment"
+        android:name="jp.tkgktyk.flyingandroid.app.SelectableListFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"

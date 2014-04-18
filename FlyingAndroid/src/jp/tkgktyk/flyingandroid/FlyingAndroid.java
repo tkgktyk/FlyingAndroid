@@ -11,6 +11,8 @@ import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +20,6 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
@@ -98,7 +99,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			// if (!sIgnoreSet.contains(packageName)) {
 			// FlyingAndroidSettings settings = new FlyingAndroidSettings(
 			// sPref);
-			// log("reload settings at " + packageName);
+			// FA.logD("reload settings at " + packageName);
 			// if (!settings.blackSet
 			// .contains(packageName)) {
 			// FlyingHelper helper = getFlyingHelper(decor);
@@ -139,7 +140,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			// //
 			// setFlyingHelper(decor, helper);
 			// }
-			// log("FA_attached = "
+			// FA.logD("FA_attached = "
 			// + (Boolean) XposedHelpers
 			// .getAdditionalInstanceField(
 			// decor,
@@ -158,7 +159,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			// "addView", child, -1, layoutParams);
 			// }
 			// } catch (Throwable t) {
-			// XposedBridge.log(t);
+			// FA.logE(t);
 			// }
 			// return null;
 			// }
@@ -178,7 +179,8 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 									if (!sIgnoreSet.contains(packageName)) {
 										FlyingAndroidSettings settings = new FlyingAndroidSettings(
 												sPref);
-										log("reload settings at " + packageName);
+										FA.logD("reload settings at "
+												+ packageName);
 										if (!settings.blackSet
 												.contains(packageName)) {
 											settings.overwriteUsePinByWhiteList(packageName);
@@ -192,6 +194,11 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 								if (helper != null) {
 									// force set window background for clear
 									// background.
+									Drawable d = activity.getWindow()
+											.peekDecorView().getBackground();
+									if (d instanceof ColorDrawable) {
+										FA.logD("background is ColorDrawable.");
+									}
 									TypedArray a = activity
 											.getTheme()
 											.obtainStyledAttributes(
@@ -203,13 +210,13 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 												.setBackgroundDrawableResource(
 														background);
 									} else {
-										log("window background is 0.");
+										FA.logD("window background is 0.");
 									}
 								} else {
-									log("FlyingHelper is not found.");
+									FA.logD("FlyingHelper is not found.");
 								}
 							} catch (Throwable t) {
-								XposedBridge.log(t);
+								FA.logE(t);
 							}
 						}
 					});
@@ -229,13 +236,13 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 										activity.registerReceiver(receiver,
 												new IntentFilter(ACTION_TOGGLE));
 										helper.onReceiverRegistered();
-										log("register");
+										FA.logD("register");
 									}
 								} else {
-									log("FlyingHelper is not found.");
+									FA.logD("FlyingHelper is not found.");
 								}
 							} catch (Throwable t) {
-								XposedBridge.log(t);
+								FA.logE(t);
 							}
 						}
 					});
@@ -254,13 +261,13 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 												.getToggleReceiver();
 										activity.unregisterReceiver(receiver);
 										helper.onReceiverUnregistered();
-										log("unregister");
+										FA.logD("unregister");
 									}
 								} else {
-									log("FlyingHelper is not found.");
+									FA.logD("FlyingHelper is not found.");
 								}
 							} catch (Throwable t) {
-								XposedBridge.log(t);
+								FA.logE(t);
 							}
 						}
 					});
@@ -284,10 +291,10 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 										flyingView.rotate();
 									}
 								} else {
-									log("FlyingHelper is not found.");
+									FA.logD("FlyingHelper is not found.");
 								}
 							} catch (Throwable t) {
-								XposedBridge.log(t);
+								FA.logE(t);
 							}
 						}
 					});
@@ -310,18 +317,12 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 									}
 								}
 							} catch (Throwable t) {
-								XposedBridge.log(t);
+								FA.logE(t);
 							}
 						}
 					});
 		} catch (Throwable t) {
-			XposedBridge.log(t);
-		}
-	}
-
-	private void log(String text) {
-		if (BuildConfig.DEBUG) {
-			XposedBridge.log("FA [DEBUG]: " + text);
+			FA.logE(t);
 		}
 	}
 
@@ -355,13 +356,12 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 										}
 									}
 								} catch (Throwable t) {
-									XposedBridge.log(t);
+									FA.logE(t);
 								}
 							}
 						});
 			} catch (NoSuchMethodError e) {
-				XposedBridge
-						.log("PhoneStatusBar#makeStatusBarView is not found");
+				FA.logE("PhoneStatusBar#makeStatusBarView is not found. \"Flying status bar\" is not available.");
 			}
 			try {
 				findAndHookMethod(
@@ -379,16 +379,15 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 										helper.resetState();
 									}
 								} catch (Throwable t) {
-									XposedBridge.log(t);
+									FA.logE(t);
 								}
 							}
 						});
 			} catch (NoSuchMethodError e) {
-				XposedBridge
-						.log("PhoneStatusBarView#onAllPanelsCollapsed is not found");
+				FA.logE("PhoneStatusBarView#onAllPanelsCollapsed is not found. \"Reset when collapsed\" is not available.");
 			}
 		} catch (Throwable t) {
-			XposedBridge.log(t);
+			FA.logE(t);
 		}
 	}
 }

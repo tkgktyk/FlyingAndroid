@@ -230,7 +230,7 @@ public class FlyingHelper {
 		for (int i = 0; i < target.getChildCount(); ++i) {
 			contents.add(target.getChildAt(i));
 		}
-		log("children: " + target.getChildCount());
+		FA.logD("children: " + target.getChildCount());
 		target.removeAllViews();
 		for (View v : contents) {
 			addViewToFlyingView(v, v.getLayoutParams());
@@ -418,11 +418,4 @@ public class FlyingHelper {
 	public void onReceiverUnregistered() {
 		mReceiverRegistered = false;
 	}
-
-	private void log(String text) {
-		if (BuildConfig.DEBUG) {
-			XposedBridge.log("FAH [DEBUG]: " + text);
-		}
-	}
-
 }

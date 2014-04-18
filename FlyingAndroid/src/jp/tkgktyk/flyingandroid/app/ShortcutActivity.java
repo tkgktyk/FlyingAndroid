@@ -1,5 +1,7 @@
-package jp.tkgktyk.flyingandroid;
+package jp.tkgktyk.flyingandroid.app;
 
+import jp.tkgktyk.flyingandroid.R;
+import jp.tkgktyk.flyingandroid.ToggleActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package jp.tkgktyk.flyingandroid;
+package jp.tkgktyk.flyingandroid.app;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jp.tkgktyk.flyingandroid.BuildConfig;
+import jp.tkgktyk.flyingandroid.R;
 import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.Context;
@@ -225,7 +227,7 @@ public class SelectableListFragment extends ListFragment implements
 		mSave = false;
 	}
 
-	private static void log(String text) {
+	private void log(String text) {
 		if (BuildConfig.DEBUG) {
 			Log.d(TAG, text);
 		}

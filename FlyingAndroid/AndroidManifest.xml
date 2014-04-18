@@ -24,7 +24,7 @@
             android:value="@string/xposed_description" />
 
         <activity
-            android:name="jp.tkgktyk.flyingandroid.MainActivity"
+            android:name="jp.tkgktyk.flyingandroid.app.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="jp.tkgktyk.flyingandroid.SelectableListActivity" >
+        <activity android:name="jp.tkgktyk.flyingandroid.app.SelectableListActivity" >
         </activity>
         <activity
             android:name="jp.tkgktyk.flyingandroid.ToggleActivity"
@@ -47,7 +47,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="jp.tkgktyk.flyingandroid.ShortcutActivity"
+            android:name="jp.tkgktyk.flyingandroid.app.ShortcutActivity"
             android:label="@string/shortcut_app_name"
             android:theme="@android:style/Theme.NoDisplay" >
             <intent-filter>
