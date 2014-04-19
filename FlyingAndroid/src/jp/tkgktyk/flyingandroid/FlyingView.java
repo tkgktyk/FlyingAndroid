@@ -63,8 +63,7 @@ public abstract class FlyingView extends FrameLayout {
 			setIgnoreTouchEvent(a.getBoolean(
 					R.styleable.FlyingView_ignoreTouchEvent,
 					DEFAULT_IGNORE_TOUCH_EVENT));
-			setUseContainer(a.getBoolean(
-					R.styleable.FlyingView_useContainer,
+			setUseContainer(a.getBoolean(R.styleable.FlyingView_useContainer,
 					DEFAULT_USE_CONTAINER));
 		} finally {
 			a.recycle();
@@ -237,6 +236,10 @@ public abstract class FlyingView extends FrameLayout {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
+		if (!mIsBeingDragged && mIgnoreTouchEvent) {
+			return false;
+		}
+
 		final int action = ev.getAction();
 
 		switch (action & MotionEvent.ACTION_MASK) {
@@ -252,10 +255,6 @@ public abstract class FlyingView extends FrameLayout {
 			break;
 		}
 		case MotionEvent.ACTION_MOVE: {
-			if (!mIsBeingDragged && mIgnoreTouchEvent) {
-				return false;
-			}
-
 			final int activePointerIndex = ev
 					.findPointerIndex(mActivePointerId);
 			if (activePointerIndex == -1) {
