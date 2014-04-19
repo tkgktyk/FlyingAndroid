@@ -1,6 +1,5 @@
 package jp.tkgktyk.flyingandroid;
 
-import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -287,7 +286,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 							}
 						}
 					});
-			findAndHookMethod(Dialog.class, "onAttachedToWindow",
+			XposedHelpers.findAndHookMethod(Dialog.class, "onAttachedToWindow",
 					new XC_MethodHook() {
 						@Override
 						protected void afterHookedMethod(MethodHookParam param)
@@ -327,7 +326,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 				return;
 			}
 			try {
-				findAndHookMethod(
+				XposedHelpers.findAndHookMethod(
 						"com.android.systemui.statusbar.phone.PhoneStatusBar",
 						lpparam.classLoader, "makeStatusBarView",
 						new XC_MethodHook() {
@@ -358,25 +357,27 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 				FA.logE("PhoneStatusBar#makeStatusBarView is not found. \"Flying status bar\" is not available.");
 			}
 			try {
-				findAndHookMethod(
-						"com.android.systemui.statusbar.phone.PhoneStatusBarView",
-						lpparam.classLoader, "onAllPanelsCollapsed",
-						new XC_MethodHook() {
-							@Override
-							protected void afterHookedMethod(
-									MethodHookParam param) throws Throwable {
-								try {
-									FlyingHelper helper = FlyingHelper
-											.getFrom((View) param.thisObject);
-									if (helper != null
-											&& helper.getSettings().resetWhenCollapsed) {
-										helper.resetState();
+				XposedHelpers
+						.findAndHookMethod(
+								"com.android.systemui.statusbar.phone.PhoneStatusBarView",
+								lpparam.classLoader, "onAllPanelsCollapsed",
+								new XC_MethodHook() {
+									@Override
+									protected void afterHookedMethod(
+											MethodHookParam param)
+											throws Throwable {
+										try {
+											FlyingHelper helper = FlyingHelper
+													.getFrom((View) param.thisObject);
+											if (helper != null
+													&& helper.getSettings().resetWhenCollapsed) {
+												helper.resetState();
+											}
+										} catch (Throwable t) {
+											FA.logE(t);
+										}
 									}
-								} catch (Throwable t) {
-									FA.logE(t);
-								}
-							}
-						});
+								});
 			} catch (NoSuchMethodError e) {
 				FA.logE("PhoneStatusBarView#onAllPanelsCollapsed is not found. \"Reset when collapsed\" is not available.");
 			}
