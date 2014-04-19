@@ -52,7 +52,7 @@
     <!-- Flying status bar -->
     <string name="Flying_status_bar">Flying status bar</string>
     <string name="pref_key_flying_status_bar">pref_key_flying_status_bar</string>
-    <string name="summary_flying_status_bar">Show pin in the expanded status bar. If use this, you might not be able to close the expanded status bar by swiping up. Then press back key to close it.</string>
+    <string name="summary_flying_status_bar">Show pin in the expanded status bar.</string>
     <!-- Reset when status bar is collapsed -->
     <string name="Reset_when_collapsed">Reset when collapsed</string>
     <string name="pref_key_reset_when_collapsed">pref_key_reset_when_collapsed</string>
