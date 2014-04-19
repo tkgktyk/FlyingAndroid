@@ -39,5 +39,15 @@
         <item>3</item>
         <item>4</item>
     </string-array>
+    <string-array name="autoPinSelections">
+        <item>disable</item>
+        <item>when takeoff</item>
+        <item>after moving</item>
+    </string-array>
+    <string-array name="autoPinSelectionValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 
 </resources>

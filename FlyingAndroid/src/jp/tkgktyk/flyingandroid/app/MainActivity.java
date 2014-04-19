@@ -40,6 +40,8 @@ public class MainActivity extends Activity {
 					R.string.Show_only_black);
 			// pin position
 			showListSummary(R.string.pref_key_pin_position);
+			// auto pin
+			showListSummary(R.string.pref_key_auto_pin_selection);
 			// white list
 			openSelectorOnClick(R.string.pref_key_white_list,
 					R.string.Show_only_white);

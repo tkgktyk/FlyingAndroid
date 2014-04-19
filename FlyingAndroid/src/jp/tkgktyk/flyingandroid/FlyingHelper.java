@@ -25,7 +25,7 @@ public class FlyingHelper {
 	public static final String PACKAGE_NAME = FlyingAndroid.class.getPackage()
 			.getName();
 
-	private final FlyingAndroidSettings mSettings;
+	private final FA.Settings mSettings;
 	private FlyingView mFlyingView;
 	private FrameLayout mContainerView;
 	private View mOverlayView;
@@ -88,7 +88,7 @@ public class FlyingHelper {
 
 			@Override
 			public void onMoveFinished(FlyingView v) {
-				if (mSettings.autoPin()) {
+				if (mSettings.autoPin(FA.AUTO_PIN_AFTER_MOVING)) {
 					pin();
 				}
 			}
@@ -118,16 +118,16 @@ public class FlyingHelper {
 			LinearLayout container = (LinearLayout) overlay
 					.findViewById(R.id.container);
 			switch (mSettings.pinPosition) {
-			case FlyingAndroidSettings.PIN_POSITION_CENTER_LEFT:
+			case FA.PIN_POSITION_CENTER_LEFT:
 				container.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
 				break;
-			case FlyingAndroidSettings.PIN_POSITION_CENTER_RIGHT:
+			case FA.PIN_POSITION_CENTER_RIGHT:
 				container.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
 				break;
-			case FlyingAndroidSettings.PIN_POSITION_LOWER_LEFT:
+			case FA.PIN_POSITION_LOWER_LEFT:
 				container.setGravity(Gravity.BOTTOM | Gravity.LEFT);
 				break;
-			case FlyingAndroidSettings.PIN_POSITION_LOWER_RIGHT:
+			case FA.PIN_POSITION_LOWER_RIGHT:
 				container.setGravity(Gravity.BOTTOM | Gravity.RIGHT);
 				break;
 			default:
@@ -166,7 +166,7 @@ public class FlyingHelper {
 
 	private boolean mAlwaysShowPin;
 
-	public FlyingHelper(FlyingAndroidSettings settings) {
+	public FlyingHelper(FA.Settings settings) {
 		mSettings = settings.clone();
 	}
 
@@ -182,7 +182,7 @@ public class FlyingHelper {
 	 * @throws Throwable
 	 */
 	public void installForFloatingWindow(ViewGroup target) throws Throwable {
-		mSettings.takeoffPosition = FlyingAndroidSettings.TAKEOFF_POSITION_CENTER;
+		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
 		mSettings.usePin = false;
 		// create FlyingView
 		installFlyingView(target.getContext(), true);
@@ -214,7 +214,7 @@ public class FlyingHelper {
 		if (!mSettings.usePin) {
 			throw new IllegalStateException("usePin should be true.");
 		}
-		mSettings.takeoffPosition = FlyingAndroidSettings.TAKEOFF_POSITION_CENTER;
+		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
 		mAlwaysShowPin = true;
 		// create FlyingView
 		installFlyingView(target.getContext(), false);
@@ -267,7 +267,7 @@ public class FlyingHelper {
 				target.getRootView(), FA_HELPER);
 	}
 
-	public FlyingAndroidSettings getSettings() {
+	public FA.Settings getSettings() {
 		return mSettings;
 	}
 
@@ -356,25 +356,27 @@ public class FlyingHelper {
 			setOverlayShown(true);
 			boolean moved = false;
 			switch (mSettings.takeoffPosition) {
-			case FlyingAndroidSettings.TAKEOFF_POSITION_CENTER:
+			case FA.TAKEOFF_POSITION_CENTER:
 				// do noting
 				break;
-			case FlyingAndroidSettings.TAKEOFF_POSITION_BOTTOM:
+			case FA.TAKEOFF_POSITION_BOTTOM:
 				mFlyingView.move(0, Math.round(mFlyingView.getHeight() / 2.0f));
 				moved = true;
 				break;
-			case FlyingAndroidSettings.TAKEOFF_POSITION_LOWER_LEFT:
+			case FA.TAKEOFF_POSITION_LOWER_LEFT:
 				mFlyingView.move(Math.round(-mFlyingView.getWidth() / 2.0f),
 						Math.round(mFlyingView.getHeight() / 2.0f));
 				moved = true;
 				break;
-			case FlyingAndroidSettings.TAKEOFF_POSITION_LOWER_RIGHT:
+			case FA.TAKEOFF_POSITION_LOWER_RIGHT:
 				mFlyingView.move(Math.round(mFlyingView.getWidth() / 2.0f),
 						Math.round(mFlyingView.getHeight() / 2.0f));
 				moved = true;
 				break;
 			}
-			if (mSettings.autoPin() && moved) {
+			if (moved
+					&& (mSettings.autoPin(FA.AUTO_PIN_WHEN_TAKEOFF) || mSettings
+							.autoPin(FA.AUTO_PIN_AFTER_MOVING))) {
 				pin();
 			} else {
 				unpin();

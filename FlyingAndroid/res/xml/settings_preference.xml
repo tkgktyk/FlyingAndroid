@@ -25,16 +25,12 @@
             android:key="@string/pref_key_notify_flying"
             android:summary="@string/summary_notify_flying"
             android:title="@string/Notify_flying" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/pref_key_force_set_window_background"
-            android:summary="@string/summary_force_set_window_background"
-            android:title="@string/Force_set_window_background" />
 
         <Preference
             android:key="@string/pref_key_black_list"
             android:title="@string/Black_list" />
-        <CheckBoxPreference
+
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/pref_key_flying_dialog"
             android:summary="@string/summary_flying_dialog"
@@ -53,12 +49,12 @@
             android:entryValues="@array/pinPositionValues"
             android:key="@string/pref_key_pin_position"
             android:title="@string/Pin_position" />
-
-        <CheckBoxPreference
-            android:defaultValue="false"
+        <ListPreference
+            android:defaultValue="0"
             android:dependency="@string/pref_key_use_pin"
-            android:key="@string/pref_key_auto_pin"
-            android:summary="@string/summary_auto_pin"
+            android:entries="@array/autoPinSelections"
+            android:entryValues="@array/autoPinSelectionValues"
+            android:key="@string/pref_key_auto_pin_selection"
             android:title="@string/Auto_pin" />
 
         <Preference

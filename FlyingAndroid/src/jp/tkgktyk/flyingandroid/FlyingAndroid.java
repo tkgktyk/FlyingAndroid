@@ -1,10 +1,6 @@
 package jp.tkgktyk.flyingandroid;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -30,7 +26,6 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
 
 	private static XSharedPreferences sPref;
-	private static Set<String> sIgnoreSet;
 
 	/**
 	 * I want to FlyingHelper attaches to a DecorView, but some Window has
@@ -66,8 +61,6 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 	public void initZygote(StartupParam startupParam) {
 		sPref = new XSharedPreferences(PACKAGE_NAME);
 		sPref.makeWorldReadable();
-		sIgnoreSet = new HashSet<String>();
-		sIgnoreSet.add(PACKAGE_NAME);
 
 		try {
 			// XposedHelpers.findAndHookMethod(ViewGroup.class, "addView",
@@ -176,19 +169,15 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 								if (helper == null) {
 									String packageName = activity
 											.getPackageName();
-									if (!sIgnoreSet.contains(packageName)) {
-										FlyingAndroidSettings settings = new FlyingAndroidSettings(
-												sPref);
-										FA.logD("reload settings at "
-												+ packageName);
-										if (!settings.blackSet
-												.contains(packageName)) {
-											settings.overwriteUsePinByWhiteList(packageName);
-											helper = new FlyingHelper(settings);
-											helper.install((ViewGroup) activity
-													.getWindow()
-													.peekDecorView());
-										}
+									FA.Settings settings = new FA.Settings(
+											sPref);
+									FA.logD("reload settings at " + packageName);
+									if (!settings.blackSet
+											.contains(packageName)) {
+										settings.overwriteUsePinByWhiteList(packageName);
+										helper = new FlyingHelper(settings);
+										helper.install((ViewGroup) activity
+												.getWindow().peekDecorView());
 									}
 								}
 								if (helper != null) {
@@ -197,20 +186,20 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 									Drawable d = activity.getWindow()
 											.peekDecorView().getBackground();
 									if (d instanceof ColorDrawable) {
-										FA.logD("background is ColorDrawable.");
-									}
-									TypedArray a = activity
-											.getTheme()
-											.obtainStyledAttributes(
-													new int[] { android.R.attr.windowBackground });
-									int background = a.getResourceId(0, 0);
-									a.recycle();
-									if (background != 0) {
-										activity.getWindow()
-												.setBackgroundDrawableResource(
-														background);
-									} else {
-										FA.logD("window background is 0.");
+										FA.logD("force set window background.");
+										TypedArray a = activity
+												.getTheme()
+												.obtainStyledAttributes(
+														new int[] { android.R.attr.windowBackground });
+										int background = a.getResourceId(0, 0);
+										a.recycle();
+										if (background != 0) {
+											activity.getWindow()
+													.setBackgroundDrawableResource(
+															background);
+										} else {
+											FA.logD("window background is 0.");
+										}
 									}
 								} else {
 									FA.logD("FlyingHelper is not found.");
@@ -304,16 +293,21 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 						protected void afterHookedMethod(MethodHookParam param)
 								throws Throwable {
 							try {
-								FlyingAndroidSettings settings = new FlyingAndroidSettings(
-										sPref);
+								FA.Settings settings = new FA.Settings(sPref);
 								if (settings.flyingDialog) {
 									Dialog dialog = (Dialog) param.thisObject;
-									FlyingHelper helper = FlyingHelper
-											.getFrom(dialog.getWindow());
-									if (helper == null) {
-										helper = new FlyingHelper(settings);
-										helper.installForFloatingWindow((ViewGroup) dialog
-												.getWindow().peekDecorView());
+									String packageName = dialog.getContext()
+											.getPackageName();
+									if (!settings.blackSet
+											.contains(packageName)) {
+										FlyingHelper helper = FlyingHelper
+												.getFrom(dialog.getWindow());
+										if (helper == null) {
+											helper = new FlyingHelper(settings);
+											helper.installForFloatingWindow((ViewGroup) dialog
+													.getWindow()
+													.peekDecorView());
+										}
 									}
 								}
 							} catch (Throwable t) {
@@ -341,7 +335,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 							protected void afterHookedMethod(
 									MethodHookParam param) throws Throwable {
 								try {
-									FlyingAndroidSettings settings = new FlyingAndroidSettings(
+									FA.Settings settings = new FA.Settings(
 											sPref);
 									if (settings.useFlyingStatusBar()) {
 										ViewGroup panel = (ViewGroup) XposedHelpers

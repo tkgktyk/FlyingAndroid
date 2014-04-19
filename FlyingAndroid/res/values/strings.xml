@@ -26,10 +26,6 @@
     <string name="Notify_flying">Notify flying</string>
     <string name="pref_key_notify_flying">pref_key_notify_flying</string>
     <string name="summary_notify_flying">Draw boundary while flying.</string>
-    <!-- Force set window background -->
-    <string name="Force_set_window_background">Force set window background</string>
-    <string name="pref_key_force_set_window_background">pref_key_force_set_window_background</string>
-    <string name="summary_force_set_window_background">Background might make clean.</string>
     <!-- Blask list -->
     <string name="Black_list">Black list&#8230;</string>
     <string name="pref_key_black_list">pref_key_black_list</string>
@@ -48,8 +44,7 @@
     <string name="pref_key_pin_position">pref_key_pin_position</string>
     <!-- Auto pin -->
     <string name="Auto_pin">Auto pin</string>
-    <string name="pref_key_auto_pin">pref_key_auto_pin</string>
-    <string name="summary_auto_pin">Pin window automatically after moving.</string>
+    <string name="pref_key_auto_pin_selection">pref_key_auto_pin_selection</string>
     <!-- White list -->
     <string name="White_list">White list&#8230;</string>
     <string name="pref_key_white_list">pref_key_white_list</string>
