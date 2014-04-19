@@ -173,10 +173,15 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 									FA.logD("reload settings at " + packageName);
 									if (!settings.blackSet
 											.contains(packageName)) {
+										// save / restore current focus
+										View v = activity.getCurrentFocus();
 										settings.overwriteUsePinByWhiteList(packageName);
 										helper = new FlyingHelper(settings);
 										helper.install((ViewGroup) activity
 												.getWindow().peekDecorView());
+										if (v != null) {
+											v.requestFocus();
+										}
 									}
 								}
 								if (helper != null) {
@@ -302,10 +307,15 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 										FlyingHelper helper = FlyingHelper
 												.getFrom(dialog.getWindow());
 										if (helper == null) {
+											// save / restore current focus
+											View v = dialog.getCurrentFocus();
 											helper = new FlyingHelper(settings);
 											helper.installForFloatingWindow((ViewGroup) dialog
 													.getWindow()
 													.peekDecorView());
+											if (v != null) {
+												v.requestFocus();
+											}
 										}
 									}
 								}
