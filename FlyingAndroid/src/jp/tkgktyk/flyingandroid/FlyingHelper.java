@@ -42,7 +42,7 @@ public class FlyingHelper {
 		prepareOverlayView(context);
 
 		// setup view hierarchy
-		mFlyingView = new FlyingView1(context);
+		mFlyingView = new FlyingView(context);
 		mFlyingView.addView(mContainerView);
 		mFlyingView.addView(mOverlayView);
 
@@ -61,29 +61,14 @@ public class FlyingHelper {
 		mFlyingView.setUseContainer(true);
 		mFlyingView.setOnFlyingEventListener(new OnFlyingEventListener() {
 			@Override
-			public void onClickUnhandled(FlyingView v, int x, int y) {
-				boolean inside = false;
-				// for (int i = 0; i < v.getChildCount(); ++i) {
-				boolean in = false;
-				// View child = v.getChildAt(i);
-				View child = v.getChildAt(0);
-				if (x >= child.getLeft() && x <= child.getRight()) {
-					if (y >= child.getTop() && y <= child.getBottom()) {
-						in = true;
-					}
-				}
-				inside = (inside || in);
-				// }
-				if (!inside) {
-					// log("unhandled outside click");
-					toggle();
-				}
+			public void onOutsideClick(FlyingView v, int x, int y) {
+				// log("outside click");
+				toggle();
 			}
 
 			@Override
-			public boolean onMove(FlyingView v, int deltaX, int deltaY) {
-				// execute original function by returning false.
-				return false;
+			public void onMove(FlyingView v, int deltaX, int deltaY) {
+				// do nothing
 			}
 
 			@Override
@@ -360,16 +345,19 @@ public class FlyingHelper {
 				// do noting
 				break;
 			case FA.TAKEOFF_POSITION_BOTTOM:
-				mFlyingView.move(0, Math.round(mFlyingView.getHeight() / 2.0f));
+				mFlyingView.moveWithoutSpeed(0,
+						Math.round(mFlyingView.getHeight() / 2.0f));
 				moved = true;
 				break;
 			case FA.TAKEOFF_POSITION_LOWER_LEFT:
-				mFlyingView.move(Math.round(-mFlyingView.getWidth() / 2.0f),
+				mFlyingView.moveWithoutSpeed(
+						Math.round(-mFlyingView.getWidth() / 2.0f),
 						Math.round(mFlyingView.getHeight() / 2.0f));
 				moved = true;
 				break;
 			case FA.TAKEOFF_POSITION_LOWER_RIGHT:
-				mFlyingView.move(Math.round(mFlyingView.getWidth() / 2.0f),
+				mFlyingView.moveWithoutSpeed(
+						Math.round(mFlyingView.getWidth() / 2.0f),
 						Math.round(mFlyingView.getHeight() / 2.0f));
 				moved = true;
 				break;

@@ -1,22 +1,30 @@
 package jp.tkgktyk.flyingandroid;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 
-public abstract class FlyingView extends FrameLayout {
+public class FlyingView extends FrameLayout {
 	private static final String TAG = FlyingView.class.getSimpleName();
+
+	private static int DEFAULT_CHILD_GRAVITY = Gravity.TOP | Gravity.START;
 
 	private static final float DEFAULT_SPEED = 1.0f;
 	private static final int DEFAULT_HORIZONTAL_PADDING = 0;
 	private static final int DEFAULT_VERTICAL_PADDING = 0;
 	private static final boolean DEFAULT_IGNORE_TOUCH_EVENT = false;
 	private static final boolean DEFAULT_USE_CONTAINER = false;
+	private static final int DEFAULT_OFFSET_X = 0;
+	private static final int DEFAULT_OFFSET_Y = 0;
 
 	/**
 	 * Sentinel value for no current active pointer. Used by
@@ -46,6 +54,8 @@ public abstract class FlyingView extends FrameLayout {
 	private int mVerticalPadding;
 	private boolean mIgnoreTouchEvent;
 	private boolean mUseContainer;
+	private int mOffsetX;
+	private int mOffsetY;
 
 	private void fetchAttribute(Context context, AttributeSet attrs,
 			int defStyle) {
@@ -65,6 +75,10 @@ public abstract class FlyingView extends FrameLayout {
 					DEFAULT_IGNORE_TOUCH_EVENT));
 			setUseContainer(a.getBoolean(R.styleable.FlyingView_useContainer,
 					DEFAULT_USE_CONTAINER));
+			setOffsetX(a.getInt(R.styleable.FlyingView_offsetX,
+					DEFAULT_OFFSET_X));
+			setOffsetY(a.getInt(R.styleable.FlyingView_offsetY,
+					DEFAULT_OFFSET_Y));
 		} finally {
 			a.recycle();
 		}
@@ -129,6 +143,22 @@ public abstract class FlyingView extends FrameLayout {
 
 	public boolean getUseContainer() {
 		return mUseContainer;
+	}
+
+	public void setOffsetX(int offset) {
+		mOffsetX = offset;
+	}
+
+	public int getOffsetX() {
+		return mOffsetX;
+	}
+
+	public void setOffsetY(int offset) {
+		mOffsetY = offset;
+	}
+
+	public int getOffsetY() {
+		return mOffsetY;
 	}
 
 	@Override
@@ -295,7 +325,7 @@ public abstract class FlyingView extends FrameLayout {
 			if (mIsBeingDragged) {
 				// Scroll to follow the motion event
 
-				onMove(-deltaX, -deltaY);
+				move(-deltaX, -deltaY);
 				mLastMotionX = x;
 				mLastMotionY = y;
 			}
@@ -350,6 +380,88 @@ public abstract class FlyingView extends FrameLayout {
 		}
 	}
 
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right,
+			int bottom) {
+		layoutChildren(left, top, right, bottom, false /* no force left gravity */);
+	}
+
+	@SuppressLint("NewApi")
+	void layoutChildren(int left, int top, int right, int bottom,
+			boolean forceLeftGravity) {
+		final int count = getChildCount();
+
+		final int parentLeft = getPaddingLeft();
+		final int parentRight = right - left - getPaddingRight();
+
+		final int parentTop = getPaddingTop();
+		final int parentBottom = bottom - top - getPaddingBottom();
+
+		for (int i = 0; i < count; i++) {
+			final View child = getChildAt(i);
+			if (child.getVisibility() != GONE) {
+				final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+
+				final int width = child.getMeasuredWidth();
+				final int height = child.getMeasuredHeight();
+
+				int childLeft;
+				int childTop;
+
+				int gravity = lp.gravity;
+				if (gravity == -1) {
+					gravity = DEFAULT_CHILD_GRAVITY;
+				}
+
+				final int layoutDirection = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) ? getLayoutDirection()
+						: 0;
+				final int absoluteGravity = Gravity.getAbsoluteGravity(gravity,
+						layoutDirection);
+				final int verticalGravity = gravity
+						& Gravity.VERTICAL_GRAVITY_MASK;
+
+				switch (absoluteGravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
+				case Gravity.CENTER_HORIZONTAL:
+					childLeft = parentLeft + (parentRight - parentLeft - width)
+							/ 2 + lp.leftMargin - lp.rightMargin;
+					break;
+				case Gravity.RIGHT:
+					if (!forceLeftGravity) {
+						childLeft = parentRight - width - lp.rightMargin;
+						break;
+					}
+				case Gravity.LEFT:
+				default:
+					childLeft = parentLeft + lp.leftMargin;
+				}
+
+				switch (verticalGravity) {
+				case Gravity.TOP:
+					childTop = parentTop + lp.topMargin;
+					break;
+				case Gravity.CENTER_VERTICAL:
+					childTop = parentTop + (parentBottom - parentTop - height)
+							/ 2 + lp.topMargin - lp.bottomMargin;
+					break;
+				case Gravity.BOTTOM:
+					childTop = parentBottom - height - lp.bottomMargin;
+					break;
+				default:
+					childTop = parentTop + lp.topMargin;
+				}
+
+				if (!getUseContainer() || i == 0) {
+					child.layout(childLeft + mOffsetX, childTop + mOffsetY,
+							childLeft + width + mOffsetX, childTop + height
+									+ mOffsetY);
+				} else {
+					child.layout(childLeft, childTop, childLeft + width,
+							childTop + height);
+				}
+			}
+		}
+	}
+
 	protected int clamp(int src, int limit) {
 		if (src > limit) {
 			return limit;
@@ -359,31 +471,66 @@ public abstract class FlyingView extends FrameLayout {
 		return src;
 	}
 
-	public void onMove(int deltaX, int deltaY) {
+	public void move(int deltaX, int deltaY) {
 		deltaX = (int) Math.round(deltaX * mSpeed);
 		deltaY = (int) Math.round(deltaY * mSpeed);
-		if (mOnFlyingEventListener != null
-				&& mOnFlyingEventListener.onMove(this, deltaX, deltaY)) {
-			return;
-		}
-
-		move(deltaX, deltaY);
+		moveWithoutSpeed(deltaX, deltaY);
 	}
 
-	public abstract void move(int deltaX, int deltaY);
+	public void moveWithoutSpeed(int deltaX, int deltaY) {
+		int hLimit = getWidth() - getHorizontalPadding();
+		int vLimit = getHeight() - getVerticalPadding();
+		mOffsetX = clamp(mOffsetX + deltaX, hLimit);
+		mOffsetY = clamp(mOffsetY + deltaY, vLimit);
+		if (mOnFlyingEventListener != null) {
+			mOnFlyingEventListener.onMove(this, deltaX, deltaY);
+		}
 
-	public abstract void goHome();
+		requestLayout();
+	}
 
-	public abstract boolean staysHome();
-
-	public abstract void rotate();
-
-	public void onUnhandledClick(MotionEvent ev) {
-		final int x = (int) ev.getX();
-		final int y = (int) ev.getY();
+	public void goHome() {
+		int x = mOffsetX;
+		int y = mOffsetY;
+		mOffsetX = 0;
+		mOffsetY = 0;
 
 		if (mOnFlyingEventListener != null) {
-			mOnFlyingEventListener.onClickUnhandled(this, x, y);
+			mOnFlyingEventListener.onMove(this, -x, -y);
+		}
+
+		requestLayout();
+	}
+
+	public boolean staysHome() {
+		return mOffsetX == 0 && mOffsetY == 0;
+	}
+
+	public void rotate() {
+		mOffsetX = Math.round(mOffsetX * 1f / getWidth() * getHeight());
+		mOffsetY = Math.round(mOffsetY * 1f / getHeight() * getWidth());
+	}
+
+	public void onUnhandledClick(MotionEvent ev) {
+		if (mOnFlyingEventListener != null) {
+			final int x = (int) ev.getX();
+			final int y = (int) ev.getY();
+
+			boolean inside = false;
+			int n = getUseContainer() ? 1 : getChildCount();
+			for (int i = 0; i < n; ++i) {
+				View child = getChildAt(i);
+				boolean in = false;
+				if (x >= child.getLeft() && x <= child.getRight()) {
+					if (y >= child.getTop() && y <= child.getBottom()) {
+						in = true;
+					}
+				}
+				inside = (inside || in);
+			}
+			if (!inside) {
+				mOnFlyingEventListener.onOutsideClick(this, x, y);
+			}
 		}
 	}
 
@@ -399,11 +546,8 @@ public abstract class FlyingView extends FrameLayout {
 		 * 
 		 * @param deltaX
 		 * @param deltaY
-		 * @return if your listener handled this event, you should return true.
-		 *         return false if did not handle or would like to execute
-		 *         original behavior.
 		 */
-		public boolean onMove(FlyingView v, int deltaX, int deltaY);
+		public void onMove(FlyingView v, int deltaX, int deltaY);
 
 		/**
 		 * callback when a moving event is finished.
@@ -413,13 +557,13 @@ public abstract class FlyingView extends FrameLayout {
 		public void onMoveFinished(FlyingView v);
 
 		/**
-		 * callback when happen click event is unhandled.
+		 * callback when happen click event at outside of contents.
 		 * 
 		 * @param v
 		 * @param x
 		 * @param y
 		 */
-		public void onClickUnhandled(FlyingView v, int x, int y);
+		public void onOutsideClick(FlyingView v, int x, int y);
 	}
 
 	private OnFlyingEventListener mOnFlyingEventListener = null;

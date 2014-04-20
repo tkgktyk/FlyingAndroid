@@ -4,6 +4,8 @@
     <string name="app_name">Flying Android</string>
     <string name="toggle_app_name">FA Toggle</string>
     <string name="shortcut_app_name">FA Toggle</string>
+    <string name="niwatori_app_name">Niwatori</string>
+    <string name="niwatori_tachi_app_name">Niwatori Tachi</string>
     <string name="xposed_description">Move the window.\nDeveloped by tkgktyk</string>
 
     <!-- SharedPreferences -->

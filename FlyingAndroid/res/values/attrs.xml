@@ -8,6 +8,8 @@
         <attr name="verticalPadding" format="dimension" />
         <attr name="ignoreTouchEvent" format="boolean" />
         <attr name="useContainer" format="boolean" />
+        <attr name="offsetX" format="integer" />
+        <attr name="offsetY" format="integer" />
     </declare-styleable>
 
 </resources>
