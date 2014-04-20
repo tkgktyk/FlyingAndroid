@@ -266,7 +266,7 @@ public class FlyingView extends FrameLayout {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		if (!mIsBeingDragged && mIgnoreTouchEvent) {
+		if (!mIsBeingDragged && mIgnoreTouchEvent && insideOfContents(ev)) {
 			return false;
 		}
 
@@ -285,6 +285,10 @@ public class FlyingView extends FrameLayout {
 			break;
 		}
 		case MotionEvent.ACTION_MOVE: {
+			if (!mIsBeingDragged && mIgnoreTouchEvent) {
+				return false;
+			}
+
 			final int activePointerIndex = ev
 					.findPointerIndex(mActivePointerId);
 			if (activePointerIndex == -1) {
@@ -511,25 +515,30 @@ public class FlyingView extends FrameLayout {
 		mOffsetY = Math.round(mOffsetY * 1f / getHeight() * getWidth());
 	}
 
+	private boolean insideOfContents(MotionEvent ev) {
+		final int x = (int) ev.getX();
+		final int y = (int) ev.getY();
+
+		boolean inside = false;
+		int n = getUseContainer() ? 1 : getChildCount();
+		for (int i = 0; i < n; ++i) {
+			View child = getChildAt(i);
+			boolean in = false;
+			if (x >= child.getLeft() && x <= child.getRight()) {
+				if (y >= child.getTop() && y <= child.getBottom()) {
+					in = true;
+				}
+			}
+			inside = (inside || in);
+		}
+		return inside;
+	}
+
 	public void onUnhandledClick(MotionEvent ev) {
 		if (mOnFlyingEventListener != null) {
-			final int x = (int) ev.getX();
-			final int y = (int) ev.getY();
-
-			boolean inside = false;
-			int n = getUseContainer() ? 1 : getChildCount();
-			for (int i = 0; i < n; ++i) {
-				View child = getChildAt(i);
-				boolean in = false;
-				if (x >= child.getLeft() && x <= child.getRight()) {
-					if (y >= child.getTop() && y <= child.getBottom()) {
-						in = true;
-					}
-				}
-				inside = (inside || in);
-			}
-			if (!inside) {
-				mOnFlyingEventListener.onOutsideClick(this, x, y);
+			if (!insideOfContents(ev)) {
+				mOnFlyingEventListener.onOutsideClick(this, (int) ev.getX(),
+						(int) ev.getY());
 			}
 		}
 	}
