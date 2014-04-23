@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
@@ -63,9 +64,12 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 								if (helper != null) {
 									// force set window background for clear
 									// background.
-									Drawable d = activity.getWindow()
-											.peekDecorView().getBackground();
-									if (d instanceof ColorDrawable) {
+									// ColorDrawable and a certain View
+									Window window = activity.getWindow();
+									View decor = window.peekDecorView();
+									Drawable drawable = decor.getBackground();
+									if (drawable == null
+											|| drawable instanceof ColorDrawable) {
 										FA.logD("force set window background.");
 										TypedArray a = activity
 												.getTheme()
@@ -74,9 +78,9 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 										int background = a.getResourceId(0, 0);
 										a.recycle();
 										if (background != 0) {
-											activity.getWindow()
-													.setBackgroundDrawableResource(
-															background);
+											window.setBackgroundDrawableResource(background);
+											FA.logD(decor.getBackground()
+													.toString());
 										} else {
 											FA.logD("window background is 0.");
 										}
