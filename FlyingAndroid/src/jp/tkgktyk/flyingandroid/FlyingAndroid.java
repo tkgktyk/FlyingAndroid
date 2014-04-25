@@ -11,7 +11,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.Window;
+import android.widget.TabHost;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
@@ -27,6 +29,16 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 
 	private static XSharedPreferences sPref;
 
+	private boolean isTabContent(ViewParent v) {
+		while (v != null) {
+			if (v instanceof TabHost) {
+				return true;
+			}
+			v = v.getParent();
+		}
+		return false;
+	}
+
 	@Override
 	public void initZygote(StartupParam startupParam) {
 		sPref = new XSharedPreferences(PACKAGE_NAME);
@@ -41,13 +53,15 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 							try {
 								Activity activity = (Activity) param.thisObject;
 								FlyingHelper helper = FlyingHelper
-										.getFrom(activity.getWindow());
+										.getFrom(activity);
 								if (helper == null) {
 									String packageName = activity
 											.getPackageName();
 									FA.Settings settings = new FA.Settings(
 											sPref);
-									FA.logD("reload settings at " + packageName);
+									FA.logD("reload settings at "
+											+ activity.getLocalClassName()
+											+ "@" + packageName);
 									if (!settings.blackSet
 											.contains(packageName)) {
 										// save / restore current focus
@@ -95,13 +109,20 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 					});
 			XposedHelpers.findAndHookMethod(Activity.class, "onResume",
 					new XC_MethodHook() {
+
 						@Override
 						protected void afterHookedMethod(MethodHookParam param)
 								throws Throwable {
 							try {
 								Activity activity = (Activity) param.thisObject;
+								ViewGroup decor = (ViewGroup) activity
+										.getWindow().peekDecorView();
+								if (isTabContent(decor)) {
+									FA.logD("tab content activity is ignored. @onResume");
+									return;
+								}
 								FlyingHelper helper = FlyingHelper
-										.getFrom(activity.getWindow());
+										.getFrom(decor);
 								if (helper != null) {
 									if (!helper.receiverRegistered()) {
 										BroadcastReceiver receiver = helper
@@ -126,8 +147,14 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 								throws Throwable {
 							try {
 								Activity activity = (Activity) param.thisObject;
+								ViewGroup decor = (ViewGroup) activity
+										.getWindow().peekDecorView();
+								if (isTabContent(decor)) {
+									FA.logD("tab content activity is ignored. @onPause");
+									return;
+								}
 								FlyingHelper helper = FlyingHelper
-										.getFrom(activity.getWindow());
+										.getFrom(decor);
 								if (helper != null) {
 									if (helper.receiverRegistered()) {
 										BroadcastReceiver receiver = helper
@@ -153,7 +180,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 							try {
 								Activity activity = (Activity) param.thisObject;
 								FlyingHelper helper = FlyingHelper
-										.getFrom(activity.getWindow());
+										.getFrom(activity);
 								if (helper != null) {
 									FlyingView flyingView = helper
 											.getFlyingView();
@@ -185,7 +212,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 									if (!settings.blackSet
 											.contains(packageName)) {
 										FlyingHelper helper = FlyingHelper
-												.getFrom(dialog.getWindow());
+												.getFrom(dialog);
 										if (helper == null) {
 											// save / restore current focus
 											View v = dialog.getCurrentFocus();

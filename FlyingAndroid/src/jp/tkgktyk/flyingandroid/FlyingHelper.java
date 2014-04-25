@@ -5,6 +5,8 @@ import java.util.List;
 
 import jp.tkgktyk.flyingandroid.FlyingView.OnFlyingEventListener;
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +15,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -210,6 +211,8 @@ public class FlyingHelper {
 		installToViewGroup(target);
 	}
 
+	private static String FA_HELPER = "FA_helper";
+
 	private void installToViewGroup(ViewGroup target) {
 		List<View> contents = new ArrayList<View>();
 		for (int i = 0; i < target.getChildCount(); ++i) {
@@ -225,7 +228,17 @@ public class FlyingHelper {
 				FA_HELPER, this);
 	}
 
-	private static String FA_HELPER = "FA_helper";
+	/**
+	 * Find a FlyingHelper attached to a DecorView by
+	 * {@link FlyingAndroid#setFlyingHelper(ViewGroup, FlyingHelper)} and return
+	 * it.
+	 * 
+	 * @param target
+	 * @return
+	 */
+	public static FlyingHelper getFrom(Activity target) {
+		return getFrom(target.getWindow().peekDecorView());
+	}
 
 	/**
 	 * Find a FlyingHelper attached to a DecorView by
@@ -235,8 +248,8 @@ public class FlyingHelper {
 	 * @param target
 	 * @return
 	 */
-	public static FlyingHelper getFrom(Window target) {
-		return getFrom(target.peekDecorView());
+	public static FlyingHelper getFrom(Dialog target) {
+		return getFrom(target.getWindow().peekDecorView());
 	}
 
 	/**
