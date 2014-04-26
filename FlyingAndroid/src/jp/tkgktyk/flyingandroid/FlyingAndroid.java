@@ -207,8 +207,8 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 								FlyingHelper helper = FlyingHelper
 										.getFrom(activity);
 								if (helper != null) {
-									FlyingView flyingView = helper
-											.getFlyingView();
+									FlyingLayoutF flyingView = helper
+											.getFlyingLayout();
 									Configuration newConfig = (Configuration) param.args[0];
 									if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 										flyingView.rotate();

@@ -3,7 +3,6 @@ package jp.tkgktyk.flyingandroid;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.tkgktyk.flyingandroid.FlyingView.OnFlyingEventListener;
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
 import android.app.Activity;
 import android.app.Dialog;
@@ -28,61 +27,62 @@ public class FlyingHelper {
 			.getName();
 
 	private final FA.Settings mSettings;
-	private FlyingView mFlyingView;
+	private FlyingLayoutF mFlyingLayout;
 	private FrameLayout mContainerView;
 	private View mOverlayView;
 	private ToggleButton mPinButton;
 
 	private PinPosition mPinPosition;
 
-	private void installFlyingView(ViewGroup target, boolean verticalDrag)
+	private void installFlyingLayout(ViewGroup target, boolean verticalDrag)
 			throws Throwable {
 		Context context = target.getContext();
 		// prepare boundary
 		prepareBoundary(context);
 
-		// prepare dragView as FlyingView's container
+		// prepare dragView as FlyingLayout's container
 		prepareContainerView(context, verticalDrag);
 		// prepare overlay
 		prepareOverlayView(context);
 
 		// setup view hierarchy
-		mFlyingView = new FlyingView(context);
-		mFlyingView.addView(mContainerView);
-		mFlyingView.addView(mOverlayView);
+		mFlyingLayout = new FlyingLayoutF(context);
+		mFlyingLayout.addView(mContainerView);
+		mFlyingLayout.addView(mOverlayView);
 
-		// setup FlyingView
-		mFlyingView.setLayoutParams(new ViewGroup.LayoutParams(
+		// setup FlyingLayout
+		mFlyingLayout.setLayoutParams(new ViewGroup.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT));
-		mFlyingView.setSpeed(mSettings.speed);
+		mFlyingLayout.setSpeed(mSettings.speed);
 		final Context flyContext = context.createPackageContext(PACKAGE_NAME,
 				Context.CONTEXT_IGNORE_SECURITY);
 		final int padding = flyContext.getResources().getDimensionPixelSize(
 				R.dimen.flying_view_padding);
-		mFlyingView.setHorizontalPadding(padding);
-		mFlyingView.setVerticalPadding(padding);
-		mFlyingView.setIgnoreTouchEvent(true);
-		mFlyingView.setUseContainer(true);
-		mFlyingView.setOnFlyingEventListener(new OnFlyingEventListener() {
-			@Override
-			public void onOutsideClick(FlyingView v, int x, int y) {
-				// log("outside click");
-				toggle();
-			}
+		mFlyingLayout.setHorizontalPadding(padding);
+		mFlyingLayout.setVerticalPadding(padding);
+		mFlyingLayout.setIgnoreTouchEvent(true);
+		mFlyingLayout.setUseContainer(true);
+		mFlyingLayout
+				.setOnFlyingEventListener(new FlyingLayoutF.OnFlyingEventListener() {
+					@Override
+					public void onOutsideClick(FlyingLayoutF v, int x, int y) {
+						// log("outside click");
+						toggle();
+					}
 
-			@Override
-			public void onMove(FlyingView v, int deltaX, int deltaY) {
-				// do nothing
-			}
+					@Override
+					public void onMove(FlyingLayoutF v, int deltaX, int deltaY) {
+						// do nothing
+					}
 
-			@Override
-			public void onMoveFinished(FlyingView v) {
-				if (mSettings.autoPin(FA.AUTO_PIN_AFTER_MOVING)) {
-					pin();
-				}
-			}
-		});
+					@Override
+					public void onMoveFinished(FlyingLayoutF v) {
+						if (mSettings.autoPin(FA.AUTO_PIN_AFTER_MOVING)) {
+							pin();
+						}
+					}
+				});
 	}
 
 	private void prepareOverlayView(Context context) {
@@ -156,7 +156,7 @@ public class FlyingHelper {
 	}
 
 	/**
-	 * Install FlyingView under following conditions.
+	 * Install FlyingLayout under following conditions.
 	 * <ul>
 	 * <li>enable vertical dragging on the screen edge</li>
 	 * <li>disable takeoff position</li>
@@ -169,28 +169,28 @@ public class FlyingHelper {
 	public void installForFloatingWindow(ViewGroup target) throws Throwable {
 		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
 		mSettings.usePin = false;
-		// create FlyingView
-		installFlyingView(target, true);
+		// create FlyingLayout
+		installFlyingLayout(target, true);
 
 		installToViewGroup(target);
 	}
 
 	/**
-	 * Install FlyingView following settings.
+	 * Install FlyingLayout following settings.
 	 * 
 	 * @param context
 	 * @throws Throwable
 	 */
 	public void install(ViewGroup target) throws Throwable {
 		mAlwaysShowPin = false;
-		// create FlyingView
-		installFlyingView(target, false);
+		// create FlyingLayout
+		installFlyingLayout(target, false);
 
 		installToViewGroup(target);
 	}
 
 	/**
-	 * Install FlyingView with pin shown always.
+	 * Install FlyingLayout with pin shown always.
 	 * 
 	 * @param context
 	 * @throws Throwable
@@ -201,8 +201,8 @@ public class FlyingHelper {
 		}
 		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
 		mAlwaysShowPin = true;
-		// create FlyingView
-		installFlyingView(target, false);
+		// create FlyingLayout
+		installFlyingLayout(target, false);
 
 		pin();
 		setOverlayShown(true);
@@ -220,9 +220,9 @@ public class FlyingHelper {
 		FA.logD("children: " + target.getChildCount());
 		target.removeAllViews();
 		for (View v : contents) {
-			addViewToFlyingView(v, v.getLayoutParams());
+			addViewToFlyingLayout(v, v.getLayoutParams());
 		}
-		target.addView(mFlyingView);
+		target.addView(mFlyingLayout);
 		XposedHelpers.setAdditionalInstanceField(target.getRootView(),
 				FA_HELPER, this);
 	}
@@ -268,11 +268,11 @@ public class FlyingHelper {
 		return mSettings;
 	}
 
-	public FlyingView getFlyingView() {
-		return mFlyingView;
+	public FlyingLayoutF getFlyingLayout() {
+		return mFlyingLayout;
 	}
 
-	public void addViewToFlyingView(View child,
+	public void addViewToFlyingLayout(View child,
 			ViewGroup.LayoutParams layoutParams) {
 		mContainerView.addView(child, layoutParams);
 	}
@@ -336,19 +336,19 @@ public class FlyingHelper {
 	}
 
 	private void unfly() {
-		mFlyingView.setIgnoreTouchEvent(true);
+		mFlyingLayout.setIgnoreTouchEvent(true);
 		setBoundaryShown(false);
 		mFlying = false;
 	}
 
 	private void fly() {
-		mFlyingView.setIgnoreTouchEvent(false);
+		mFlyingLayout.setIgnoreTouchEvent(false);
 		setBoundaryShown(true);
 		mFlying = true;
 	}
 
 	public void toggle() {
-		if (mFlyingView.staysHome() && !mFlying) {
+		if (mFlyingLayout.staysHome() && !mFlying) {
 			// take off
 			setOverlayShown(true);
 			boolean moved = false;
@@ -357,20 +357,20 @@ public class FlyingHelper {
 				// do noting
 				break;
 			case FA.TAKEOFF_POSITION_BOTTOM:
-				mFlyingView.moveWithoutSpeed(0,
-						Math.round(mFlyingView.getHeight() / 2.0f));
+				mFlyingLayout.moveWithoutSpeed(0,
+						Math.round(mFlyingLayout.getHeight() / 2.0f));
 				moved = true;
 				break;
 			case FA.TAKEOFF_POSITION_LOWER_LEFT:
-				mFlyingView.moveWithoutSpeed(
-						Math.round(-mFlyingView.getWidth() / 2.0f),
-						Math.round(mFlyingView.getHeight() / 2.0f));
+				mFlyingLayout.moveWithoutSpeed(
+						Math.round(-mFlyingLayout.getWidth() / 2.0f),
+						Math.round(mFlyingLayout.getHeight() / 2.0f));
 				moved = true;
 				break;
 			case FA.TAKEOFF_POSITION_LOWER_RIGHT:
-				mFlyingView.moveWithoutSpeed(
-						Math.round(mFlyingView.getWidth() / 2.0f),
-						Math.round(mFlyingView.getHeight() / 2.0f));
+				mFlyingLayout.moveWithoutSpeed(
+						Math.round(mFlyingLayout.getWidth() / 2.0f),
+						Math.round(mFlyingLayout.getHeight() / 2.0f));
 				moved = true;
 				break;
 			}
@@ -384,7 +384,7 @@ public class FlyingHelper {
 		} else {
 			// go home and unfly
 			setOverlayShown(false);
-			mFlyingView.goHome();
+			mFlyingLayout.goHome();
 			pin();
 		}
 	}
@@ -392,7 +392,7 @@ public class FlyingHelper {
 	public void resetState() {
 		// go home and unfly
 		setOverlayShown(false);
-		mFlyingView.goHome();
+		mFlyingLayout.goHome();
 		pin();
 	}
 

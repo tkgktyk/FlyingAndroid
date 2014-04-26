@@ -13,8 +13,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 
-public class FlyingView extends FrameLayout {
-	private static final String TAG = FlyingView.class.getSimpleName();
+public class FlyingLayoutF extends FrameLayout {
+	private static final String TAG = FlyingLayoutF.class.getSimpleName();
 
 	private static int DEFAULT_CHILD_GRAVITY = Gravity.TOP | Gravity.START;
 
@@ -61,41 +61,41 @@ public class FlyingView extends FrameLayout {
 			int defStyle) {
 		// get attributes specified in XML
 		TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
-				R.styleable.FlyingView, defStyle, 0);
+				R.styleable.FlyingLayout, defStyle, 0);
 		try {
-			setSpeed(a.getFloat(R.styleable.FlyingView_speed, DEFAULT_SPEED));
+			setSpeed(a.getFloat(R.styleable.FlyingLayout_speed, DEFAULT_SPEED));
 			setHorizontalPadding(a.getDimensionPixelSize(
-					R.styleable.FlyingView_horizontalPadding,
+					R.styleable.FlyingLayout_horizontalPadding,
 					DEFAULT_HORIZONTAL_PADDING));
 			setVerticalPadding(a.getDimensionPixelSize(
-					R.styleable.FlyingView_verticalPadding,
+					R.styleable.FlyingLayout_verticalPadding,
 					DEFAULT_VERTICAL_PADDING));
 			setIgnoreTouchEvent(a.getBoolean(
-					R.styleable.FlyingView_ignoreTouchEvent,
+					R.styleable.FlyingLayout_ignoreTouchEvent,
 					DEFAULT_IGNORE_TOUCH_EVENT));
-			setUseContainer(a.getBoolean(R.styleable.FlyingView_useContainer,
+			setUseContainer(a.getBoolean(R.styleable.FlyingLayout_useContainer,
 					DEFAULT_USE_CONTAINER));
-			setOffsetX(a.getInt(R.styleable.FlyingView_offsetX,
+			setOffsetX(a.getInt(R.styleable.FlyingLayout_offsetX,
 					DEFAULT_OFFSET_X));
-			setOffsetY(a.getInt(R.styleable.FlyingView_offsetY,
+			setOffsetY(a.getInt(R.styleable.FlyingLayout_offsetY,
 					DEFAULT_OFFSET_Y));
 		} finally {
 			a.recycle();
 		}
 	}
 
-	public FlyingView(Context context, AttributeSet attrs, int defStyle) {
+	public FlyingLayoutF(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
 		fetchAttribute(context, attrs, defStyle);
 	}
 
-	public FlyingView(Context context, AttributeSet attrs) {
+	public FlyingLayoutF(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
 
-	public FlyingView(Context context) {
+	public FlyingLayoutF(Context context) {
 		super(context);
 		mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
@@ -556,14 +556,14 @@ public class FlyingView extends FrameLayout {
 		 * @param deltaX
 		 * @param deltaY
 		 */
-		public void onMove(FlyingView v, int deltaX, int deltaY);
+		public void onMove(FlyingLayoutF v, int deltaX, int deltaY);
 
 		/**
 		 * callback when a moving event is finished.
 		 * 
 		 * @param v
 		 */
-		public void onMoveFinished(FlyingView v);
+		public void onMoveFinished(FlyingLayoutF v);
 
 		/**
 		 * callback when happen click event at outside of contents.
@@ -572,7 +572,7 @@ public class FlyingView extends FrameLayout {
 		 * @param x
 		 * @param y
 		 */
-		public void onOutsideClick(FlyingView v, int x, int y);
+		public void onOutsideClick(FlyingLayoutF v, int x, int y);
 	}
 
 	private OnFlyingEventListener mOnFlyingEventListener = null;

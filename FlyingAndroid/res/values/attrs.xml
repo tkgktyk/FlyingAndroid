@@ -2,7 +2,7 @@
 <resources>
 
     <!-- note: to re-use an existing Android attribute not already used by the superclass, name should have prefix "android:" and do not define a format -->
-    <declare-styleable name="FlyingView">
+    <declare-styleable name="FlyingLayout">
         <attr name="speed" format="float" />
         <attr name="horizontalPadding" format="dimension" />
         <attr name="verticalPadding" format="dimension" />
