@@ -35,15 +35,18 @@
     <string name="Flying_dialog">Flying dialog</string>
     <string name="pref_key_flying_dialog">pref_key_flying_dialog</string>
     <string name="summary_flying_dialog">Dialogs can fly by dragging vertically on the edge of them. Note that IME is also dialog.</string>
-    
+
     <!-- Pin -->
     <string name="Pinning">Pinning</string>
     <!-- Use pin -->
     <string name="Use_pin">Use pin</string>
     <string name="pref_key_use_pin">pref_key_use_pin</string>
     <!-- Pin position -->
-    <string name="Pin_position">Pin position</string>
+    <string name="Pin_position">Pin position&#8230;</string>
     <string name="pref_key_pin_position">pref_key_pin_position</string>
+    <string name="pref_key_pin_x_percent">pref_key_pin_x_percent</string>
+    <string name="pref_key_pin_y_percent">pref_key_pin_y_percent</string>
+    <string name="summary_pin_position">Long-press to drag pin. Press back key to save.</string>
     <!-- Auto pin -->
     <string name="Auto_pin">Auto pin</string>
     <string name="pref_key_auto_pin_selection">pref_key_auto_pin_selection</string>

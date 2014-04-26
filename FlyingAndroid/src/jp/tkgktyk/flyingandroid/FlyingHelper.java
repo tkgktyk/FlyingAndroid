@@ -10,18 +10,19 @@ import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsoluteLayout;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
+@SuppressWarnings("deprecation")
 public class FlyingHelper {
 	public static final String PACKAGE_NAME = FlyingAndroid.class.getPackage()
 			.getName();
@@ -32,8 +33,11 @@ public class FlyingHelper {
 	private View mOverlayView;
 	private ToggleButton mPinButton;
 
-	private void installFlyingView(Context context, boolean verticalDrag)
+	private PinPosition mPinPosition;
+
+	private void installFlyingView(ViewGroup target, boolean verticalDrag)
 			throws Throwable {
+		Context context = target.getContext();
 		// prepare boundary
 		prepareBoundary(context);
 
@@ -82,56 +86,51 @@ public class FlyingHelper {
 	}
 
 	private void prepareOverlayView(Context context) {
-		View overlay;
-		ToggleButton button;
+		Context flyContext;
 		try {
-			final Context flyContext = context.createPackageContext(
-					PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
-			overlay = LayoutInflater.from(flyContext).inflate(
+			flyContext = context.createPackageContext(PACKAGE_NAME,
+					Context.CONTEXT_IGNORE_SECURITY);
+			mOverlayView = LayoutInflater.from(flyContext).inflate(
 					R.layout.view_overlay, null);
-			button = (ToggleButton) overlay.findViewById(R.id.button);
-			button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView,
-						boolean isChecked) {
-					if (isChecked) {
-						unfly();
-					} else {
-						fly();
-					}
-				}
-			});
-			LinearLayout container = (LinearLayout) overlay
-					.findViewById(R.id.container);
-			switch (mSettings.pinPosition) {
-			case FA.PIN_POSITION_CENTER_LEFT:
-				container.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-				break;
-			case FA.PIN_POSITION_CENTER_RIGHT:
-				container.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
-				break;
-			case FA.PIN_POSITION_LOWER_LEFT:
-				container.setGravity(Gravity.BOTTOM | Gravity.LEFT);
-				break;
-			case FA.PIN_POSITION_LOWER_RIGHT:
-				container.setGravity(Gravity.BOTTOM | Gravity.RIGHT);
-				break;
-			default:
-				container.setGravity(Gravity.BOTTOM | Gravity.LEFT);
-				break;
-			}
-		} catch (Throwable t) {
-			XposedBridge.log(t);
-			overlay = new View(context);
-			button = new ToggleButton(context);
-		}
+			mPinButton = (ToggleButton) mOverlayView.findViewById(R.id.pin);
+			mPinButton
+					.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+						@Override
+						public void onCheckedChanged(CompoundButton buttonView,
+								boolean isChecked) {
+							if (isChecked) {
+								unfly();
+							} else {
+								fly();
+							}
+						}
+					});
 
-		mOverlayView = overlay;
-		mPinButton = button;
-
-		mOverlayView.setVisibility(View.GONE);
-		if (!mSettings.usePin) {
+			mOverlayView.setVisibility(View.GONE);
 			mPinButton.setVisibility(View.GONE);
+		} catch (NameNotFoundException e) {
+			FA.logE(e);
+		}
+	}
+
+	public void putPin() {
+		putPin(mOverlayView);
+	}
+
+	public void putPin(View target) {
+		if (mPinPosition == null) {
+			mPinPosition = new PinPosition(target.getContext(),
+					mSettings.pinXp, mSettings.pinYp);
+			int x = mPinPosition.getX(target);
+			int y = mPinPosition.getY(target);
+			AbsoluteLayout.LayoutParams lp = (AbsoluteLayout.LayoutParams) mPinButton
+					.getLayoutParams();
+			lp.x = x - mPinPosition.getOffset();
+			lp.y = y - mPinPosition.getOffset();
+			mPinButton.setLayoutParams(lp);
+			if (mSettings.usePin) {
+				mPinButton.setVisibility(View.VISIBLE);
+			}
 		}
 	}
 
@@ -171,7 +170,7 @@ public class FlyingHelper {
 		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
 		mSettings.usePin = false;
 		// create FlyingView
-		installFlyingView(target.getContext(), true);
+		installFlyingView(target, true);
 
 		installToViewGroup(target);
 	}
@@ -185,7 +184,7 @@ public class FlyingHelper {
 	public void install(ViewGroup target) throws Throwable {
 		mAlwaysShowPin = false;
 		// create FlyingView
-		installFlyingView(target.getContext(), false);
+		installFlyingView(target, false);
 
 		installToViewGroup(target);
 	}
@@ -198,12 +197,12 @@ public class FlyingHelper {
 	 */
 	public void installWithPinShownAlways(ViewGroup target) throws Throwable {
 		if (!mSettings.usePin) {
-			throw new IllegalStateException("usePin should be true.");
+			mSettings.usePin = true;
 		}
 		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
 		mAlwaysShowPin = true;
 		// create FlyingView
-		installFlyingView(target.getContext(), false);
+		installFlyingView(target, false);
 
 		pin();
 		setOverlayShown(true);

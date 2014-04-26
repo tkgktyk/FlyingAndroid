@@ -7,14 +7,14 @@ import android.os.Bundle;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-public class SelectableListActivity extends Activity {
+public class AppSelectActivity extends Activity {
 
 	public static String EXTRA_PREF_KEY_STRING = "PREF_KEY_STRING";
 	public static String EXTRA_ONLY_TEXT_ID = "ONLY_TEXT_ID";
 
 	private class ViewHolder {
 		CheckBox onlySelected;
-		SelectableListFragment selectableList;
+		AppSelectFragment selectableList;
 	}
 
 	private ViewHolder mViewHolder;
@@ -22,7 +22,7 @@ public class SelectableListActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_selectable_list);
+		setContentView(R.layout.activity_app_select);
 
 		String prefKey = null;
 		int onlyTextId = 0;
@@ -34,7 +34,7 @@ public class SelectableListActivity extends Activity {
 
 		mViewHolder = new ViewHolder();
 		mViewHolder.onlySelected = (CheckBox) findViewById(R.id.only_selected_check);
-		mViewHolder.selectableList = (SelectableListFragment) getFragmentManager()
+		mViewHolder.selectableList = (AppSelectFragment) getFragmentManager()
 				.findFragmentById(R.id.selectable_list);
 
 		mViewHolder.onlySelected.setText(onlyTextId);

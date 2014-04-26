@@ -1,5 +1,6 @@
 package jp.tkgktyk.flyingandroid;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -8,10 +9,12 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.widget.TabHost;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -68,8 +71,30 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 										View v = activity.getCurrentFocus();
 										settings.overwriteUsePinByWhiteList(packageName);
 										helper = new FlyingHelper(settings);
-										helper.install((ViewGroup) activity
-												.getWindow().peekDecorView());
+										final ViewGroup decor = (ViewGroup) activity
+												.getWindow().peekDecorView();
+										helper.install(decor);
+										final FlyingHelper h = helper;
+										decor.getViewTreeObserver()
+												.addOnGlobalLayoutListener(
+														new OnGlobalLayoutListener() {
+															@SuppressWarnings("deprecation")
+															@SuppressLint("NewApi")
+															@Override
+															public void onGlobalLayout() {
+																h.putPin(decor);
+
+																if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+																	decor.getViewTreeObserver()
+																			.removeOnGlobalLayoutListener(
+																					this);
+																} else {
+																	decor.getViewTreeObserver()
+																			.removeGlobalOnLayoutListener(
+																					this);
+																}
+															}
+														});
 										if (v != null) {
 											v.requestFocus();
 										}
@@ -272,6 +297,37 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 						});
 			} catch (NoSuchMethodError e) {
 				FA.logE("PhoneStatusBar#makeStatusBarView is not found. \"Flying status bar\" is not available.");
+			}
+			try {
+				XposedHelpers
+						.findAndHookMethod(
+								"com.android.systemui.statusbar.phone.PhoneStatusBarView",
+								lpparam.classLoader,
+								"onPanelFullyOpened",
+								lpparam.classLoader
+										.loadClass("com.android.systemui.statusbar.phone.PanelView"),
+								new XC_MethodHook() {
+									@Override
+									protected void afterHookedMethod(
+											MethodHookParam param)
+											throws Throwable {
+										try {
+											FA.logD("onPanelFullyOpened");
+											FlyingHelper helper = FlyingHelper
+													.getFrom((View) param.thisObject);
+											if (helper != null
+													&& helper
+															.getSettings()
+															.useFlyingStatusBar()) {
+												helper.putPin();
+											}
+										} catch (Throwable t) {
+											FA.logE(t);
+										}
+									}
+								});
+			} catch (NoSuchMethodError e) {
+				FA.logE("PhoneStatusBarView#onPanelFullyOpened is not found. \"Status bar's pin\" is not available.");
 			}
 			try {
 				XposedHelpers

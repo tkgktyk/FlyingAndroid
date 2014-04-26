@@ -27,9 +27,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class SelectableListFragment extends ListFragment implements
-		LoaderManager.LoaderCallbacks<List<SelectableListFragment.Entry>> {
-	private static final String TAG = SelectableListFragment.class
+public class AppSelectFragment extends ListFragment implements
+		LoaderManager.LoaderCallbacks<List<AppSelectFragment.Entry>> {
+	private static final String TAG = AppSelectFragment.class
 			.getSimpleName();
 
 	public static class Entry {
@@ -103,7 +103,7 @@ public class SelectableListFragment extends ListFragment implements
 	 * Mandatory empty constructor for the fragment manager to instantiate the
 	 * fragment (e.g. upon screen orientation changes).
 	 */
-	public SelectableListFragment() {
+	public AppSelectFragment() {
 	}
 
 	public void setPrefKey(String key) {

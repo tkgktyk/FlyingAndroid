@@ -45,7 +45,8 @@ public class FA {
 		public Set<String> blackSet;
 		// for pinning
 		public boolean usePin;
-		public int pinPosition;
+		public int pinXp;
+		public int pinYp;
 		private int autoPinSelection;
 		public Set<String> whiteSet;
 		private boolean flyingStatusBar;
@@ -63,8 +64,10 @@ public class FA {
 					Collections.<String> emptySet());
 			// for pinning
 			usePin = pref.getBoolean("pref_key_use_pin", false);
-			pinPosition = Integer.parseInt(pref.getString(
-					"pref_key_pin_position", "3"));
+			pinXp = pref.getInt("pref_key_pin_x_percent",
+					PinPosition.DEFAULT_X_PERCENT);
+			pinYp = pref.getInt("pref_key_pin_y_percent",
+					PinPosition.DEFAULT_Y_PERCENT);
 			autoPinSelection = Integer.parseInt(pref.getString(
 					"pref_key_auto_pin_selection", "3"));
 			whiteSet = pref.getStringSet("pref_key_white_list",

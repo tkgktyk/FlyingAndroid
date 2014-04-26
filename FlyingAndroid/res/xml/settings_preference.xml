@@ -42,13 +42,12 @@
             android:key="@string/pref_key_use_pin"
             android:title="@string/Use_pin" />
 
-        <ListPreference
-            android:defaultValue="3"
+        <Preference
             android:dependency="@string/pref_key_use_pin"
-            android:entries="@array/pinPositions"
-            android:entryValues="@array/pinPositionValues"
             android:key="@string/pref_key_pin_position"
+            android:summary="@string/summary_pin_position"
             android:title="@string/Pin_position" />
+
         <ListPreference
             android:defaultValue="0"
             android:dependency="@string/pref_key_use_pin"

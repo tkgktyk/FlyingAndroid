@@ -39,7 +39,7 @@ public class MainActivity extends Activity {
 			openSelectorOnClick(R.string.pref_key_black_list,
 					R.string.Show_only_black);
 			// pin position
-			showListSummary(R.string.pref_key_pin_position);
+			openActivity(R.string.pref_key_pin_position, MovePinActivity.class);
 			// auto pin
 			showListSummary(R.string.pref_key_auto_pin_selection);
 			// white list
@@ -88,12 +88,24 @@ public class MainActivity extends Activity {
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
 					Intent activity = new Intent(preference.getContext(),
-							SelectableListActivity.class);
+							AppSelectActivity.class);
 					activity.putExtra(
-							SelectableListActivity.EXTRA_PREF_KEY_STRING,
+							AppSelectActivity.EXTRA_PREF_KEY_STRING,
 							preference.getKey());
 					activity.putExtra(
-							SelectableListActivity.EXTRA_ONLY_TEXT_ID, textId);
+							AppSelectActivity.EXTRA_ONLY_TEXT_ID, textId);
+					startActivity(activity);
+					return true;
+				}
+			});
+		}
+
+		private void openActivity(int id, final Class<?> cls) {
+			Preference pref = findPreference(id);
+			pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+					Intent activity = new Intent(preference.getContext(), cls);
 					startActivity(activity);
 					return true;
 				}
