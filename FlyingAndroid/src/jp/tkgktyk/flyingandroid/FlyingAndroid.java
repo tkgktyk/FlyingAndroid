@@ -326,6 +326,8 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 										}
 									}
 								});
+			} catch (ClassNotFoundException e) {
+				FA.logE("PanelView is not found. \"Status bar's pin\" is not available.");
 			} catch (NoSuchMethodError e) {
 				FA.logE("PhoneStatusBarView#onPanelFullyOpened is not found. \"Status bar's pin\" is not available.");
 			}
