@@ -14,14 +14,12 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsoluteLayout;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ToggleButton;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
-@SuppressWarnings("deprecation")
 public class FlyingHelper {
 	public static final String PACKAGE_NAME = FlyingAndroid.class.getPackage()
 			.getName();
@@ -91,7 +89,7 @@ public class FlyingHelper {
 			flyContext = context.createPackageContext(PACKAGE_NAME,
 					Context.CONTEXT_IGNORE_SECURITY);
 			mOverlayView = LayoutInflater.from(flyContext).inflate(
-					R.layout.view_overlay, null);
+					R.layout.view_pin_button, null);
 			mPinButton = (ToggleButton) mOverlayView.findViewById(R.id.pin);
 			mPinButton
 					.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -107,30 +105,15 @@ public class FlyingHelper {
 					});
 
 			mOverlayView.setVisibility(View.GONE);
-			mPinButton.setVisibility(View.GONE);
+			if (mSettings.usePin) {
+				mPinPosition = new PinPosition(context, mSettings.pinXp,
+						mSettings.pinYp);
+				mPinPosition.apply(mOverlayView);
+			} else {
+				mPinButton.setVisibility(View.GONE);
+			}
 		} catch (NameNotFoundException e) {
 			FA.logE(e);
-		}
-	}
-
-	public void putPin() {
-		putPin(mOverlayView);
-	}
-
-	public void putPin(View target) {
-		if (mPinPosition == null) {
-			mPinPosition = new PinPosition(target.getContext(),
-					mSettings.pinXp, mSettings.pinYp);
-			int x = mPinPosition.getX(target);
-			int y = mPinPosition.getY(target);
-			AbsoluteLayout.LayoutParams lp = (AbsoluteLayout.LayoutParams) mPinButton
-					.getLayoutParams();
-			lp.x = x - mPinPosition.getOffset();
-			lp.y = y - mPinPosition.getOffset();
-			mPinButton.setLayoutParams(lp);
-			if (mSettings.usePin) {
-				mPinButton.setVisibility(View.VISIBLE);
-			}
 		}
 	}
 

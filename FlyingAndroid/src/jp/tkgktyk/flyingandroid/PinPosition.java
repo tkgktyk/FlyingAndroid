@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.view.View;
+import android.widget.LinearLayout;
 
 public class PinPosition {
 	public static int DEFAULT_X_PERCENT = 10;
@@ -77,4 +78,42 @@ public class PinPosition {
 		mYp = yp;
 	}
 
+	public void apply(View container) {
+		{
+			View left = container.findViewById(R.id.space_left);
+			if (left != null) {
+				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) left
+						.getLayoutParams();
+				lp.weight = mXp;
+				left.setLayoutParams(lp);
+			}
+		}
+		{
+			View right = container.findViewById(R.id.space_right);
+			if (right != null) {
+				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) right
+						.getLayoutParams();
+				lp.weight = 100 - mXp;
+				right.setLayoutParams(lp);
+			}
+		}
+		{
+			View top = container.findViewById(R.id.space_top);
+			if (top != null) {
+				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) top
+						.getLayoutParams();
+				lp.weight = mYp;
+				top.setLayoutParams(lp);
+			}
+		}
+		{
+			View bottom = container.findViewById(R.id.space_bottom);
+			if (bottom != null) {
+				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) bottom
+						.getLayoutParams();
+				lp.weight = 100-mYp;
+				bottom.setLayoutParams(lp);
+			}
+		}
+	}
 }

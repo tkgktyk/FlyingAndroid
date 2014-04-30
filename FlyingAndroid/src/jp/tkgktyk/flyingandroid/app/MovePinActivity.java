@@ -2,25 +2,21 @@ package jp.tkgktyk.flyingandroid.app;
 
 import jp.tkgktyk.flyingandroid.PinPosition;
 import jp.tkgktyk.flyingandroid.R;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 import android.view.View.OnLongClickListener;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.widget.AbsoluteLayout;
 import android.widget.ToggleButton;
 
-@SuppressWarnings("deprecation")
 public class MovePinActivity extends Activity {
 
 	private ToggleButton mPin;
 	private View mLineH;
 	private View mLineV;
 	private View mContainer;
+	private View mPinContainer;
 
 	private PinPosition mPinPosition;
 
@@ -34,6 +30,7 @@ public class MovePinActivity extends Activity {
 		mContainer = findViewById(R.id.container);
 		mLineH = findViewById(R.id.h_line);
 		mLineV = findViewById(R.id.v_line);
+		mPinContainer = findViewById(R.id.pin_container);
 		mPin = (ToggleButton) findViewById(R.id.pin);
 
 		mPin.setOnLongClickListener(new OnLongClickListener() {
@@ -76,37 +73,12 @@ public class MovePinActivity extends Activity {
 			}
 		});
 
-		mContainer.getViewTreeObserver().addOnGlobalLayoutListener(
-				new OnGlobalLayoutListener() {
-					@SuppressLint("NewApi")
-					@Override
-					public void onGlobalLayout() {
-						move();
-
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-							mContainer.getViewTreeObserver()
-									.removeOnGlobalLayoutListener(this);
-						} else {
-							mContainer.getViewTreeObserver()
-									.removeGlobalOnLayoutListener(this);
-						}
-					}
-				});
+		move();
 	}
 
 	private void move() {
-		int x = mPinPosition.getX(mContainer);
-		int y = mPinPosition.getY(mContainer);
-		AbsoluteLayout.LayoutParams lp = (AbsoluteLayout.LayoutParams) mPin
-				.getLayoutParams();
-		lp.x = x - mPinPosition.getOffset();
-		lp.y = y - mPinPosition.getOffset();
-		mPin.setLayoutParams(lp);
-		lp = (AbsoluteLayout.LayoutParams) mLineH.getLayoutParams();
-		lp.y = y;
-		mLineH.setLayoutParams(lp);
-		lp = (AbsoluteLayout.LayoutParams) mLineV.getLayoutParams();
-		lp.x = x;
-		mLineV.setLayoutParams(lp);
+		mPinPosition.apply(mPinContainer);
+		mPinPosition.apply(mLineH);
+		mPinPosition.apply(mLineV);
 	}
 }

@@ -1,21 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <View
+    <LinearLayout
         android:id="@+id/h_line"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/holo_orange_light" />
-
-    <View
-        android:id="@+id/v_line"
-        android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:background="@android:color/holo_orange_light" />
+        android:orientation="vertical" >
+
+        <Space
+            android:id="@+id/space_top"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/holo_orange_light" />
+
+        <Space
+            android:id="@+id/space_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/v_line"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
+
+        <Space
+            android:id="@+id/space_left"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/holo_orange_light" />
+
+        <Space
+            android:id="@+id/space_right"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
 
     <include layout="@layout/view_pin_button" />
 
-</AbsoluteLayout>
+</FrameLayout>
