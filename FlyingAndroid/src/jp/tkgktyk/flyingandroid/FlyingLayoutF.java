@@ -103,6 +103,9 @@ public class FlyingLayoutF extends FrameLayout {
 		setHorizontalPadding(DEFAULT_HORIZONTAL_PADDING);
 		setVerticalPadding(DEFAULT_VERTICAL_PADDING);
 		setIgnoreTouchEvent(DEFAULT_IGNORE_TOUCH_EVENT);
+		setUseContainer(DEFAULT_USE_CONTAINER);
+		setOffsetX(DEFAULT_OFFSET_X);
+		setOffsetY(DEFAULT_OFFSET_Y);
 	}
 
 	public void setSpeed(float speed) {
