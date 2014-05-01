@@ -13,10 +13,7 @@ import android.widget.ToggleButton;
 public class MovePinActivity extends Activity {
 
 	private ToggleButton mPin;
-	private View mLineH;
-	private View mLineV;
-	private View mContainer;
-	private View mPinContainer;
+	private TargetingLayout mContainer;
 
 	private PinPosition mPinPosition;
 
@@ -27,10 +24,8 @@ public class MovePinActivity extends Activity {
 
 		mPinPosition = new PinPosition(this);
 
-		mContainer = findViewById(R.id.container);
-		mLineH = findViewById(R.id.h_line);
-		mLineV = findViewById(R.id.v_line);
-		mPinContainer = findViewById(R.id.pin_container);
+		mContainer = (TargetingLayout)findViewById(R.id.container);
+		mContainer.setTarget(R.id.pin);
 		mPin = (ToggleButton) findViewById(R.id.pin);
 
 		mPin.setOnLongClickListener(new OnLongClickListener() {
@@ -77,8 +72,7 @@ public class MovePinActivity extends Activity {
 	}
 
 	private void move() {
-		mPinPosition.apply(mPinContainer);
-		mPinPosition.apply(mLineH);
-		mPinPosition.apply(mLineV);
+		mPinPosition.apply(mContainer);
+		mContainer.invalidate();
 	}
 }
