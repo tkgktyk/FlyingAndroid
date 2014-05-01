@@ -1,6 +1,5 @@
 package jp.tkgktyk.flyingandroid.app;
 
-import android.R.color;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
