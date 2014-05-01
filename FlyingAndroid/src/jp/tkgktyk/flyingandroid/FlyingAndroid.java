@@ -96,6 +96,14 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 											window.setBackgroundDrawableResource(background);
 											FA.logD(decor.getBackground()
 													.toString());
+											if (decor.getBackground() instanceof ColorDrawable
+													&& ((ColorDrawable) decor
+															.getBackground())
+															.getAlpha() == 0xFF) {
+												helper.getFlyingLayout()
+														.setBackgroundResource(
+																background);
+											}
 										} else {
 											FA.logD("window background is 0.");
 										}
