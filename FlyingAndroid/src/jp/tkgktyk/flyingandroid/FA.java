@@ -7,6 +7,10 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 
 public class FA {
+	public static final String PACKAGE_NAME = FA.class.getPackage().getName();
+	public static final String PRE_PREFERENCES = "pre_" + PACKAGE_NAME
+			+ "_preferences";
+	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
 
 	public static void logD(String text) {
 		if (BuildConfig.DEBUG) {

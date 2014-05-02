@@ -9,6 +9,9 @@
     <string name="xposed_description">Move the window.\nDeveloped by tkgktyk</string>
 
     <!-- SharedPreferences -->
+    <string name="Reload">Reload without reboot</string>
+    <string name="pref_key_reload">pref_key_reload</string>
+    <string name="summary_reload">Need to reboot for this change to take effect.</string>
     <!-- Note -->
     <string name="Note">Note</string>
     <string name="summary_note">Need to recreate window for changes to take effect.</string>

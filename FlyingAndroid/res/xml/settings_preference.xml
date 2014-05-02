@@ -2,9 +2,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:mylib="http://schemas.android.com/apk/res-auto" >
 
-    <Preference
-        android:summary="@string/summary_note"
-        android:title="@string/Note" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/pref_key_reload"
+        android:summary="@string/summary_reload"
+        android:title="@string/Reload" />
 
     <PreferenceCategory android:title="@string/Flying" >
         <ListPreference

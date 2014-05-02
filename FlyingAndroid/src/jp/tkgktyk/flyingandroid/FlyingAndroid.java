@@ -23,11 +23,9 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class FlyingAndroid implements IXposedHookZygoteInit,
 		IXposedHookLoadPackage {
-	public static final String PACKAGE_NAME = FlyingAndroid.class.getPackage()
-			.getName();
-	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
-
 	private static XSharedPreferences sPref;
+	private static FA.Settings sSettings;
+	private static boolean sReload;
 
 	private boolean isTabContent(ViewParent v) {
 		while (v != null) {
@@ -39,10 +37,21 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 		return false;
 	}
 
+	private FA.Settings loadSettings() {
+		return sReload ? new FA.Settings(sPref) : sSettings;
+	}
+
 	@Override
 	public void initZygote(StartupParam startupParam) {
-		sPref = new XSharedPreferences(PACKAGE_NAME);
-		sPref.makeWorldReadable();
+		XSharedPreferences prePref = new XSharedPreferences(FA.PACKAGE_NAME,
+				FA.PRE_PREFERENCES);
+		sReload = prePref.getBoolean("pref_key_reload", true);
+		sPref = new XSharedPreferences(FA.PACKAGE_NAME);
+		if (sReload) {
+			sPref.makeWorldReadable();
+		} else {
+			sSettings = new FA.Settings(sPref);
+		}
 
 		try {
 			XposedHelpers.findAndHookMethod(Activity.class, "onPostCreate",
@@ -57,11 +66,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 								if (helper == null) {
 									String packageName = activity
 											.getPackageName();
-									FA.Settings settings = new FA.Settings(
-											sPref);
-									FA.logD("reload settings at "
-											+ activity.getLocalClassName()
-											+ "@" + packageName);
+									FA.Settings settings = loadSettings();
 									if (!settings.blackSet
 											.contains(packageName)) {
 										// save / restore current focus
@@ -94,8 +99,6 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 										a.recycle();
 										if (background != 0) {
 											window.setBackgroundDrawableResource(background);
-											FA.logD(decor.getBackground()
-													.toString());
 											if (decor.getBackground() instanceof ColorDrawable
 													&& ((ColorDrawable) decor
 															.getBackground())
@@ -137,7 +140,8 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 										BroadcastReceiver receiver = helper
 												.getToggleReceiver();
 										activity.registerReceiver(receiver,
-												new IntentFilter(ACTION_TOGGLE));
+												new IntentFilter(
+														FA.ACTION_TOGGLE));
 										helper.onReceiverRegistered();
 										FA.logD("register");
 									}
@@ -213,7 +217,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 						protected void afterHookedMethod(MethodHookParam param)
 								throws Throwable {
 							try {
-								FA.Settings settings = new FA.Settings(sPref);
+								FA.Settings settings = loadSettings();
 								if (settings.flyingDialog) {
 									Dialog dialog = (Dialog) param.thisObject;
 									String packageName = dialog.getContext()
@@ -260,8 +264,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 							protected void afterHookedMethod(
 									MethodHookParam param) throws Throwable {
 								try {
-									FA.Settings settings = new FA.Settings(
-											sPref);
+									FA.Settings settings = loadSettings();
 									if (settings.useFlyingStatusBar()) {
 										ViewGroup panel = (ViewGroup) XposedHelpers
 												.getObjectField(

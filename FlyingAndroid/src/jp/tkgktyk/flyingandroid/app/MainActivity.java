@@ -1,8 +1,10 @@
 package jp.tkgktyk.flyingandroid.app;
 
+import jp.tkgktyk.flyingandroid.FA;
 import jp.tkgktyk.flyingandroid.R;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -23,13 +25,35 @@ public class MainActivity extends Activity {
 	}
 
 	public static class SettingsFragment extends PreferenceFragment {
+		private SharedPreferences mPrePref;
 
 		@SuppressWarnings("deprecation")
 		public void onCreate(Bundle savedInstanceState) {
+			mPrePref = getActivity().getSharedPreferences(FA.PRE_PREFERENCES,
+					MODE_PRIVATE);
+			boolean reload = mPrePref.getBoolean(
+					getString(R.string.pref_key_reload), true);
+
 			super.onCreate(savedInstanceState);
-			getPreferenceManager().setSharedPreferencesMode(
-					PreferenceActivity.MODE_WORLD_READABLE);
+			if (reload) {
+				getPreferenceManager().setSharedPreferencesMode(
+						PreferenceActivity.MODE_WORLD_READABLE);
+			}
 			addPreferencesFromResource(R.xml.settings_preference);
+
+			findPreference(R.string.pref_key_reload)
+					.setOnPreferenceChangeListener(
+							new OnPreferenceChangeListener() {
+								@Override
+								public boolean onPreferenceChange(
+										Preference preference, Object newValue) {
+									mPrePref.edit()
+											.putBoolean(
+													getString(R.string.pref_key_reload),
+													(Boolean) newValue).apply();
+									return true;
+								}
+							});
 
 			// scroll speed
 			showListSummary(R.string.pref_key_speed);
@@ -51,11 +75,6 @@ public class MainActivity extends Activity {
 			return findPreference(getString(id));
 		}
 
-		private String getSharedString(int keyId) {
-			return PreferenceManager.getDefaultSharedPreferences(getActivity())
-					.getString(getString(keyId), null);
-		}
-
 		private final OnPreferenceChangeListener mListChangeListener = new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference,
@@ -68,7 +87,10 @@ public class MainActivity extends Activity {
 		private void showListSummary(int id) {
 			ListPreference list = (ListPreference) findPreference(id);
 			list.setOnPreferenceChangeListener(mListChangeListener);
-			setListSummary(list, getSharedString(id));
+			setListSummary(list,
+					PreferenceManager
+							.getDefaultSharedPreferences(getActivity())
+							.getString(getString(id), null));
 		}
 
 		private void setListSummary(ListPreference pref, String value) {
@@ -89,11 +111,10 @@ public class MainActivity extends Activity {
 				public boolean onPreferenceClick(Preference preference) {
 					Intent activity = new Intent(preference.getContext(),
 							AppSelectActivity.class);
-					activity.putExtra(
-							AppSelectActivity.EXTRA_PREF_KEY_STRING,
+					activity.putExtra(AppSelectActivity.EXTRA_PREF_KEY_STRING,
 							preference.getKey());
-					activity.putExtra(
-							AppSelectActivity.EXTRA_ONLY_TEXT_ID, textId);
+					activity.putExtra(AppSelectActivity.EXTRA_ONLY_TEXT_ID,
+							textId);
 					startActivity(activity);
 					return true;
 				}
