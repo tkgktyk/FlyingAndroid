@@ -1,5 +1,6 @@
 package jp.tkgktyk.flyingandroid;
 
+import jp.tkgktyk.flyinglayout.FlyingLayoutF;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;

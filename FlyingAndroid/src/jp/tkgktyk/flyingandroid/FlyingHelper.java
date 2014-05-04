@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
+import jp.tkgktyk.flyinglayout.FlyingLayoutF;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
