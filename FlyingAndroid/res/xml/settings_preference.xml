@@ -2,11 +2,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:mylib="http://schemas.android.com/apk/res-auto" >
 
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="@string/pref_key_reload"
-        android:summary="@string/summary_reload"
-        android:title="@string/Reload" />
+    <Preference
+        android:summary="@string/summary_note"
+        android:title="@string/Note" />
 
     <PreferenceCategory android:title="@string/Flying" >
         <ListPreference
@@ -44,6 +42,13 @@
             android:key="@string/pref_key_use_pin"
             android:title="@string/Use_pin" />
 
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/pref_key_use_pin"
+            android:key="@string/pref_key_always_show_pin"
+            android:summary="@string/summary_always_show_pin"
+            android:title="@string/Always_show_pin" />
+        
         <Preference
             android:dependency="@string/pref_key_use_pin"
             android:key="@string/pref_key_pin_position"

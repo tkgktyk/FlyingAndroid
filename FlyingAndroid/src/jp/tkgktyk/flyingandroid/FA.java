@@ -7,10 +7,6 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 
 public class FA {
-	public static final String PACKAGE_NAME = FA.class.getPackage().getName();
-	public static final String PRE_PREFERENCES = "pre_" + PACKAGE_NAME
-			+ "_preferences";
-	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
 
 	public static void logD(String text) {
 		if (BuildConfig.DEBUG) {
@@ -49,6 +45,7 @@ public class FA {
 		public Set<String> blackSet;
 		// for pinning
 		public boolean usePin;
+		private boolean alwaysShowPin;
 		public int pinXp;
 		public int pinYp;
 		private int autoPinSelection;
@@ -68,6 +65,7 @@ public class FA {
 					Collections.<String> emptySet());
 			// for pinning
 			usePin = pref.getBoolean("pref_key_use_pin", false);
+			alwaysShowPin = pref.getBoolean("pref_key_always_show_pin", false);
 			pinXp = pref.getInt("pref_key_pin_x_percent",
 					PinPosition.DEFAULT_X_PERCENT);
 			pinYp = pref.getInt("pref_key_pin_y_percent",
@@ -88,6 +86,10 @@ public class FA {
 						|| whiteSet.contains(packageName);
 				usePin = newUsePin;
 			}
+		}
+		
+		public boolean alwaysShowPin() {
+			return usePin && alwaysShowPin;
 		}
 
 		public boolean autoPin(int selection) {

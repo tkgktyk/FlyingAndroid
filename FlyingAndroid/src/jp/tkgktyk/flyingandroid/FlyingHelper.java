@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
-import android.app.Activity;
-import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -32,9 +28,8 @@ public class FlyingHelper {
 
 	private PinPosition mPinPosition;
 
-	private void installFlyingLayout(ViewGroup target, boolean verticalDrag)
+	private void installFlyingLayout(Context context, boolean verticalDrag)
 			throws Throwable {
-		Context context = target.getContext();
 		// prepare boundary
 		prepareBoundary(context);
 
@@ -153,7 +148,7 @@ public class FlyingHelper {
 		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
 		mSettings.usePin = false;
 		// create FlyingLayout
-		installFlyingLayout(target, true);
+		installFlyingLayout(target.getContext(), true);
 
 		installToViewGroup(target);
 	}
@@ -167,7 +162,7 @@ public class FlyingHelper {
 	public void install(ViewGroup target) throws Throwable {
 		mAlwaysShowPin = false;
 		// create FlyingLayout
-		installFlyingLayout(target, false);
+		installFlyingLayout(target.getContext(), false);
 
 		installToViewGroup(target);
 	}
@@ -185,7 +180,7 @@ public class FlyingHelper {
 		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
 		mAlwaysShowPin = true;
 		// create FlyingLayout
-		installFlyingLayout(target, false);
+		installFlyingLayout(target.getContext(), false);
 
 		pin();
 		setOverlayShown(true);
@@ -218,30 +213,6 @@ public class FlyingHelper {
 	 * @param target
 	 * @return
 	 */
-	public static FlyingHelper getFrom(Activity target) {
-		return getFrom(target.getWindow().peekDecorView());
-	}
-
-	/**
-	 * Find a FlyingHelper attached to a DecorView by
-	 * {@link FlyingAndroid#setFlyingHelper(ViewGroup, FlyingHelper)} and return
-	 * it.
-	 * 
-	 * @param target
-	 * @return
-	 */
-	public static FlyingHelper getFrom(Dialog target) {
-		return getFrom(target.getWindow().peekDecorView());
-	}
-
-	/**
-	 * Find a FlyingHelper attached to a DecorView by
-	 * {@link FlyingAndroid#setFlyingHelper(ViewGroup, FlyingHelper)} and return
-	 * it.
-	 * 
-	 * @param target
-	 * @return
-	 */
 	public static FlyingHelper getFrom(View target) {
 		return (FlyingHelper) XposedHelpers.getAdditionalInstanceField(
 				target.getRootView(), FA_HELPER);
@@ -261,8 +232,6 @@ public class FlyingHelper {
 	}
 
 	private Drawable mBoundaryDrawable;
-
-	private boolean mReceiverRegistered = false;
 
 	private boolean mFlying = false;
 
@@ -377,30 +346,5 @@ public class FlyingHelper {
 		setOverlayShown(false);
 		mFlyingLayout.goHome();
 		pin();
-	}
-
-	private final BroadcastReceiver mToggleReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// log("toggle");
-			toggle();
-		}
-	};
-
-	public BroadcastReceiver getToggleReceiver() {
-		return mToggleReceiver;
-	}
-
-	public boolean receiverRegistered() {
-		return mReceiverRegistered;
-	}
-
-	public void onReceiverRegistered() {
-		mReceiverRegistered = true;
-	}
-
-	public void onReceiverUnregistered() {
-		mReceiverRegistered = false;
 	}
 }
