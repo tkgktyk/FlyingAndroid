@@ -6,7 +6,6 @@ import java.util.List;
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
 import jp.tkgktyk.flyinglayout.FlyingLayoutF;
 import android.content.Context;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +26,71 @@ public class FlyingHelper {
 	private View mOverlayView;
 	private ToggleButton mPinButton;
 
-	private PinPosition mPinPosition;
+	private Drawable mBoundaryDrawable;
+
+	private boolean mFlying = false;
+
+	public FlyingHelper(FA.Settings settings) {
+		mSettings = settings.clone();
+	}
+
+	/**
+	 * Install FlyingLayout under following conditions.
+	 * <ul>
+	 * <li>enable vertical dragging on the screen edge</li>
+	 * <li>disable takeoff position</li>
+	 * <li>without pin</li>
+	 * </ul>
+	 * 
+	 * @param context
+	 * @throws Throwable
+	 */
+	public void installForFloatingWindow(ViewGroup target) throws Throwable {
+		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
+		mSettings.usePin = false;
+		// create FlyingLayout
+		installFlyingLayout(target.getContext(), true);
+
+		installToViewGroup(target);
+	}
+
+	/**
+	 * Install FlyingLayout following settings.
+	 * 
+	 * @param context
+	 * @throws Throwable
+	 */
+	public void install(ViewGroup target) throws Throwable {
+		// create FlyingLayout
+		installFlyingLayout(target.getContext(), false);
+
+		installToViewGroup(target);
+	}
+
+	/**
+	 * Install FlyingLayout with pin shown always.
+	 * 
+	 * @param context
+	 * @throws Throwable
+	 */
+	public void installWithPinShownAlways(ViewGroup target) throws Throwable {
+		if (!mSettings.usePin) {
+			mSettings.usePin = true;
+		}
+		if (!mSettings.alwaysShowPin()) {
+			mSettings.overwriteAlwaysShowPin(true);
+		}
+		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
+		// create FlyingLayout
+		installFlyingLayout(target.getContext(), false);
+
+		pin();
+		setOverlayShown(true);
+
+		installToViewGroup(target);
+	}
+
+	private static String FA_HELPER = "FA_helper";
 
 	private void installFlyingLayout(Context context, boolean verticalDrag)
 			throws Throwable {
@@ -79,37 +142,52 @@ public class FlyingHelper {
 				});
 	}
 
-	private void prepareOverlayView(Context context) {
-		Context flyContext;
-		try {
-			flyContext = context.createPackageContext(PACKAGE_NAME,
-					Context.CONTEXT_IGNORE_SECURITY);
-			mOverlayView = LayoutInflater.from(flyContext).inflate(
-					R.layout.view_pin_button, null);
-			mPinButton = (ToggleButton) mOverlayView.findViewById(R.id.pin);
-			mPinButton
-					.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-						@Override
-						public void onCheckedChanged(CompoundButton buttonView,
-								boolean isChecked) {
-							if (isChecked) {
-								unfly();
-							} else {
-								fly();
-							}
-						}
-					});
-
-			mOverlayView.setVisibility(View.GONE);
-			if (mSettings.usePin) {
-				mPinPosition = new PinPosition(context, mSettings.pinXp,
-						mSettings.pinYp);
-				mPinPosition.apply(mOverlayView);
-			} else {
-				mPinButton.setVisibility(View.GONE);
+	public void prepareBoundary(Context context) {
+		if (!mSettings.notifyFlying) {
+			mBoundaryDrawable = null;
+		} else {
+			Context flyContext = null;
+			try {
+				flyContext = context.createPackageContext(PACKAGE_NAME,
+						Context.CONTEXT_IGNORE_SECURITY);
+			} catch (Throwable t) {
+				XposedBridge.log(t);
 			}
-		} catch (NameNotFoundException e) {
-			FA.logE(e);
+			if (flyContext != null) {
+				mBoundaryDrawable = flyContext.getResources().getDrawable(
+						R.drawable.notify_flying);
+			} else {
+				mBoundaryDrawable = null;
+			}
+		}
+	}
+
+	private void prepareOverlayView(Context context) throws Throwable {
+		Context flyContext = context.createPackageContext(PACKAGE_NAME,
+				Context.CONTEXT_IGNORE_SECURITY);
+		mOverlayView = LayoutInflater.from(flyContext).inflate(
+				R.layout.view_pin_button, null);
+		mPinButton = (ToggleButton) mOverlayView.findViewById(R.id.pin);
+		mPinButton
+				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						if (isChecked) {
+							unfly();
+						} else {
+							fly();
+						}
+					}
+				});
+
+		mOverlayView.setVisibility(View.GONE);
+		if (mSettings.usePin) {
+			PinPosition pos = new PinPosition(context, mSettings.pinXp,
+					mSettings.pinYp);
+			pos.apply(mOverlayView);
+		} else {
+			mPinButton.setVisibility(View.GONE);
 		}
 	}
 
@@ -128,69 +206,6 @@ public class FlyingHelper {
 		mContainerView = dragView;
 	}
 
-	private boolean mAlwaysShowPin;
-
-	public FlyingHelper(FA.Settings settings) {
-		mSettings = settings.clone();
-	}
-
-	/**
-	 * Install FlyingLayout under following conditions.
-	 * <ul>
-	 * <li>enable vertical dragging on the screen edge</li>
-	 * <li>disable takeoff position</li>
-	 * <li>without pin</li>
-	 * </ul>
-	 * 
-	 * @param context
-	 * @throws Throwable
-	 */
-	public void installForFloatingWindow(ViewGroup target) throws Throwable {
-		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
-		mSettings.usePin = false;
-		// create FlyingLayout
-		installFlyingLayout(target.getContext(), true);
-
-		installToViewGroup(target);
-	}
-
-	/**
-	 * Install FlyingLayout following settings.
-	 * 
-	 * @param context
-	 * @throws Throwable
-	 */
-	public void install(ViewGroup target) throws Throwable {
-		mAlwaysShowPin = false;
-		// create FlyingLayout
-		installFlyingLayout(target.getContext(), false);
-
-		installToViewGroup(target);
-	}
-
-	/**
-	 * Install FlyingLayout with pin shown always.
-	 * 
-	 * @param context
-	 * @throws Throwable
-	 */
-	public void installWithPinShownAlways(ViewGroup target) throws Throwable {
-		if (!mSettings.usePin) {
-			mSettings.usePin = true;
-		}
-		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
-		mAlwaysShowPin = true;
-		// create FlyingLayout
-		installFlyingLayout(target.getContext(), false);
-
-		pin();
-		setOverlayShown(true);
-
-		installToViewGroup(target);
-	}
-
-	private static String FA_HELPER = "FA_helper";
-
 	private void installToViewGroup(ViewGroup target) {
 		List<View> contents = new ArrayList<View>();
 		for (int i = 0; i < target.getChildCount(); ++i) {
@@ -199,7 +214,7 @@ public class FlyingHelper {
 		FA.logD("children: " + target.getChildCount());
 		target.removeAllViews();
 		for (View v : contents) {
-			addViewToFlyingLayout(v, v.getLayoutParams());
+			mContainerView.addView(v, v.getLayoutParams());
 		}
 		target.addView(mFlyingLayout);
 		XposedHelpers.setAdditionalInstanceField(target.getRootView(),
@@ -227,39 +242,10 @@ public class FlyingHelper {
 		return mFlyingLayout;
 	}
 
-	public void addViewToFlyingLayout(View child,
-			ViewGroup.LayoutParams layoutParams) {
-		mContainerView.addView(child, layoutParams);
-	}
-
-	private Drawable mBoundaryDrawable;
-
-	private boolean mFlying = false;
-
-	public void prepareBoundary(Context context) {
-		if (!mSettings.notifyFlying) {
-			mBoundaryDrawable = null;
-		} else {
-			Context flyContext = null;
-			try {
-				flyContext = context.createPackageContext(PACKAGE_NAME,
-						Context.CONTEXT_IGNORE_SECURITY);
-			} catch (Throwable t) {
-				XposedBridge.log(t);
-			}
-			if (flyContext != null) {
-				mBoundaryDrawable = flyContext.getResources().getDrawable(
-						R.drawable.notify_flying);
-			} else {
-				mBoundaryDrawable = null;
-			}
-		}
-	}
-
 	private void setOverlayShown(boolean shown) {
 		if (shown) {
 			mOverlayView.setVisibility(View.VISIBLE);
-		} else if (!mAlwaysShowPin) {
+		} else if (!mSettings.alwaysShowPin()) {
 			mOverlayView.setVisibility(View.GONE);
 		}
 	}
@@ -335,10 +321,7 @@ public class FlyingHelper {
 				unpin();
 			}
 		} else {
-			// go home and unfly
-			setOverlayShown(false);
-			mFlyingLayout.goHome();
-			pin();
+			resetState();
 		}
 	}
 

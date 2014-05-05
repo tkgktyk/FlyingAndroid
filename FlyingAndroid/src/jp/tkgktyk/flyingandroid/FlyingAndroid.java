@@ -34,6 +34,152 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 
 	private static XSharedPreferences sPref;
 
+	@Override
+	public void initZygote(StartupParam startupParam) {
+		sPref = new XSharedPreferences(PACKAGE_NAME);
+		sPref.makeWorldReadable();
+
+		try {
+			hooksForActivity();
+			hooksForDialog();
+		} catch (Throwable t) {
+			FA.logE(t);
+		}
+	}
+
+	private void hooksForActivity() {
+		XposedHelpers.findAndHookMethod(Activity.class, "onPostCreate",
+				Bundle.class, new XC_MethodHook() {
+					@Override
+					protected void afterHookedMethod(MethodHookParam param)
+							throws Throwable {
+						try {
+							installToActivity((Activity) param.thisObject);
+						} catch (Throwable t) {
+							FA.logE(t);
+						}
+					}
+				});
+		{
+			XC_MethodHook afterSetContentView = new XC_MethodHook() {
+				@Override
+				protected void afterHookedMethod(MethodHookParam param)
+						throws Throwable {
+					try {
+						Activity activity = (Activity) param.thisObject;
+						Boolean registered = (Boolean) XposedHelpers
+								.getAdditionalInstanceField(activity,
+										FA_REGISTERED);
+						if (registered != null) {
+							Boolean handled = (Boolean) XposedHelpers
+									.getAdditionalInstanceField(activity,
+											FA_HANDLED);
+							if (handled == null) {
+								FA.logD("install after set content view.");
+								installToActivity(activity);
+							}
+						}
+					} catch (Throwable t) {
+						FA.logE(t);
+					}
+				}
+			};
+			XposedHelpers.findAndHookMethod(Activity.class, "setContentView",
+					int.class, afterSetContentView);
+			XposedHelpers.findAndHookMethod(Activity.class, "setContentView",
+					View.class, afterSetContentView);
+			XposedHelpers.findAndHookMethod(Activity.class, "setContentView",
+					View.class, ViewGroup.LayoutParams.class,
+					afterSetContentView);
+		}
+
+		final BroadcastReceiver toggleReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				Activity activity = (Activity) context;
+				FlyingHelper helper = FlyingHelper.getFrom(activity.getWindow()
+						.peekDecorView());
+				if (helper != null) {
+					helper.toggle();
+				} else {
+					FA.logD("FlyingHelper is not found.");
+				}
+			}
+		};
+		XposedHelpers.findAndHookMethod(Activity.class, "onResume",
+				new XC_MethodHook() {
+					@Override
+					protected void afterHookedMethod(MethodHookParam param)
+							throws Throwable {
+						try {
+							Activity activity = (Activity) param.thisObject;
+							Boolean registered = (Boolean) XposedHelpers
+									.getAdditionalInstanceField(activity,
+											FA_REGISTERED);
+							if (registered == null) {
+								activity.registerReceiver(toggleReceiver,
+										new IntentFilter(ACTION_TOGGLE));
+								XposedHelpers.setAdditionalInstanceField(
+										activity, FA_REGISTERED, true);
+							} else {
+								FA.logD("already registered.");
+							}
+						} catch (Throwable t) {
+							FA.logE(t);
+						}
+					}
+				});
+		XposedHelpers.findAndHookMethod(Activity.class, "onPause",
+				new XC_MethodHook() {
+					@Override
+					protected void afterHookedMethod(MethodHookParam param)
+							throws Throwable {
+						try {
+							Activity activity = (Activity) param.thisObject;
+							Boolean registered = (Boolean) XposedHelpers
+									.getAdditionalInstanceField(activity,
+											FA_REGISTERED);
+							if (registered != null) {
+								activity.unregisterReceiver(toggleReceiver);
+								XposedHelpers.removeAdditionalInstanceField(
+										activity, FA_REGISTERED);
+							} else {
+								FA.logD("not registered.");
+							}
+						} catch (Throwable t) {
+							FA.logE(t);
+						}
+					}
+				});
+		XposedHelpers.findAndHookMethod(Activity.class,
+				"onConfigurationChanged", Configuration.class,
+				new XC_MethodHook() {
+					@Override
+					protected void afterHookedMethod(MethodHookParam param)
+							throws Throwable {
+						try {
+							Activity activity = (Activity) param.thisObject;
+							FlyingHelper helper = FlyingHelper.getFrom(activity
+									.getWindow().peekDecorView());
+							if (helper != null) {
+								FlyingLayoutF flyingLayout = helper
+										.getFlyingLayout();
+								Configuration newConfig = (Configuration) param.args[0];
+								if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+									flyingLayout.rotate();
+								} else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+									flyingLayout.rotate();
+								}
+							} else {
+								FA.logD("FlyingHelper is not found.");
+							}
+						} catch (Throwable t) {
+							FA.logE(t);
+						}
+					}
+				});
+	}
+
 	private void installToActivity(Activity activity) {
 		ViewGroup decor = (ViewGroup) activity.getWindow().peekDecorView();
 		if (decor == null) {
@@ -122,186 +268,50 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 		}
 	}
 
-	@Override
-	public void initZygote(StartupParam startupParam) {
-		sPref = new XSharedPreferences(PACKAGE_NAME);
-		sPref.makeWorldReadable();
-
-		try {
-			XposedHelpers.findAndHookMethod(Activity.class, "onPostCreate",
-					Bundle.class, new XC_MethodHook() {
-						@Override
-						protected void afterHookedMethod(MethodHookParam param)
-								throws Throwable {
-							try {
-								Activity activity = (Activity) param.thisObject;
-								installToActivity(activity);
-							} catch (Throwable t) {
-								FA.logE(t);
-							}
-						}
-					});
-
-			{
-				XC_MethodHook afterSetContentView = new XC_MethodHook() {
+	private void hooksForDialog() {
+		XposedHelpers.findAndHookMethod(Dialog.class, "onAttachedToWindow",
+				new XC_MethodHook() {
 					@Override
 					protected void afterHookedMethod(MethodHookParam param)
 							throws Throwable {
 						try {
-							Activity activity = (Activity) param.thisObject;
-							Boolean registered = (Boolean) XposedHelpers
-									.getAdditionalInstanceField(activity,
-											FA_REGISTERED);
-							if (registered != null) {
-								Boolean handled = (Boolean) XposedHelpers
-										.getAdditionalInstanceField(activity,
-												FA_HANDLED);
-								if (handled == null) {
-									FA.logD("install after set content view.");
-									installToActivity(activity);
-								}
-							}
+							installToDialog((Dialog) param.thisObject);
 						} catch (Throwable t) {
 							FA.logE(t);
 						}
 					}
-				};
-				XposedHelpers.findAndHookMethod(Activity.class,
-						"setContentView", int.class, afterSetContentView);
-				XposedHelpers.findAndHookMethod(Activity.class,
-						"setContentView", View.class, afterSetContentView);
-				XposedHelpers.findAndHookMethod(Activity.class,
-						"setContentView", View.class,
-						ViewGroup.LayoutParams.class, afterSetContentView);
-			}
 
-			final BroadcastReceiver toggleReceiver = new BroadcastReceiver() {
-				@Override
-				public void onReceive(Context context, Intent intent) {
-					Activity activity = (Activity) context;
-					FlyingHelper helper = FlyingHelper.getFrom(activity
-							.getWindow().peekDecorView());
-					if (helper != null) {
-						helper.toggle();
-					} else {
-						FA.logD("FlyingHelper is not found.");
-					}
-				}
-			};
-
-			XposedHelpers.findAndHookMethod(Activity.class, "onResume",
-					new XC_MethodHook() {
-						@Override
-						protected void afterHookedMethod(MethodHookParam param)
-								throws Throwable {
-							try {
-								Activity activity = (Activity) param.thisObject;
-								Boolean registered = (Boolean) XposedHelpers
-										.getAdditionalInstanceField(activity,
-												FA_REGISTERED);
-								if (registered == null) {
-									activity.registerReceiver(toggleReceiver,
-											new IntentFilter(ACTION_TOGGLE));
-									XposedHelpers.setAdditionalInstanceField(
-											activity, FA_REGISTERED, true);
-								} else {
-									FA.logD("already registered.");
-								}
-							} catch (Throwable t) {
-								FA.logE(t);
-							}
-						}
-					});
-			XposedHelpers.findAndHookMethod(Activity.class, "onPause",
-					new XC_MethodHook() {
-						@Override
-						protected void afterHookedMethod(MethodHookParam param)
-								throws Throwable {
-							try {
-								Activity activity = (Activity) param.thisObject;
-								Boolean registered = (Boolean) XposedHelpers
-										.getAdditionalInstanceField(activity,
-												FA_REGISTERED);
-								if (registered != null) {
-									activity.unregisterReceiver(toggleReceiver);
-									XposedHelpers
-											.removeAdditionalInstanceField(
-													activity, FA_REGISTERED);
-								} else {
-									FA.logD("not registered.");
-								}
-							} catch (Throwable t) {
-								FA.logE(t);
-							}
-						}
-					});
-			XposedHelpers.findAndHookMethod(Activity.class,
-					"onConfigurationChanged", Configuration.class,
-					new XC_MethodHook() {
-						@Override
-						protected void afterHookedMethod(MethodHookParam param)
-								throws Throwable {
-							try {
-								Activity activity = (Activity) param.thisObject;
+					private void installToDialog(Dialog dialog) {
+						FA.Settings settings = new FA.Settings(sPref);
+						if (settings.flyingDialog) {
+							String packageName = dialog.getContext()
+									.getPackageName();
+							if (!settings.blackSet.contains(packageName)) {
+								ViewGroup decor = (ViewGroup) dialog
+										.getWindow().peekDecorView();
 								FlyingHelper helper = FlyingHelper
-										.getFrom(activity.getWindow()
-												.peekDecorView());
-								if (helper != null) {
-									FlyingLayoutF flyingView = helper
-											.getFlyingLayout();
-									Configuration newConfig = (Configuration) param.args[0];
-									if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-										flyingView.rotate();
-									} else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-										flyingView.rotate();
+										.getFrom(decor);
+								if (helper == null) {
+									// save / restore current focus
+									View v = dialog.getCurrentFocus();
+									helper = new FlyingHelper(settings);
+									try {
+										helper.installForFloatingWindow(decor);
+									} catch (Throwable t) {
+										FA.logE(t);
+										helper = null;
 									}
-								} else {
-									FA.logD("FlyingHelper is not found.");
-								}
-							} catch (Throwable t) {
-								FA.logE(t);
-							}
-						}
-					});
-			XposedHelpers.findAndHookMethod(Dialog.class, "onAttachedToWindow",
-					new XC_MethodHook() {
-						@Override
-						protected void afterHookedMethod(MethodHookParam param)
-								throws Throwable {
-							try {
-								FA.Settings settings = new FA.Settings(sPref);
-								if (settings.flyingDialog) {
-									Dialog dialog = (Dialog) param.thisObject;
-									String packageName = dialog.getContext()
-											.getPackageName();
-									if (!settings.blackSet
-											.contains(packageName)) {
-										ViewGroup decor = (ViewGroup) dialog
-												.getWindow().peekDecorView();
-										FlyingHelper helper = FlyingHelper
-												.getFrom(decor);
-										if (helper == null) {
-											// save / restore current focus
-											View v = dialog.getCurrentFocus();
-											helper = new FlyingHelper(settings);
-											helper.installForFloatingWindow(decor);
-											if (v != null) {
-												v.requestFocus();
-											}
-										}
-									} else {
-										FA.logD(packageName
-												+ " is contained blacklist.");
+									if (v != null) {
+										v.requestFocus();
 									}
 								}
-							} catch (Throwable t) {
-								FA.logE(t);
+							} else {
+								FA.logD(packageName
+										+ " is contained blacklist.");
 							}
 						}
-					});
-		} catch (Throwable t) {
-			FA.logE(t);
-		}
+					}
+				});
 	}
 
 	@Override

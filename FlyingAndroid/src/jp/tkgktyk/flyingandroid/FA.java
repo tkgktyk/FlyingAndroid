@@ -91,6 +91,10 @@ public class FA {
 		public boolean alwaysShowPin() {
 			return usePin && alwaysShowPin;
 		}
+		
+		public void overwriteAlwaysShowPin(boolean show) {
+			alwaysShowPin = show;
+		}
 
 		public boolean autoPin(int selection) {
 			return usePin && autoPinSelection == selection;
