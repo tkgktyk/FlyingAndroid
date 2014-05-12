@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -97,12 +96,24 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				Activity activity = (Activity) context;
-				FlyingHelper helper = FlyingHelper.getFrom(activity.getWindow()
-						.peekDecorView());
-				if (helper != null) {
-					helper.toggle();
+				if (!isTabContent(activity)) {
+					FlyingHelper helper = FlyingHelper.getFrom(activity
+							.getWindow().peekDecorView());
+					if (helper != null) {
+						Boolean handled = (Boolean) XposedHelpers
+								.getAdditionalInstanceField(activity,
+										FA_HANDLED);
+						if (handled.equals(Boolean.FALSE)) {
+							resetBackground(activity);
+							XposedHelpers.setAdditionalInstanceField(activity,
+									FA_HANDLED, Boolean.TRUE);
+						}
+						helper.toggle();
+					} else {
+						FA.logD("FlyingHelper is not found.");
+					}
 				} else {
-					FA.logD("FlyingHelper is not found.");
+					FA.logD(activity.getLocalClassName() + " is a tab content.");
 				}
 			}
 		};
@@ -186,12 +197,6 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			FA.logD("decorView is null.");
 			return;
 		}
-		if (isTabContent(decor)) {
-			FA.logD("tab content activity is ignored. @onResume");
-			XposedHelpers.setAdditionalInstanceField(activity, FA_HANDLED,
-					false);
-			return;
-		}
 		String packageName = activity.getPackageName();
 		FA.Settings settings = new FA.Settings(sPref);
 		FA.logD("reload settings at " + activity.getLocalClassName() + "@"
@@ -218,18 +223,20 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 		} else {
 			FA.logD(packageName + " is contained blacklist.");
 		}
-		if (helper != null) {
-			resetBackground(activity);
-		}
-		XposedHelpers.setAdditionalInstanceField(activity, FA_HANDLED, true);
+		// set false because window background isn't reset yet.
+		XposedHelpers.setAdditionalInstanceField(activity, FA_HANDLED,
+				Boolean.FALSE);
 	}
 
-	private boolean isTabContent(ViewParent v) {
-		while (v != null) {
-			if (v instanceof TabHost) {
-				return true;
+	private boolean isTabContent(Activity activity) {
+		View decor = activity.getWindow().peekDecorView();
+		if (decor != null) {
+			for (ViewParent v = decor.getParent(); v != null; v = v.getParent()) {
+				FA.logD(v.getClass().getName());
+				if (v instanceof TabHost) {
+					return true;
+				}
 			}
-			v = v.getParent();
 		}
 		return false;
 	}
@@ -240,32 +247,20 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 		// ColorDrawable and a certain View
 		View decor = activity.getWindow().peekDecorView();
 		Drawable drawable = decor.getBackground();
-		if (drawable == null || drawable instanceof ColorDrawable) {
-			TypedArray a = activity.getTheme().obtainStyledAttributes(
-					new int[] { android.R.attr.windowBackground });
-			int background = a.getResourceId(0, 0);
-			a.recycle();
-			if (background != 0) {
-				activity.getWindow().setBackgroundDrawableResource(background);
-				drawable = decor.getBackground();
-				if (drawable instanceof ColorDrawable
-						&& ((ColorDrawable) drawable).getAlpha() == 0xFF) {
-					FlyingHelper helper = FlyingHelper.getFrom(decor);
-					helper.getFlyingLayout().setBackgroundDrawable(drawable);
-				}
-			} else {
-				FA.logD("window background is 0.");
-				if (drawable == null) {
-					drawable = new ColorDrawable(activity.getResources()
-							.getColor(android.R.color.background_dark));
-					FlyingHelper helper = FlyingHelper.getFrom(decor);
-					helper.getFlyingLayout().setBackgroundDrawable(drawable);
-				} else if (((ColorDrawable) drawable).getAlpha() == 0xFF) {
-					FlyingHelper helper = FlyingHelper.getFrom(decor);
-					helper.getFlyingLayout().setBackgroundDrawable(drawable);
-				}
-			}
+		if (drawable == null || isProblemDrawable(drawable)) {
+			FA.logD("force set background.");
+			drawable = new ColorDrawable(activity.getResources().getColor(
+					android.R.color.background_dark));
+			activity.getWindow().setBackgroundDrawable(drawable);
+			drawable = decor.getBackground();
+			FlyingHelper helper = FlyingHelper.getFrom(decor);
+			helper.getFlyingLayout().setBackgroundDrawable(drawable);
 		}
+	}
+
+	private boolean isProblemDrawable(Drawable drawable) {
+		return drawable instanceof ColorDrawable
+				&& ((ColorDrawable) drawable).getAlpha() == 0xFF;
 	}
 
 	private void hooksForDialog() {
