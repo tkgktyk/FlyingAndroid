@@ -22,24 +22,15 @@ public class FA {
 		XposedBridge.log(t);
 	}
 
-	public static final int TAKEOFF_POSITION_CENTER = 0;
-	public static final int TAKEOFF_POSITION_BOTTOM = 1;
-	public static final int TAKEOFF_POSITION_LOWER_LEFT = 2;
-	public static final int TAKEOFF_POSITION_LOWER_RIGHT = 3;
-
-	public static final int PIN_POSITION_CENTER_LEFT = 1;
-	public static final int PIN_POSITION_CENTER_RIGHT = 2;
-	public static final int PIN_POSITION_LOWER_LEFT = 3;
-	public static final int PIN_POSITION_LOWER_RIGHT = 4;
-
-	public static final int AUTO_PIN_DISABLE = 0;
+	public static final int AUTO_PIN_DISABLED = 0;
 	public static final int AUTO_PIN_WHEN_TAKEOFF = 1;
 	public static final int AUTO_PIN_AFTER_MOVING = 2;
 
 	public static class Settings implements Cloneable {
 		// for flying
 		public float speed;
-		public int takeoffPosition;
+		public int initialXp;
+		public int initialYp;
 		public boolean notifyFlying;
 		public boolean flyingDialog;
 		public Set<String> blackSet;
@@ -57,8 +48,10 @@ public class FA {
 			pref.reload();
 			// for flying
 			speed = Float.parseFloat(pref.getString("pref_key_speed", "1.5"));
-			takeoffPosition = Integer.parseInt(pref.getString(
-					"pref_key_takeoff_position", "0"));
+			initialXp = pref.getInt("pref_key_initial_x_percent",
+					InitialPosition.DEFAULT_X_PERCENT);
+			initialYp = pref.getInt("pref_key_initial_y_percent",
+					InitialPosition.DEFAULT_Y_PERCENT);
 			notifyFlying = pref.getBoolean("pref_key_notify_flying", true);
 			flyingDialog = pref.getBoolean("pref_key_flying_dialog", false);
 			blackSet = pref.getStringSet("pref_key_black_list",

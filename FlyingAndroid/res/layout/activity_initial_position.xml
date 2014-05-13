@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jp.tkgktyk.flyingandroid.app.GridLinedFlyingLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:flying="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/flying"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    flying:horizontalPadding="@dimen/flying_view_padding"
+    flying:useContainer="true"
+    flying:verticalPadding="@dimen/flying_view_padding" >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:drawable/screen_background_dark_transparent" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/usage_of_initial_position"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/notify_flying" />
+    </FrameLayout>
+
+</jp.tkgktyk.flyingandroid.app.GridLinedFlyingLayout>

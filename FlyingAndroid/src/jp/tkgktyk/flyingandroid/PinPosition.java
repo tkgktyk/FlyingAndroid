@@ -59,7 +59,7 @@ public class PinPosition {
 	}
 
 	public void setXp(View container, float x) {
-		mXp = Math.round(x / container.getWidth() * 100);
+		mXp = Math.round(x / container.getWidth() * 100f);
 	}
 
 	public void setXp(int xp) {
@@ -71,7 +71,7 @@ public class PinPosition {
 	}
 
 	public void setYp(View container, float y) {
-		mYp = Math.round(y / container.getHeight() * 100);
+		mYp = Math.round(y / container.getHeight() * 100f);
 	}
 
 	public void setYp(int yp) {
@@ -111,7 +111,7 @@ public class PinPosition {
 			if (bottom != null) {
 				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) bottom
 						.getLayoutParams();
-				lp.weight = 100-mYp;
+				lp.weight = 100 - mYp;
 				bottom.setLayoutParams(lp);
 			}
 		}

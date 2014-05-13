@@ -21,9 +21,13 @@
     <!-- Speed -->
     <string name="Speed">Speed</string>
     <string name="pref_key_speed">pref_key_speed</string>
-    <!-- Takeoff position -->
-    <string name="Takeoff_position">Takeoff position</string>
-    <string name="pref_key_takeoff_position">pref_key_takeoff_position</string>
+    <!-- Initial position -->
+    <string name="Initial_position">Initial position&#8230;</string>
+    <string name="pref_key_initial_position">pref_key_initial_position</string>
+    <string name="pref_key_initial_x_percent">pref_key_initial_x_percent</string>
+    <string name="pref_key_initial_y_percent">pref_key_initial_y_percent</string>
+    <string name="summary_initial_position">Move to this position when you launch FA Toggle.</string>
+    <string name="usage_of_initial_position">Drag to change position.\nPress back key to save.</string>
     <!-- Notify flying -->
     <string name="Notify_flying">Notify flying</string>
     <string name="pref_key_notify_flying">pref_key_notify_flying</string>

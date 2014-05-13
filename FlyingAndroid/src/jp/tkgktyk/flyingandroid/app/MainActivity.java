@@ -33,8 +33,8 @@ public class MainActivity extends Activity {
 
 			// scroll speed
 			showListSummary(R.string.pref_key_speed);
-			// takeoff position
-			showListSummary(R.string.pref_key_takeoff_position);
+			// initial position
+			openActivity(R.string.pref_key_initial_position, InitialPositionActivity.class);
 			// black list
 			openSelectorOnClick(R.string.pref_key_black_list,
 					R.string.Show_only_black);

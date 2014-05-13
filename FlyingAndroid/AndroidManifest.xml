@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.tkgktyk.flyingandroid"
-    android:versionCode="28"
-    android:versionName="0.6.14" >
+    android:versionCode="29"
+    android:versionName="0.6.15" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -74,7 +74,15 @@
                 <action android:name="android.intent.action.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".app.MovePinActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+        <activity
+            android:name=".app.MovePinActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".app.InitialPositionActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+>
+        </activity>
     </application>
 
 </manifest>

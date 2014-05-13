@@ -15,32 +15,8 @@
         <item>1.5</item>
         <item>1</item>
     </string-array>
-    <string-array name="takeoffPositions">
-        <item>center</item>
-        <item>bottom</item>
-        <item>lower left</item>
-        <item>lower right</item>
-    </string-array>
-    <string-array name="takeoffPositionValues">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-    <string-array name="pinPositions">
-        <item>center left</item>
-        <item>center right</item>
-        <item>lower left</item>
-        <item>lower right</item>
-    </string-array>
-    <string-array name="pinPositionValues">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-    </string-array>
     <string-array name="autoPinSelections">
-        <item>disable</item>
+        <item>disabled</item>
         <item>when takeoff</item>
         <item>after moving</item>
     </string-array>

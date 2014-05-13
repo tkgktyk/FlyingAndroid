@@ -24,7 +24,7 @@ public class MovePinActivity extends Activity {
 
 		mPinPosition = new PinPosition(this);
 
-		mContainer = (TargetingLayout)findViewById(R.id.container);
+		mContainer = (TargetingLayout) findViewById(R.id.container);
 		mContainer.setTarget(R.id.pin);
 		mPin = (ToggleButton) findViewById(R.id.pin);
 

@@ -46,7 +46,8 @@ public class FlyingHelper {
 	 * @throws Throwable
 	 */
 	public void installForFloatingWindow(ViewGroup target) throws Throwable {
-		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
+		mSettings.initialXp = 0;
+		mSettings.initialYp = 0;
 		mSettings.usePin = false;
 		// create FlyingLayout
 		installFlyingLayout(target.getContext(), true);
@@ -80,7 +81,8 @@ public class FlyingHelper {
 		if (!mSettings.alwaysShowPin()) {
 			mSettings.overwriteAlwaysShowPin(true);
 		}
-		mSettings.takeoffPosition = FA.TAKEOFF_POSITION_CENTER;
+		mSettings.initialXp = 0;
+		mSettings.initialYp = 0;
 		// create FlyingLayout
 		installFlyingLayout(target.getContext(), false);
 
@@ -291,28 +293,11 @@ public class FlyingHelper {
 			// take off
 			setOverlayShown(true);
 			boolean moved = false;
-			switch (mSettings.takeoffPosition) {
-			case FA.TAKEOFF_POSITION_CENTER:
-				// do noting
-				break;
-			case FA.TAKEOFF_POSITION_BOTTOM:
-				mFlyingLayout.moveWithoutSpeed(0,
-						Math.round(mFlyingLayout.getHeight() / 2.0f));
-				moved = true;
-				break;
-			case FA.TAKEOFF_POSITION_LOWER_LEFT:
-				mFlyingLayout.moveWithoutSpeed(
-						Math.round(-mFlyingLayout.getWidth() / 2.0f),
-						Math.round(mFlyingLayout.getHeight() / 2.0f));
-				moved = true;
-				break;
-			case FA.TAKEOFF_POSITION_LOWER_RIGHT:
-				mFlyingLayout.moveWithoutSpeed(
-						Math.round(mFlyingLayout.getWidth() / 2.0f),
-						Math.round(mFlyingLayout.getHeight() / 2.0f));
-				moved = true;
-				break;
-			}
+			InitialPosition pos = new InitialPosition(
+					mFlyingLayout.getContext(), mSettings.initialXp,
+					mSettings.initialYp);
+			mFlyingLayout.moveWithoutSpeed(pos.getX(mFlyingLayout),
+					pos.getY(mFlyingLayout));
 			if (moved
 					&& (mSettings.autoPin(FA.AUTO_PIN_WHEN_TAKEOFF) || mSettings
 							.autoPin(FA.AUTO_PIN_AFTER_MOVING))) {

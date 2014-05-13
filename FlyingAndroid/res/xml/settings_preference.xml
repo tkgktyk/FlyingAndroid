@@ -13,12 +13,11 @@
             android:entryValues="@array/speedValues"
             android:key="@string/pref_key_speed"
             android:title="@string/Speed" />
-        <ListPreference
-            android:defaultValue="0"
-            android:entries="@array/takeoffPositions"
-            android:entryValues="@array/takeoffPositionValues"
-            android:key="@string/pref_key_takeoff_position"
-            android:title="@string/Takeoff_position" />
+
+        <Preference
+            android:key="@string/pref_key_initial_position"
+            android:summary="@string/summary_initial_position"
+            android:title="@string/Initial_position" />
 
         <CheckBoxPreference
             android:defaultValue="true"
@@ -41,14 +40,13 @@
             android:defaultValue="false"
             android:key="@string/pref_key_use_pin"
             android:title="@string/Use_pin" />
-
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="@string/pref_key_use_pin"
             android:key="@string/pref_key_always_show_pin"
             android:summary="@string/summary_always_show_pin"
             android:title="@string/Always_show_pin" />
-        
+
         <Preference
             android:dependency="@string/pref_key_use_pin"
             android:key="@string/pref_key_pin_position"
