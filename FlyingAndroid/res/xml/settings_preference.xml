@@ -24,11 +24,6 @@
             android:key="@string/pref_key_notify_flying"
             android:summary="@string/summary_notify_flying"
             android:title="@string/Notify_flying" />
-
-        <Preference
-            android:key="@string/pref_key_black_list"
-            android:title="@string/Black_list" />
-
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/pref_key_flying_dialog"
@@ -79,6 +74,15 @@
             android:key="@string/pref_key_reset_when_collapsed"
             android:summary="@string/summary_reset_when_collapsed"
             android:title="@string/Reset_when_collapsed" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/Troubleshooting" >
+        <Preference
+            android:key="@string/pref_key_force_set_black_background"
+            android:summary="@string/summary_force_set_black_background"
+            android:title="@string/Force_set_black_background" />
+        <Preference
+            android:key="@string/pref_key_black_list"
+            android:title="@string/Black_list" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/Informations" >
         <Preference

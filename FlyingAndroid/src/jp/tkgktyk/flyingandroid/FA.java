@@ -33,6 +33,7 @@ public class FA {
 		public int initialYp;
 		public boolean notifyFlying;
 		public boolean flyingDialog;
+		public Set<String> forceSetBlackBackgroundSet;
 		public Set<String> blackSet;
 		// for pinning
 		public boolean usePin;
@@ -54,6 +55,9 @@ public class FA {
 					InitialPosition.DEFAULT_Y_PERCENT);
 			notifyFlying = pref.getBoolean("pref_key_notify_flying", true);
 			flyingDialog = pref.getBoolean("pref_key_flying_dialog", false);
+			forceSetBlackBackgroundSet = pref.getStringSet(
+					"pref_key_force_set_black_background",
+					Collections.<String> emptySet());
 			blackSet = pref.getStringSet("pref_key_black_list",
 					Collections.<String> emptySet());
 			// for pinning
@@ -80,11 +84,11 @@ public class FA {
 				usePin = newUsePin;
 			}
 		}
-		
+
 		public boolean alwaysShowPin() {
 			return usePin && alwaysShowPin;
 		}
-		
+
 		public void overwriteAlwaysShowPin(boolean show) {
 			alwaysShowPin = show;
 		}

@@ -32,9 +32,6 @@
     <string name="Notify_flying">Notify flying</string>
     <string name="pref_key_notify_flying">pref_key_notify_flying</string>
     <string name="summary_notify_flying">Draw boundary while flying.</string>
-    <!-- Blask list -->
-    <string name="Black_list">Black list&#8230;</string>
-    <string name="pref_key_black_list">pref_key_black_list</string>
     <!-- Flying dialog -->
     <string name="Flying_dialog">Flying dialog</string>
     <string name="pref_key_flying_dialog">pref_key_flying_dialog</string>
@@ -71,6 +68,16 @@
     <string name="pref_key_reset_when_collapsed">pref_key_reset_when_collapsed</string>
     <string name="summary_reset_when_collapsed">Reset flying state when status bar is collapsed. Requires Android 4.2 or later.</string>
 
+    <!-- Troubleshooting -->
+    <string name="Troubleshooting">Troubleshooting</string>
+    <!-- Force set black background -->
+    <string name="Force_set_black_background">Force set black background&#8230;</string>
+    <string name="pref_key_force_set_black_background">pref_key_force_set_black_background</string>
+    <string name="summary_force_set_black_background">Check apps for clear background if you encountered a ghost on the outside of app after moving.</string>
+    <!-- Blask list -->
+    <string name="Black_list">Black list&#8230;</string>
+    <string name="pref_key_black_list">pref_key_black_list</string>
+    
     <!-- Informations -->
     <string name="Informations">Informations</string>
     <!-- Developer -->
@@ -81,6 +88,7 @@
     <string name="summary_donate">Touch to open donation app\'s page on Google Play. (Please donate via donation app.)</string>
 
     <!-- SelectableListActivity -->
+    <string name="Show_only_checked">Show only checked</string>
     <string name="Show_only_black">Show only black</string>
     <string name="Show_only_white">Show only white</string>
     <string name="No_applications">No applications</string>

@@ -35,6 +35,9 @@ public class MainActivity extends Activity {
 			showListSummary(R.string.pref_key_speed);
 			// initial position
 			openActivity(R.string.pref_key_initial_position, InitialPositionActivity.class);
+			// force set black background
+			openSelectorOnClick(R.string.pref_key_force_set_black_background,
+					R.string.Show_only_checked);
 			// black list
 			openSelectorOnClick(R.string.pref_key_black_list,
 					R.string.Show_only_black);

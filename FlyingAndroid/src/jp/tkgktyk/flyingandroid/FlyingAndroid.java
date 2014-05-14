@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -104,7 +105,10 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 								.getAdditionalInstanceField(activity,
 										FA_HANDLED);
 						if (handled.equals(Boolean.FALSE)) {
-							resetBackground(activity);
+							if (helper.getSettings().forceSetBlackBackgroundSet
+									.contains(activity.getPackageName())) {
+								forceSetBlackBackground(activity);
+							}
 							XposedHelpers.setAdditionalInstanceField(activity,
 									FA_HANDLED, Boolean.TRUE);
 						}
@@ -241,26 +245,10 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 		return false;
 	}
 
-	@SuppressWarnings("deprecation")
-	private void resetBackground(Activity activity) {
-		// force set window background for clear background.
-		// ColorDrawable and a certain View
-		View decor = activity.getWindow().peekDecorView();
-		Drawable drawable = decor.getBackground();
-		if (drawable == null || isProblemDrawable(drawable)) {
-			FA.logD("force set background.");
-			drawable = new ColorDrawable(activity.getResources().getColor(
-					android.R.color.background_dark));
-			activity.getWindow().setBackgroundDrawable(drawable);
-			drawable = decor.getBackground();
-			FlyingHelper helper = FlyingHelper.getFrom(decor);
-			helper.getFlyingLayout().setBackgroundDrawable(drawable);
-		}
-	}
-
-	private boolean isProblemDrawable(Drawable drawable) {
-		return drawable instanceof ColorDrawable
-				&& ((ColorDrawable) drawable).getAlpha() == 0xFF;
+	private void forceSetBlackBackground(Activity activity) {
+		// force set black background for clear background.
+		activity.getWindow().setBackgroundDrawableResource(
+				android.R.drawable.screen_background_dark);
 	}
 
 	private void hooksForDialog() {
