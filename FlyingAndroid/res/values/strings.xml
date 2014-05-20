@@ -67,7 +67,11 @@
     <string name="Reset_when_collapsed">Reset when collapsed</string>
     <string name="pref_key_reset_when_collapsed">pref_key_reset_when_collapsed</string>
     <string name="summary_reset_when_collapsed">Reset flying state when status bar is collapsed. Requires Android 4.2 or later.</string>
-
+    <!-- Use niwatori button -->
+    <string name="Niwatori_button">Niwatori button</string>
+    <string name="pref_key_use_niwatori_button">pref_key_use_niwatori_button</string>
+    <string name="summary_use_niwatori_button">Show Niwatori instead of Unpin button. This feature requires your feeling to donate.</string>
+    
     <!-- Troubleshooting -->
     <string name="Troubleshooting">Troubleshooting</string>
     <!-- Force set black background -->
@@ -86,7 +90,8 @@
     <!-- Donate -->
     <string name="Donate">Donate</string>
     <string name="summary_donate">Touch to open donation app\'s page on Google Play. (Please donate via donation app.)</string>
-
+    <string name="pref_key_feeling_to_donate">pref_key_feeling_to_donate</string>
+    
     <!-- SelectableListActivity -->
     <string name="Show_only_checked">Show only checked</string>
     <string name="Show_only_black">Show only black</string>

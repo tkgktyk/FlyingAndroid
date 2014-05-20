@@ -44,6 +44,7 @@ public class FA {
 		public Set<String> whiteSet;
 		private boolean flyingStatusBar;
 		public boolean resetWhenCollapsed;
+		public boolean useNiwatoriButton;
 
 		public Settings(XSharedPreferences pref) {
 			pref.reload();
@@ -75,6 +76,8 @@ public class FA {
 					false);
 			resetWhenCollapsed = pref.getBoolean(
 					"pref_key_reset_when_collapsed", false);
+			useNiwatoriButton = pref.getBoolean("pref_key_use_niwatori_button",
+					false);
 		}
 
 		public void overwriteUsePinByWhiteList(String packageName) {

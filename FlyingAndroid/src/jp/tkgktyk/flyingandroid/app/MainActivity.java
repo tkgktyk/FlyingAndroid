@@ -34,7 +34,8 @@ public class MainActivity extends Activity {
 			// scroll speed
 			showListSummary(R.string.pref_key_speed);
 			// initial position
-			openActivity(R.string.pref_key_initial_position, InitialPositionActivity.class);
+			openActivity(R.string.pref_key_initial_position,
+					InitialPositionActivity.class);
 			// force set black background
 			openSelectorOnClick(R.string.pref_key_force_set_black_background,
 					R.string.Show_only_checked);
@@ -48,6 +49,27 @@ public class MainActivity extends Activity {
 			// white list
 			openSelectorOnClick(R.string.pref_key_white_list,
 					R.string.Show_only_white);
+			// niwatori button
+			if (getPreferenceManager().getSharedPreferences().getBoolean(
+					getString(R.string.pref_key_feeling_to_donate), false)) {
+				Preference niwatori = findPreference(R.string.pref_key_use_niwatori_button);
+				niwatori.setEnabled(true);
+			}
+			Preference donate = findPreference(R.string.pref_key_feeling_to_donate);
+			donate.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+					getPreferenceManager()
+							.getSharedPreferences()
+							.edit()
+							.putBoolean(
+									getString(R.string.pref_key_feeling_to_donate),
+									true).apply();
+					Preference niwatori = findPreference(R.string.pref_key_use_niwatori_button);
+					niwatori.setEnabled(true);
+					return false;
+				}
+			});
 		}
 
 		protected Preference findPreference(int id) {
@@ -92,11 +114,10 @@ public class MainActivity extends Activity {
 				public boolean onPreferenceClick(Preference preference) {
 					Intent activity = new Intent(preference.getContext(),
 							AppSelectActivity.class);
-					activity.putExtra(
-							AppSelectActivity.EXTRA_PREF_KEY_STRING,
+					activity.putExtra(AppSelectActivity.EXTRA_PREF_KEY_STRING,
 							preference.getKey());
-					activity.putExtra(
-							AppSelectActivity.EXTRA_ONLY_TEXT_ID, textId);
+					activity.putExtra(AppSelectActivity.EXTRA_ONLY_TEXT_ID,
+							textId);
 					startActivity(activity);
 					return true;
 				}

@@ -182,6 +182,9 @@ public class FlyingHelper {
 						}
 					}
 				});
+		if (mSettings.useNiwatoriButton) {
+			mPinButton.setButtonDrawable(R.drawable.pin_niwatori);
+		}
 
 		mOverlayView.setVisibility(View.GONE);
 		if (mSettings.usePin) {

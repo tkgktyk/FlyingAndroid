@@ -74,6 +74,13 @@
             android:key="@string/pref_key_reset_when_collapsed"
             android:summary="@string/summary_reset_when_collapsed"
             android:title="@string/Reset_when_collapsed" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/pref_key_use_pin"
+            android:enabled="false"
+            android:key="@string/pref_key_use_niwatori_button"
+            android:summary="@string/summary_use_niwatori_button"
+            android:title="@string/Niwatori_button" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/Troubleshooting" >
         <Preference
@@ -93,6 +100,7 @@
                 android:data="http://forum.xda-developers.com/xposed/modules/mod-flying-android-t2717372" />
         </Preference>
         <Preference
+            android:key="@string/pref_key_feeling_to_donate"
             android:summary="@string/summary_donate"
             android:title="@string/Donate" >
             <intent
