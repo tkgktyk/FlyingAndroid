@@ -300,8 +300,11 @@ public class FlyingHelper {
 					mSettings.initialYp);
 			int x = pos.getX(mFlyingLayout);
 			int y = pos.getY(mFlyingLayout);
-			boolean moved = (x != 0 || y != 0);
-			mFlyingLayout.moveWithoutSpeed(x, y);
+			boolean moved = false;
+			if (x != 0 || y != 0) {
+				moved = true;
+				mFlyingLayout.moveWithoutSpeed(x, y);
+			}
 			if (moved
 					&& (mSettings.autoPin(FA.AUTO_PIN_WHEN_TAKEOFF) || mSettings
 							.autoPin(FA.AUTO_PIN_AFTER_MOVING))) {
