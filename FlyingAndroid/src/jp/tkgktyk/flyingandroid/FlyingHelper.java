@@ -295,12 +295,13 @@ public class FlyingHelper {
 		if (mFlyingLayout.staysHome() && !mFlying) {
 			// take off
 			setOverlayShown(true);
-			boolean moved = false;
 			InitialPosition pos = new InitialPosition(
 					mFlyingLayout.getContext(), mSettings.initialXp,
 					mSettings.initialYp);
-			mFlyingLayout.moveWithoutSpeed(pos.getX(mFlyingLayout),
-					pos.getY(mFlyingLayout));
+			int x = pos.getX(mFlyingLayout);
+			int y = pos.getY(mFlyingLayout);
+			boolean moved = (x != 0 || y != 0);
+			mFlyingLayout.moveWithoutSpeed(x, y);
 			if (moved
 					&& (mSettings.autoPin(FA.AUTO_PIN_WHEN_TAKEOFF) || mSettings
 							.autoPin(FA.AUTO_PIN_AFTER_MOVING))) {
