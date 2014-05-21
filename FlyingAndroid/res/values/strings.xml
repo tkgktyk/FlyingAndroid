@@ -70,7 +70,7 @@
     <!-- Use niwatori button -->
     <string name="Niwatori_button">Niwatori button</string>
     <string name="pref_key_use_niwatori_button">pref_key_use_niwatori_button</string>
-    <string name="summary_use_niwatori_button">Show Niwatori instead of Unpin button. This feature requires your feeling to donate. (Tap below "Donate" to unlock this feature.)</string>
+    <string name="summary_use_niwatori_button">Show Niwatori instead of Unpin button. This feature requires your feeling to donate. (Tap below \"Donate\" to unlock this feature.)</string>
     
     <!-- Troubleshooting -->
     <string name="Troubleshooting">Troubleshooting</string>
