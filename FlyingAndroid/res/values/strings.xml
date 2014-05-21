@@ -70,7 +70,7 @@
     <!-- Use niwatori button -->
     <string name="Niwatori_button">Niwatori button</string>
     <string name="pref_key_use_niwatori_button">pref_key_use_niwatori_button</string>
-    <string name="summary_use_niwatori_button">Show Niwatori instead of Unpin button. This feature requires your feeling to donate.</string>
+    <string name="summary_use_niwatori_button">Show Niwatori instead of Unpin button. This feature requires your feeling to donate. (Tap below "Donate" to unlock this feature.)</string>
     
     <!-- Troubleshooting -->
     <string name="Troubleshooting">Troubleshooting</string>
@@ -86,10 +86,10 @@
     <string name="Informations">Informations</string>
     <!-- Developer -->
     <string name="Developer">Developer</string>
-    <string name="summary_developer">Flying Android is coded by tkgktyk. Touch to open a thread on XDA.</string>
+    <string name="summary_developer">Flying Android is coded by tkgktyk. Tap to open a thread on XDA.</string>
     <!-- Donate -->
     <string name="Donate">Donate</string>
-    <string name="summary_donate">Touch to open donation app\'s page on Google Play. (Please donate via donation app.)</string>
+    <string name="summary_donate">Tap to open donation app\'s page on Google Play. (Please donate via donation app.)</string>
     <string name="pref_key_feeling_to_donate">pref_key_feeling_to_donate</string>
     
     <!-- SelectableListActivity -->
