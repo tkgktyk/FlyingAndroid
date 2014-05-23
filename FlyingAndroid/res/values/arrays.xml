@@ -2,6 +2,12 @@
 <resources>
 
     <string-array name="speeds">
+        <item>x9.0</item>
+        <item>x8.0</item>
+        <item>x7.0</item>
+        <item>x6.0</item>
+        <item>x5.0</item>
+        <item>x4.0</item>
         <item>x3.0</item>
         <item>x2.5</item>
         <item>x2.0</item>
@@ -9,6 +15,12 @@
         <item>x1.0</item>
     </string-array>
     <string-array name="speedValues">
+        <item>9</item>
+        <item>8</item>
+        <item>7</item>
+        <item>6</item>
+        <item>5</item>
+        <item>4</item>
         <item>3</item>
         <item>2.5</item>
         <item>2</item>
