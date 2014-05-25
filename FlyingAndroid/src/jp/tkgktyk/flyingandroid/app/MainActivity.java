@@ -1,12 +1,8 @@
 package jp.tkgktyk.flyingandroid.app;
 
+import jp.tkgktyk.flyingandroid.FA;
 import jp.tkgktyk.flyingandroid.R;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -17,12 +13,9 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 
 public class MainActivity extends Activity {
 
-	private final static int NOTIFICATION_ID = 1234567;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,22 +32,14 @@ public class MainActivity extends Activity {
 			getPreferenceManager().setSharedPreferencesMode(
 					PreferenceActivity.MODE_WORLD_READABLE);
 			addPreferencesFromResource(R.xml.settings_preference);
-			
-			CheckBoxPreference notificationPref = (CheckBoxPreference) findPreference(R.string.pref_key_use_notification);
-			
-			setToggleNotification(notificationPref.isChecked());
 
 			// scroll speed
 			showListSummary(R.string.pref_key_speed);
 			// initial position
 			openActivity(R.string.pref_key_initial_position,
 					InitialPositionActivity.class);
-			// force set black background
-			openSelectorOnClick(R.string.pref_key_force_set_black_background,
-					R.string.Show_only_checked);
-			// black list
-			openSelectorOnClick(R.string.pref_key_black_list,
-					R.string.Show_only_black);
+			// use notification toggle
+			setupNotificationToggle();
 			// pin position
 			openActivity(R.string.pref_key_pin_position, MovePinActivity.class);
 			// auto pin
@@ -63,26 +48,13 @@ public class MainActivity extends Activity {
 			openSelectorOnClick(R.string.pref_key_white_list,
 					R.string.Show_only_white);
 			// niwatori button
-			if (getPreferenceManager().getSharedPreferences().getBoolean(
-					getString(R.string.pref_key_feeling_to_donate), false)) {
-				Preference niwatori = findPreference(R.string.pref_key_use_niwatori_button);
-				niwatori.setEnabled(true);
-			}
-			Preference donate = findPreference(R.string.pref_key_feeling_to_donate);
-			donate.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
-					getPreferenceManager()
-							.getSharedPreferences()
-							.edit()
-							.putBoolean(
-									getString(R.string.pref_key_feeling_to_donate),
-									true).apply();
-					Preference niwatori = findPreference(R.string.pref_key_use_niwatori_button);
-					niwatori.setEnabled(true);
-					return false;
-				}
-			});
+			setupNiwatoriButton();
+			// force set black background
+			openSelectorOnClick(R.string.pref_key_force_set_black_background,
+					R.string.Show_only_checked);
+			// black list
+			openSelectorOnClick(R.string.pref_key_black_list,
+					R.string.Show_only_black);
 		}
 
 		protected Preference findPreference(int id) {
@@ -148,53 +120,40 @@ public class MainActivity extends Activity {
 				}
 			});
 		}
-		
-		@SuppressWarnings("deprecation")
-		@SuppressLint("NewApi")
-		private void setToggleNotification(boolean showNotification){
-			
-			NotificationManager nm = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-			
-			if(showNotification){
-				
-				Notification.Builder notBuilder = new Notification.Builder(getActivity());
-				
-				notBuilder.setOngoing(true);
-				notBuilder.setContentTitle("Toggle Flying Android");
-				
-				notBuilder.setSmallIcon(R.drawable.ic_launcher);
-				
-				notBuilder.setWhen(System.currentTimeMillis());
-				
-				PendingIntent toggleBroadcast = PendingIntent.getBroadcast(getActivity(), 0, new Intent("jp.tkgktyk.flyingandroid.ACTION_TOGGLE"), 0);
-				
-				notBuilder.setContentIntent(toggleBroadcast);
-				
-				if(android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1){
-					nm.notify(NOTIFICATION_ID, notBuilder.getNotification());
-				}
-				else{
-					nm.notify(NOTIFICATION_ID, notBuilder.build());
-				}
-			}
-			else{
-				nm.cancel(NOTIFICATION_ID);
-			}
+
+		private void setupNotificationToggle() {
+			CheckBoxPreference notificationPref = (CheckBoxPreference) findPreference(R.string.pref_key_use_notification);
+			notificationPref
+					.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+						@Override
+						public boolean onPreferenceClick(Preference preference) {
+							CheckBoxPreference cbPref = (CheckBoxPreference) preference;
+							FA.showToggleNotification(cbPref.getContext(),
+									cbPref.isChecked());
+							return false;
+						}
+					});
 		}
-		
-		@Override
-		public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference){
-			
-			if(preference.getKey().equals(getString(R.string.pref_key_use_notification))){
-				
-				CheckBoxPreference cbPref = (CheckBoxPreference)preference;
-				
-				setToggleNotification(cbPref.isChecked());				
-				
-				return true;
+
+		private void setupNiwatoriButton() {
+			if (getPreferenceManager().getSharedPreferences().getBoolean(
+					getString(R.string.pref_key_feeling_to_donate), false)) {
+				Preference niwatori = findPreference(R.string.pref_key_use_niwatori_button);
+				niwatori.setEnabled(true);
 			}
-			
-			return super.onPreferenceTreeClick(preferenceScreen, preference);
+			Preference donate = findPreference(R.string.pref_key_feeling_to_donate);
+			donate.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+					getPreferenceManager()
+							.getSharedPreferences()
+							.edit()
+							.putBoolean(
+									getString(R.string.pref_key_feeling_to_donate),
+									true).apply();
+					return false;
+				}
+			});
 		}
 	}
 }

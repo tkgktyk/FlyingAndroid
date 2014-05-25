@@ -28,7 +28,7 @@
             android:defaultValue="false"
             android:key="@string/pref_key_flying_dialog"
             android:summary="@string/summary_flying_dialog"
-            android:title="@string/Flying_dialog" />
+            android:title="@string/Flying_Dialog" />
          <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/pref_key_use_notification"
@@ -71,7 +71,7 @@
             android:dependency="@string/pref_key_use_pin"
             android:key="@string/pref_key_flying_status_bar"
             android:summary="@string/summary_flying_status_bar"
-            android:title="@string/Flying_status_bar" />
+            android:title="@string/Flying_Status_Bar" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="@string/pref_key_use_pin"
@@ -95,7 +95,7 @@
             android:key="@string/pref_key_black_list"
             android:title="@string/Black_list" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/Informations" >
+    <PreferenceCategory android:title="@string/Information" >
         <Preference
             android:summary="@string/summary_developer"
             android:title="@string/Developer" >
