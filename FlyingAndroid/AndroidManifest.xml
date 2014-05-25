@@ -61,7 +61,7 @@
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
             <intent-filter>
-                <action android:name="android.intent.action.DEFAULT" />
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
         <activity
@@ -71,7 +71,7 @@
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
             <intent-filter>
-                <action android:name="android.intent.action.DEFAULT" />
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
         <activity
@@ -81,7 +81,6 @@
         <activity
             android:name=".app.InitialPositionActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
->
         </activity>
     </application>
 
