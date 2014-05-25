@@ -39,7 +39,7 @@
     <!-- Use Notification -->
     <string name="use_notification">Use Notification Toggle</string>
     <string name="pref_key_use_notification" translatable="false">pref_key_use_notification</string>
-    
+
     <!-- Pin -->
     <string name="pinning">Pinning</string>
     <!-- Use pin -->
@@ -58,6 +58,9 @@
     <!-- Auto pin -->
     <string name="auto_pin">Auto pin</string>
     <string name="pref_key_auto_pin_selection" translatable="false">pref_key_auto_pin_selection</string>
+    <string name="disabled">Disabled</string>
+    <string name="when_takeoff">When takeoff</string>
+    <string name="after_moving">After moving</string>
     <!-- White list -->
     <string name="white_list">White list&#8230;</string>
     <string name="pref_key_white_list" translatable="false">pref_key_white_list</string>
@@ -74,7 +77,7 @@
     <string name="niwatori_button">Niwatori button</string>
     <string name="pref_key_use_niwatori_button" translatable="false">pref_key_use_niwatori_button</string>
     <string name="summary_use_niwatori_button">Show Niwatori instead of Unpin button. This feature requires your feeling to donate. (Tap below \"Donate\" to unlock this feature.)</string>
-    
+
     <!-- Troubleshooting -->
     <string name="troubleshooting">Troubleshooting</string>
     <!-- Force set black background -->
@@ -84,7 +87,7 @@
     <!-- Blask list -->
     <string name="black_list">Black list&#8230;</string>
     <string name="pref_key_black_list" translatable="false">pref_key_black_list</string>
-    
+
     <!-- Information -->
     <string name="information">Information</string>
     <!-- Developer -->
@@ -94,6 +97,9 @@
     <string name="donate">Donate</string>
     <string name="summary_donate">Tap to open donation app\'s page on Google Play. (Please donate via donation app.)</string>
     <string name="pref_key_feeling_to_donate" translatable="false">pref_key_feeling_to_donate</string>
+	<!-- Special Thanks -->
+    <string name="special_thanks">Special Thanks</string>
+    <string name="summary_special_thanks">Tap to open information page.</string>
     
     <!-- SelectableListActivity -->
     <string name="show_only_checked">Show only checked</string>
@@ -103,4 +109,5 @@
 
     <!-- Notification -->
     <string name="notification_title">Toggle Flying Android</string>
+
 </resources>
