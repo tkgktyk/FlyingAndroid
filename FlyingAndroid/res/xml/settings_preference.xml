@@ -7,11 +7,11 @@
         android:title="@string/note" />
 
     <PreferenceCategory android:title="@string/flying" >
-        <ListPreference
+        <EditTextPreference
             android:defaultValue="1.5"
-            android:entries="@array/speeds"
-            android:entryValues="@array/speedValues"
+			android:inputType="numberDecimal"
             android:key="@string/pref_key_speed"
+            android:selectAllOnFocus="true"
             android:title="@string/speed" />
 
         <Preference

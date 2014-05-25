@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -34,7 +35,7 @@ public class MainActivity extends Activity {
 			addPreferencesFromResource(R.xml.settings_preference);
 
 			// scroll speed
-			showListSummary(R.string.pref_key_speed);
+			showTextSummary(R.string.pref_key_speed);
 			// initial position
 			openActivity(R.string.pref_key_initial_position,
 					InitialPositionActivity.class);
@@ -90,6 +91,21 @@ public class MainActivity extends Activity {
 				entry = "default";
 			}
 			pref.setSummary(getString(R.string.current_s1, entry));
+		}
+
+		private void showTextSummary(int id) {
+			EditTextPreference et = (EditTextPreference) findPreference(id);
+			et.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+				@Override
+				public boolean onPreferenceChange(Preference preference,
+						Object newValue) {
+					preference.setSummary(getString(R.string.current_s1,
+							(String) newValue));
+					return true;
+				}
+			});
+			et.getOnPreferenceChangeListener().onPreferenceChange(et,
+					et.getText());
 		}
 
 		private void openSelectorOnClick(int id, final int textId) {
