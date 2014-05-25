@@ -82,8 +82,12 @@
     <string name="Black_list">Black list&#8230;</string>
     <string name="pref_key_black_list">pref_key_black_list</string>
     
+    <!-- Use Notification -->
+    <string name="use_notification">Use Notification Toggle</string>
+    <string name="pref_key_use_notification">pref_key_use_notification</string>
+    
     <!-- Informations -->
-    <string name="Informations">Informations</string>
+    <string name="Informations">Information</string>
     <!-- Developer -->
     <string name="Developer">Developer</string>
     <string name="summary_developer">Flying Android is coded by tkgktyk. Tap to open a thread on XDA.</string>
