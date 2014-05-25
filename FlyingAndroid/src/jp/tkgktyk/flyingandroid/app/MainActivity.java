@@ -1,9 +1,15 @@
 package jp.tkgktyk.flyingandroid.app;
 
 import jp.tkgktyk.flyingandroid.R;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -11,9 +17,12 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 
 public class MainActivity extends Activity {
 
+	private final static int NOTIFICATION_ID = 1234567;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -30,6 +39,10 @@ public class MainActivity extends Activity {
 			getPreferenceManager().setSharedPreferencesMode(
 					PreferenceActivity.MODE_WORLD_READABLE);
 			addPreferencesFromResource(R.xml.settings_preference);
+			
+			CheckBoxPreference notificationPref = (CheckBoxPreference) findPreference(R.string.pref_key_use_notification);
+			
+			setToggleNotification(notificationPref.isChecked());
 
 			// scroll speed
 			showListSummary(R.string.pref_key_speed);
@@ -134,6 +147,54 @@ public class MainActivity extends Activity {
 					return true;
 				}
 			});
+		}
+		
+		@SuppressWarnings("deprecation")
+		@SuppressLint("NewApi")
+		private void setToggleNotification(boolean showNotification){
+			
+			NotificationManager nm = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+			
+			if(showNotification){
+				
+				Notification.Builder notBuilder = new Notification.Builder(getActivity());
+				
+				notBuilder.setOngoing(true);
+				notBuilder.setContentTitle("Toggle Flying Android");
+				
+				notBuilder.setSmallIcon(R.drawable.ic_launcher);
+				
+				notBuilder.setWhen(System.currentTimeMillis());
+				
+				PendingIntent toggleBroadcast = PendingIntent.getBroadcast(getActivity(), 0, new Intent("jp.tkgktyk.flyingandroid.ACTION_TOGGLE"), 0);
+				
+				notBuilder.setContentIntent(toggleBroadcast);
+				
+				if(android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1){
+					nm.notify(NOTIFICATION_ID, notBuilder.getNotification());
+				}
+				else{
+					nm.notify(NOTIFICATION_ID, notBuilder.build());
+				}
+			}
+			else{
+				nm.cancel(NOTIFICATION_ID);
+			}
+		}
+		
+		@Override
+		public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference){
+			
+			if(preference.getKey().equals(getString(R.string.pref_key_use_notification))){
+				
+				CheckBoxPreference cbPref = (CheckBoxPreference)preference;
+				
+				setToggleNotification(cbPref.isChecked());				
+				
+				return true;
+			}
+			
+			return super.onPreferenceTreeClick(preferenceScreen, preference);
 		}
 	}
 }
