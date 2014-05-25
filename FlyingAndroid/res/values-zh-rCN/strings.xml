@@ -20,67 +20,49 @@
     <string name="flying">飞行中</string>
     <!-- Speed -->
     <string name="speed">速度</string>
-    <string name="pref_key_speed">pref_key_speed</string>
     <!-- Initial position -->
-    <string name="Initial_position">初始位置</string>
-    <string name="pref_key_initial_position">pref_key_initial_position</string>
-    <string name="pref_key_initial_x_percent">pref_key_initial_x_percent</string>
-    <string name="pref_key_initial_y_percent">pref_key_initial_y_percent</string>
+    <string name="initial_position">初始位置</string>
     <string name="summary_initial_position">点击&quot;起飞/降落&quot;时，会把窗口移动到这个初始位置。</string>
     <string name="usage_of_initial_position">拖动以移动位置。\n按返回键保存位置。</string>
     <!-- Notify flying -->
     <string name="notify_flying">飞行提示</string>
-    <string name="pref_key_notify_flying">pref_key_notify_flying</string>
     <string name="summary_notify_flying">飞行时，在窗口边缘显示绿边。</string>
     <!-- Flying dialog -->
     <string name="flying_dialog">让对话框飞</string>
-    <string name="pref_key_flying_dialog">pref_key_flying_dialog</string>
     <string name="summary_flying_dialog">启用后，可以在对话框的边上竖直拖动来使对话框起飞。注意：输入法也是一个对话框。</string>
 
     <!-- Pin -->
     <string name="pinning">钉子</string>
     <!-- Use pin -->
     <string name="use_pin">使用钉子</string>
-    <string name="pref_key_use_pin">pref_key_use_pin</string>
     <!-- Always show pin -->
     <string name="always_show_pin">总是显示钉子</string>
-    <string name="pref_key_always_show_pin">pref_key_always_show_pin</string>
     <string name="summary_always_show_pin">钉子总在应用上显示。</string>
     <!-- Pin position -->
     <string name="pin_position">钉子位置</string>
-    <string name="pref_key_pin_position">pref_key_pin_position</string>
-    <string name="pref_key_pin_x_percent">pref_key_pin_x_percent</string>
-    <string name="pref_key_pin_y_percent">pref_key_pin_y_percent</string>
     <string name="summary_pin_position">长按拖动钉子，按返回键保存。</string>
     <!-- Auto pin -->
     <string name="auto_pin">自动钉住</string>
-    <string name="pref_key_auto_pin_selection">pref_key_auto_pin_selection</string>
     <!-- White list -->
     <string name="white_list">白名单</string>
-    <string name="pref_key_white_list">pref_key_white_list</string>
     <string name="summary_white_list">使钉子只在特定的应用上显示，不勾选任何应用则在所有应用上显示。</string>
     <!-- Flying status bar -->
     <string name="flying_status_bar">让状态栏飞</string>
-    <string name="pref_key_flying_status_bar">pref_key_flying_status_bar</string>
     <string name="summary_flying_status_bar">在展开的状态栏中显示钉子。</string>
     <!-- Reset when status bar is collapsed -->
     <string name="reset_when_collapsed">收起则复原</string>
-    <string name="pref_key_reset_when_collapsed">pref_key_reset_when_collapsed</string>
     <string name="summary_reset_when_collapsed">状态栏收起时，重置飞行状态。需要 Android 4.2 以上。</string>
     <!-- Use niwatori button -->
     <string name="niwatori_button">公鸡按钮</string>
-    <string name="pref_key_use_niwatori_button">pref_key_use_niwatori_button</string>
     <string name="summary_use_niwatori_button">将拔钉按钮替换成公鸡按钮。仅限捐赠版本。（点击下面的捐赠按钮即可解锁）</string>
     
     <!-- Troubleshooting -->
     <string name="troubleshooting">处理麻烦</string>
     <!-- Force set black background -->
     <string name="force_set_black_background">强制黑色背景</string>
-    <string name="pref_key_force_set_black_background">pref_key_force_set_black_background</string>
     <string name="summary_force_set_black_background">如果你发现移动应用后应用界面仍在背景中残留，勾选即可将背景变为黑色。</string>
     <!-- Blask list -->
     <string name="black_list">黑名单</string>
-    <string name="pref_key_black_list">pref_key_black_list</string>
     
     <!-- Informations -->
     <string name="information">信息</string>
@@ -90,7 +72,6 @@
     <!-- Donate -->
     <string name="donate">捐赠</string>
     <string name="summary_donate">点击可以打开本应用在 Google Play 上的捐赠页面。（请通过该捐赠应用向我捐赠，谢谢）</string>
-    <string name="pref_key_feeling_to_donate">pref_key_feeling_to_donate</string>
     
     <!-- SelectableListActivity -->
     <string name="show_only_checked">只显示已勾选项</string>

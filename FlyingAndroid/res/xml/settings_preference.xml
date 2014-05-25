@@ -17,7 +17,7 @@
         <Preference
             android:key="@string/pref_key_initial_position"
             android:summary="@string/summary_initial_position"
-            android:title="@string/Initial_position" />
+            android:title="@string/initial_position" />
 
         <CheckBoxPreference
             android:defaultValue="true"
