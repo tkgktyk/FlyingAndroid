@@ -3,10 +3,22 @@ package jp.tkgktyk.flyingandroid;
 import java.util.Collections;
 import java.util.Set;
 
+import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 
 public class FA {
+	public static final String PACKAGE_NAME = FA.class.getPackage()
+			.getName();
+	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
+
+	private final static int NOTIFICATION_ID = R.drawable.ic_launcher;
 
 	public static void logD(String text) {
 		if (BuildConfig.DEBUG) {
@@ -113,6 +125,37 @@ public class FA {
 				XposedBridge.log(e);
 			}
 			return ret;
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	@SuppressLint("NewApi")
+	public static void showToggleNotification(Context context, boolean show) {
+		NotificationManager nm = (NotificationManager) context
+				.getSystemService(Context.NOTIFICATION_SERVICE);
+		if (show) {
+			Notification.Builder notBuilder = new Notification.Builder(context);
+
+			notBuilder.setOngoing(true);
+			notBuilder.setContentTitle(context
+					.getText(R.string.notification_title));
+
+			notBuilder.setSmallIcon(R.drawable.ic_launcher);
+
+			// notBuilder.setWhen(System.currentTimeMillis());
+
+			PendingIntent toggleBroadcast = PendingIntent.getBroadcast(context,
+					0, new Intent(FA.ACTION_TOGGLE), 0);
+
+			notBuilder.setContentIntent(toggleBroadcast);
+
+			if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+				nm.notify(NOTIFICATION_ID, notBuilder.getNotification());
+			} else {
+				nm.notify(NOTIFICATION_ID, notBuilder.build());
+			}
+		} else {
+			nm.cancel(NOTIFICATION_ID);
 		}
 	}
 }
