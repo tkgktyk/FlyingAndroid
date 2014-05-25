@@ -46,15 +46,15 @@ public class MainActivity extends Activity {
 			showListSummary(R.string.pref_key_auto_pin_selection);
 			// white list
 			openSelectorOnClick(R.string.pref_key_white_list,
-					R.string.Show_only_white);
+					R.string.show_only_white);
 			// niwatori button
 			setupNiwatoriButton();
 			// force set black background
 			openSelectorOnClick(R.string.pref_key_force_set_black_background,
-					R.string.Show_only_checked);
+					R.string.show_only_checked);
 			// black list
 			openSelectorOnClick(R.string.pref_key_black_list,
-					R.string.Show_only_black);
+					R.string.show_only_black);
 		}
 
 		protected Preference findPreference(int id) {
@@ -89,7 +89,7 @@ public class MainActivity extends Activity {
 			} else {
 				entry = "default";
 			}
-			pref.setSummary(getString(R.string.Current_s1, entry));
+			pref.setSummary(getString(R.string.current_s1, entry));
 		}
 
 		private void openSelectorOnClick(int id, final int textId) {
