@@ -43,6 +43,9 @@
     <string name="summary_pin_position">长按拖动钉子，按返回键保存。</string>
     <!-- Auto pin -->
     <string name="auto_pin">自动钉住</string>
+    <string name="disabled">Disabled</string>
+    <string name="when_takeoff">When takeoff</string>
+    <string name="after_moving">After moving</string>
     <!-- White list -->
     <string name="white_list">白名单</string>
     <string name="summary_white_list">使钉子只在特定的应用上显示，不勾选任何应用则在所有应用上显示。</string>
@@ -55,7 +58,7 @@
     <!-- Use niwatori button -->
     <string name="niwatori_button">公鸡按钮</string>
     <string name="summary_use_niwatori_button">将拔钉按钮替换成公鸡按钮。仅限捐赠版本。（点击下面的捐赠按钮即可解锁）</string>
-    
+
     <!-- Troubleshooting -->
     <string name="troubleshooting">处理麻烦</string>
     <!-- Force set black background -->
@@ -63,7 +66,7 @@
     <string name="summary_force_set_black_background">如果你发现移动应用后应用界面仍在背景中残留，勾选即可将背景变为黑色。</string>
     <!-- Blask list -->
     <string name="black_list">黑名单</string>
-    
+
     <!-- Informations -->
     <string name="information">信息</string>
     <!-- Developer -->
@@ -72,6 +75,9 @@
     <!-- Donate -->
     <string name="donate">捐赠</string>
     <string name="summary_donate">点击可以打开本应用在 Google Play 上的捐赠页面。（请通过该捐赠应用向我捐赠，谢谢）</string>
+	<!-- Special Thanks -->
+    <string name="special_thanks">Special Thanks</string>
+    <string name="summary_special_thanks">Tap to open information page.</string>
     
     <!-- SelectableListActivity -->
     <string name="show_only_checked">只显示已勾选项</string>
@@ -79,4 +85,7 @@
     <string name="show_only_white">只显示已加入白名单的项</string>
     <string name="no_applications">没有应用</string>
 
+    <!-- Notification -->
+    <string name="notification_title">Toggle Flying Android</string>
+    
 </resources>
