@@ -111,6 +111,13 @@
                 android:action="android.intent.action.VIEW"
                 android:data="market://details?id=jp.tkgktyk.donatetotkgktyk" />
         </Preference>
-    </PreferenceCategory>
+        <Preference
+            android:summary="@string/summary_special_thanks"
+            android:title="@string/special_thanks" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://sites.google.com/site/tkgktyk/android/flying-android" />
+        </Preference>
+        </PreferenceCategory>
 
 </PreferenceScreen>
