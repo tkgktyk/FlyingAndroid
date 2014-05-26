@@ -5,6 +5,7 @@ import java.util.List;
 
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
 import jp.tkgktyk.flyinglayout.FlyingLayoutF;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -29,6 +30,7 @@ public class FlyingHelper {
 	private Drawable mBoundaryDrawable;
 
 	private boolean mFlying = false;
+	private boolean mForceSet = false;
 
 	public FlyingHelper(FA.Settings settings) {
 		mSettings = settings.clone();
@@ -81,8 +83,6 @@ public class FlyingHelper {
 		if (!mSettings.alwaysShowPin()) {
 			mSettings.overwriteAlwaysShowPin(true);
 		}
-		mSettings.initialXp = 0;
-		mSettings.initialYp = 0;
 		// create FlyingLayout
 		installFlyingLayout(target.getContext(), false);
 
@@ -286,25 +286,35 @@ public class FlyingHelper {
 	}
 
 	private void fly() {
+		forceSetBlackBackground();
+		if (mFlyingLayout.staysHome()) {
+			moveToInitialPosition();
+		}
 		mFlyingLayout.setIgnoreTouchEvent(false);
 		setBoundaryShown(true);
 		mFlying = true;
+	}
+
+	private void forceSetBlackBackground() {
+		if (!mForceSet) {
+			if (mFlyingLayout.getContext() instanceof Activity) {
+				Activity activity = (Activity) mFlyingLayout.getContext();
+				if (mSettings.forceSetBlackBackgroundSet.contains(activity
+						.getPackageName())) {
+					// force set black background for clear background.
+					activity.getWindow().setBackgroundDrawableResource(
+							android.R.drawable.screen_background_dark);
+				}
+			}
+			mForceSet = true;
+		}
 	}
 
 	public void toggle() {
 		if (mFlyingLayout.staysHome() && !mFlying) {
 			// take off
 			setOverlayShown(true);
-			InitialPosition pos = new InitialPosition(
-					mFlyingLayout.getContext(), mSettings.initialXp,
-					mSettings.initialYp);
-			int x = pos.getX(mFlyingLayout);
-			int y = pos.getY(mFlyingLayout);
-			boolean moved = false;
-			if (x != 0 || y != 0) {
-				moved = true;
-				mFlyingLayout.moveWithoutSpeed(x, y);
-			}
+			boolean moved = moveToInitialPosition();
 			if (moved
 					&& (mSettings.autoPin(FA.AUTO_PIN_WHEN_TAKEOFF) || mSettings
 							.autoPin(FA.AUTO_PIN_AFTER_MOVING))) {
@@ -317,10 +327,24 @@ public class FlyingHelper {
 		}
 	}
 
+	private boolean moveToInitialPosition() {
+		InitialPosition pos = new InitialPosition(mSettings.initialXp,
+				mSettings.initialYp);
+		int x = pos.getX(mFlyingLayout);
+		int y = pos.getY(mFlyingLayout);
+		boolean moved = false;
+		if (x != 0 || y != 0) {
+			moved = true;
+			mFlyingLayout.moveWithoutSpeed(x, y);
+		}
+		return moved;
+	}
+
 	public void resetState() {
 		// go home and unfly
 		setOverlayShown(false);
-		mFlyingLayout.goHome();
 		pin();
+		// goHome must be placed after pin() for "Reset when collapsed" option.
+		mFlyingLayout.goHome();
 	}
 }
