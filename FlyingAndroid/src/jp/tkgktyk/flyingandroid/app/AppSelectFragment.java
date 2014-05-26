@@ -29,8 +29,7 @@ import android.widget.TextView;
 
 public class AppSelectFragment extends ListFragment implements
 		LoaderManager.LoaderCallbacks<List<AppSelectFragment.Entry>> {
-	private static final String TAG = AppSelectFragment.class
-			.getSimpleName();
+	private static final String TAG = AppSelectFragment.class.getSimpleName();
 
 	public static class Entry {
 		public final Drawable icon;
@@ -114,7 +113,7 @@ public class AppSelectFragment extends ListFragment implements
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		setEmptyText(getString(R.string.No_applications));
+		setEmptyText(getString(R.string.no_applications));
 		getLoaderManager().initLoader(0, null, this);
 	}
 

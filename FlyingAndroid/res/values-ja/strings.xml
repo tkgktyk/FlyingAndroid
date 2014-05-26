@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Flying Android</string>
+    <string name="toggle_app_name">FAトグル</string>
+    <string name="shortcut_app_name">FAトグル</string>
+    <string name="niwatori_app_name">Niwatori</string>
+    <string name="niwatori_tachi_app_name">Niwatori Tachi</string>
+    <string name="xposed_description">ウィンドウを動かせます。\n開発者：tkgktyk</string>
+
+    <!-- SharedPreferences -->
+    <!-- Note -->
+    <string name="note">注意</string>
+    <string name="summary_note">設定を反映させるにはウィンドウの再作成が必要です。</string>
+
+    <!-- Settings -->
+    <string name="current_s1">設定値：%1$s</string>
+
+    <!-- Flying -->
+    <string name="flying">フライング</string>
+    <!-- Speed -->
+    <string name="speed">速度</string>
+    <!-- Initial position -->
+    <string name="initial_position">初期位置&#8230;</string>
+    <string name="summary_initial_position">FAトグルを起動した時にこの位置へ移動します。</string>
+    <string name="usage_of_initial_position">ドラッグして位置を変えてください。\n戻るキーで保存されます。</string>
+    <!-- Notify flying -->
+    <string name="notify_flying">フライング中の通知</string>
+    <string name="summary_notify_flying">フライング中にウィンドウの周囲に線を描画します。</string>
+    <!-- Flying dialog -->
+    <string name="flying_dialog">フライング ダイアログ</string>
+    <string name="summary_flying_dialog">ウィンドウの端を縦にドラッグすることでダイアログを動かせるようになります。IMEもダイアログです。</string>
+    <!-- Use Notification -->
+    <string name="use_notification">通知からトグルする</string>
+
+    <!-- Pin -->
+    <string name="pinning">ピン</string>
+    <!-- Use pin -->
+    <string name="use_pin">ピンを使う</string>
+    <!-- Always show pin -->
+    <string name="always_show_pin">ピンを常に表示する</string>
+    <string name="summary_always_show_pin">アプリ上にピンが常に表示されるようになります。</string>
+    <!-- Pin position -->
+    <string name="pin_position">ピン位置&#8230;</string>
+    <string name="summary_pin_position">ピンを長押しすることで動かせるように鳴ります。戻るキーで保存されます。</string>
+    <!-- Auto pin -->
+    <string name="auto_pin">オートピン</string>
+    <string name="disabled">無効</string>
+    <string name="when_takeoff">トグル時のみ</string>
+    <string name="after_moving">移動後</string>
+    <!-- White list -->
+    <string name="white_list">ホワイトリスト&#8230;</string>
+    <string name="summary_white_list">何もチェックしないと全てのアプリにピンを表示します。</string>
+    <!-- Flying status bar -->
+    <string name="flying_status_bar">フライングステータスバー</string>
+    <string name="summary_flying_status_bar">ステータスバーにピンを表示します。（ステータスバー内のコンテンツを動かせるようになります。）</string>
+    <!-- Reset when status bar is collapsed -->
+    <string name="reset_when_collapsed">閉じた時にリセットする</string>
+    <string name="summary_reset_when_collapsed">ステータスバーを閉じた時にフライング状態をリセットします。Android 4.2以上で動作します。</string>
+    <!-- Use niwatori button -->
+    <string name="niwatori_button">Niwatoriボタン</string>
+    <string name="summary_use_niwatori_button">ピンを外すボタンの代わりにNiwatoriを表示します。この機能を使用するには、寄付しようとする気持ちが必要になります。（下の「寄付」をクリックするとアンロックされます。）</string>
+
+    <!-- Troubleshooting -->
+    <string name="troubleshooting">トラブルシューティング</string>
+    <!-- Force set black background -->
+    <string name="force_set_black_background">背景を強制的に黒く塗りつぶす&#8230;</string>
+    <string name="summary_force_set_black_background">ウィンドウを動かした後に背景が汚いアプリがある場合に、そのアプリをチェックしてください。</string>
+    <!-- Blask list -->
+    <string name="black_list">ブラックリスト&#8230;</string>
+
+    <!-- Information -->
+    <string name="information">インフォメーション</string>
+    <!-- Developer -->
+    <string name="developer">開発者</string>
+    <string name="summary_developer">Flying Androidはtkgktykが開発しています。タップするとXDAのスレッドを開きます。</string>
+    <!-- Donate -->
+    <string name="donate">寄付</string>
+    <string name="summary_donate">タップするとGoogle Playが開きます。寄付用のアプリから寄付をお願いします。</string>
+    <!-- Special Thanks -->
+    <string name="special_thanks">謝辞</string>
+    <string name="summary_special_thanks">タップするとHPを開きます。</string>
+
+    <!-- SelectableListActivity -->
+    <string name="show_only_checked">チェックされている項目だけを表示</string>
+    <string name="show_only_black">チェックされている項目だけを表示</string>
+    <string name="show_only_white">チェックされている項目だけを表示</string>
+    <string name="no_applications">アプリが見つかりません</string>
+
+    <!-- Notification -->
+    <string name="notification_title">Flying Androidをトグルする</string>
+
+</resources>

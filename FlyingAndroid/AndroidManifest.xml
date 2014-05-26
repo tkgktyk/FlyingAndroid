@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.tkgktyk.flyingandroid"
-    android:versionCode="32"
-    android:versionName="1.0.1" >
+    android:versionCode="34"
+    android:versionName="1.0.3" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -24,7 +24,7 @@
             android:value="@string/xposed_description" />
 
         <activity
-            android:name="jp.tkgktyk.flyingandroid.app.MainActivity"
+            android:name=".app.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,10 +32,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="jp.tkgktyk.flyingandroid.app.AppSelectActivity" >
+        <activity android:name=".app.AppSelectActivity" >
         </activity>
         <activity
-            android:name="jp.tkgktyk.flyingandroid.ToggleActivity"
+            android:name=".ToggleActivity"
             android:excludeFromRecents="true"
             android:label="@string/toggle_app_name"
             android:noHistory="true"
@@ -47,7 +47,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="jp.tkgktyk.flyingandroid.app.ShortcutActivity"
+            android:name=".app.ShortcutActivity"
             android:label="@string/shortcut_app_name"
             android:theme="@android:style/Theme.NoDisplay" >
             <intent-filter>
@@ -61,7 +61,7 @@
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
             <intent-filter>
-                <action android:name="android.intent.action.DEFAULT" />
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
         <activity
@@ -71,7 +71,7 @@
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
             <intent-filter>
-                <action android:name="android.intent.action.DEFAULT" />
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
         <activity
@@ -81,8 +81,13 @@
         <activity
             android:name=".app.InitialPositionActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
->
         </activity>
+
+        <receiver android:name=".app.BootCompletedReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

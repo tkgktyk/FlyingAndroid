@@ -1,9 +1,12 @@
 package jp.tkgktyk.flyingandroid.app;
 
+import jp.tkgktyk.flyingandroid.FA;
 import jp.tkgktyk.flyingandroid.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -32,44 +35,27 @@ public class MainActivity extends Activity {
 			addPreferencesFromResource(R.xml.settings_preference);
 
 			// scroll speed
-			showListSummary(R.string.pref_key_speed);
+			showTextSummary(R.string.pref_key_speed);
 			// initial position
 			openActivity(R.string.pref_key_initial_position,
 					InitialPositionActivity.class);
-			// force set black background
-			openSelectorOnClick(R.string.pref_key_force_set_black_background,
-					R.string.Show_only_checked);
-			// black list
-			openSelectorOnClick(R.string.pref_key_black_list,
-					R.string.Show_only_black);
+			// use notification toggle
+			setupNotificationToggle();
 			// pin position
 			openActivity(R.string.pref_key_pin_position, MovePinActivity.class);
 			// auto pin
 			showListSummary(R.string.pref_key_auto_pin_selection);
 			// white list
 			openSelectorOnClick(R.string.pref_key_white_list,
-					R.string.Show_only_white);
+					R.string.show_only_white);
 			// niwatori button
-			if (getPreferenceManager().getSharedPreferences().getBoolean(
-					getString(R.string.pref_key_feeling_to_donate), false)) {
-				Preference niwatori = findPreference(R.string.pref_key_use_niwatori_button);
-				niwatori.setEnabled(true);
-			}
-			Preference donate = findPreference(R.string.pref_key_feeling_to_donate);
-			donate.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
-					getPreferenceManager()
-							.getSharedPreferences()
-							.edit()
-							.putBoolean(
-									getString(R.string.pref_key_feeling_to_donate),
-									true).apply();
-					Preference niwatori = findPreference(R.string.pref_key_use_niwatori_button);
-					niwatori.setEnabled(true);
-					return false;
-				}
-			});
+			setupNiwatoriButton();
+			// force set black background
+			openSelectorOnClick(R.string.pref_key_force_set_black_background,
+					R.string.show_only_checked);
+			// black list
+			openSelectorOnClick(R.string.pref_key_black_list,
+					R.string.show_only_black);
 		}
 
 		protected Preference findPreference(int id) {
@@ -104,7 +90,22 @@ public class MainActivity extends Activity {
 			} else {
 				entry = "default";
 			}
-			pref.setSummary(getString(R.string.Current_s1, entry));
+			pref.setSummary(getString(R.string.current_s1, entry));
+		}
+
+		private void showTextSummary(int id) {
+			EditTextPreference et = (EditTextPreference) findPreference(id);
+			et.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+				@Override
+				public boolean onPreferenceChange(Preference preference,
+						Object newValue) {
+					preference.setSummary(getString(R.string.current_s1,
+							(String) newValue));
+					return true;
+				}
+			});
+			et.getOnPreferenceChangeListener().onPreferenceChange(et,
+					et.getText());
 		}
 
 		private void openSelectorOnClick(int id, final int textId) {
@@ -132,6 +133,41 @@ public class MainActivity extends Activity {
 					Intent activity = new Intent(preference.getContext(), cls);
 					startActivity(activity);
 					return true;
+				}
+			});
+		}
+
+		private void setupNotificationToggle() {
+			CheckBoxPreference notificationPref = (CheckBoxPreference) findPreference(R.string.pref_key_use_notification);
+			notificationPref
+					.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+						@Override
+						public boolean onPreferenceClick(Preference preference) {
+							CheckBoxPreference cbPref = (CheckBoxPreference) preference;
+							FA.showToggleNotification(cbPref.getContext(),
+									cbPref.isChecked());
+							return false;
+						}
+					});
+		}
+
+		private void setupNiwatoriButton() {
+			if (getPreferenceManager().getSharedPreferences().getBoolean(
+					getString(R.string.pref_key_feeling_to_donate), false)) {
+				Preference niwatori = findPreference(R.string.pref_key_use_niwatori_button);
+				niwatori.setEnabled(true);
+			}
+			Preference donate = findPreference(R.string.pref_key_feeling_to_donate);
+			donate.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+					getPreferenceManager()
+							.getSharedPreferences()
+							.edit()
+							.putBoolean(
+									getString(R.string.pref_key_feeling_to_donate),
+									true).apply();
+					return false;
 				}
 			});
 		}

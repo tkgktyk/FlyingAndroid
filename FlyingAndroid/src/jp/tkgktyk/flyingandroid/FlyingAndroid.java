@@ -8,9 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +22,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class FlyingAndroid implements IXposedHookZygoteInit,
 		IXposedHookLoadPackage {
-	public static final String PACKAGE_NAME = FlyingAndroid.class.getPackage()
-			.getName();
-	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
-
 	private static final String FA_HANDLED = "FA_handled";
 	private static final String FA_REGISTERED = "FA_registered";
 
@@ -36,7 +29,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 
 	@Override
 	public void initZygote(StartupParam startupParam) {
-		sPref = new XSharedPreferences(PACKAGE_NAME);
+		sPref = new XSharedPreferences(FA.PACKAGE_NAME);
 		sPref.makeWorldReadable();
 
 		try {
@@ -133,7 +126,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 											FA_REGISTERED);
 							if (registered == null) {
 								activity.registerReceiver(toggleReceiver,
-										new IntentFilter(ACTION_TOGGLE));
+										new IntentFilter(FA.ACTION_TOGGLE));
 								XposedHelpers.setAdditionalInstanceField(
 										activity, FA_REGISTERED, true);
 							} else {

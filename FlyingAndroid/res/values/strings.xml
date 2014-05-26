@@ -10,92 +10,104 @@
 
     <!-- SharedPreferences -->
     <!-- Note -->
-    <string name="Note">Note</string>
+    <string name="note">Note</string>
     <string name="summary_note">Need to recreate window for changes to take effect.</string>
 
     <!-- Settings -->
-    <string name="Current_s1">Current: %1$s</string>
+    <string name="current_s1">Current: %1$s</string>
 
     <!-- Flying -->
-    <string name="Flying">Flying</string>
+    <string name="flying">Flying</string>
     <!-- Speed -->
-    <string name="Speed">Speed</string>
-    <string name="pref_key_speed">pref_key_speed</string>
+    <string name="speed">Speed</string>
+    <string name="pref_key_speed" translatable="false">pref_key_speed</string>
     <!-- Initial position -->
-    <string name="Initial_position">Initial position&#8230;</string>
-    <string name="pref_key_initial_position">pref_key_initial_position</string>
-    <string name="pref_key_initial_x_percent">pref_key_initial_x_percent</string>
-    <string name="pref_key_initial_y_percent">pref_key_initial_y_percent</string>
+    <string name="initial_position">Initial position&#8230;</string>
+    <string name="pref_key_initial_position" translatable="false">pref_key_initial_position</string>
+    <string name="pref_key_initial_x_percent" translatable="false">pref_key_initial_x_percent</string>
+    <string name="pref_key_initial_y_percent" translatable="false">pref_key_initial_y_percent</string>
     <string name="summary_initial_position">Move to this position when you launch FA Toggle.</string>
     <string name="usage_of_initial_position">Drag to change position.\nPress back key to save.</string>
     <!-- Notify flying -->
-    <string name="Notify_flying">Notify flying</string>
-    <string name="pref_key_notify_flying">pref_key_notify_flying</string>
+    <string name="notify_flying">Notify flying</string>
+    <string name="pref_key_notify_flying" translatable="false">pref_key_notify_flying</string>
     <string name="summary_notify_flying">Draw boundary while flying.</string>
     <!-- Flying dialog -->
-    <string name="Flying_dialog">Flying dialog</string>
-    <string name="pref_key_flying_dialog">pref_key_flying_dialog</string>
+    <string name="flying_dialog">Flying Dialog</string>
+    <string name="pref_key_flying_dialog" translatable="false">pref_key_flying_dialog</string>
     <string name="summary_flying_dialog">Dialogs can fly by dragging vertically on the edge of them. Note that IME is also dialog.</string>
+    <!-- Use Notification -->
+    <string name="use_notification">Use Notification Toggle</string>
+    <string name="pref_key_use_notification" translatable="false">pref_key_use_notification</string>
 
     <!-- Pin -->
-    <string name="Pinning">Pinning</string>
+    <string name="pinning">Pinning</string>
     <!-- Use pin -->
-    <string name="Use_pin">Use pin</string>
-    <string name="pref_key_use_pin">pref_key_use_pin</string>
+    <string name="use_pin">Use pin</string>
+    <string name="pref_key_use_pin" translatable="false">pref_key_use_pin</string>
     <!-- Always show pin -->
-    <string name="Always_show_pin">Always show pin</string>
-    <string name="pref_key_always_show_pin">pref_key_always_show_pin</string>
+    <string name="always_show_pin">Always show pin</string>
+    <string name="pref_key_always_show_pin" translatable="false">pref_key_always_show_pin</string>
     <string name="summary_always_show_pin">pin is always shown on apps.</string>
     <!-- Pin position -->
-    <string name="Pin_position">Pin position&#8230;</string>
-    <string name="pref_key_pin_position">pref_key_pin_position</string>
-    <string name="pref_key_pin_x_percent">pref_key_pin_x_percent</string>
-    <string name="pref_key_pin_y_percent">pref_key_pin_y_percent</string>
+    <string name="pin_position">Pin position&#8230;</string>
+    <string name="pref_key_pin_position" translatable="false">pref_key_pin_position</string>
+    <string name="pref_key_pin_x_percent" translatable="false">pref_key_pin_x_percent</string>
+    <string name="pref_key_pin_y_percent" translatable="false">pref_key_pin_y_percent</string>
     <string name="summary_pin_position">Long-press to drag pin. Press back key to save.</string>
     <!-- Auto pin -->
-    <string name="Auto_pin">Auto pin</string>
-    <string name="pref_key_auto_pin_selection">pref_key_auto_pin_selection</string>
+    <string name="auto_pin">Auto pin</string>
+    <string name="pref_key_auto_pin_selection" translatable="false">pref_key_auto_pin_selection</string>
+    <string name="disabled">Disabled</string>
+    <string name="when_takeoff">When takeoff</string>
+    <string name="after_moving">After moving</string>
     <!-- White list -->
-    <string name="White_list">White list&#8230;</string>
-    <string name="pref_key_white_list">pref_key_white_list</string>
+    <string name="white_list">White list&#8230;</string>
+    <string name="pref_key_white_list" translatable="false">pref_key_white_list</string>
     <string name="summary_white_list">If not check anything, pin is shown on all apps.</string>
     <!-- Flying status bar -->
-    <string name="Flying_status_bar">Flying status bar</string>
-    <string name="pref_key_flying_status_bar">pref_key_flying_status_bar</string>
+    <string name="flying_status_bar">Flying Status Bar</string>
+    <string name="pref_key_flying_status_bar" translatable="false">pref_key_flying_status_bar</string>
     <string name="summary_flying_status_bar">Show pin in the expanded status bar.</string>
     <!-- Reset when status bar is collapsed -->
-    <string name="Reset_when_collapsed">Reset when collapsed</string>
-    <string name="pref_key_reset_when_collapsed">pref_key_reset_when_collapsed</string>
+    <string name="reset_when_collapsed">Reset when collapsed</string>
+    <string name="pref_key_reset_when_collapsed" translatable="false">pref_key_reset_when_collapsed</string>
     <string name="summary_reset_when_collapsed">Reset flying state when status bar is collapsed. Requires Android 4.2 or later.</string>
     <!-- Use niwatori button -->
-    <string name="Niwatori_button">Niwatori button</string>
-    <string name="pref_key_use_niwatori_button">pref_key_use_niwatori_button</string>
+    <string name="niwatori_button">Niwatori button</string>
+    <string name="pref_key_use_niwatori_button" translatable="false">pref_key_use_niwatori_button</string>
     <string name="summary_use_niwatori_button">Show Niwatori instead of Unpin button. This feature requires your feeling to donate. (Tap below \"Donate\" to unlock this feature.)</string>
-    
+
     <!-- Troubleshooting -->
-    <string name="Troubleshooting">Troubleshooting</string>
+    <string name="troubleshooting">Troubleshooting</string>
     <!-- Force set black background -->
-    <string name="Force_set_black_background">Force set black background&#8230;</string>
-    <string name="pref_key_force_set_black_background">pref_key_force_set_black_background</string>
+    <string name="force_set_black_background">Force set black background&#8230;</string>
+    <string name="pref_key_force_set_black_background" translatable="false">pref_key_force_set_black_background</string>
     <string name="summary_force_set_black_background">Check apps for clear background if you encountered a ghost on the outside of app after moving.</string>
     <!-- Blask list -->
-    <string name="Black_list">Black list&#8230;</string>
-    <string name="pref_key_black_list">pref_key_black_list</string>
-    
-    <!-- Informations -->
-    <string name="Informations">Informations</string>
+    <string name="black_list">Black list&#8230;</string>
+    <string name="pref_key_black_list" translatable="false">pref_key_black_list</string>
+
+    <!-- Information -->
+    <string name="information">Information</string>
     <!-- Developer -->
-    <string name="Developer">Developer</string>
+    <string name="developer">Developer</string>
     <string name="summary_developer">Flying Android is coded by tkgktyk. Tap to open a thread on XDA.</string>
     <!-- Donate -->
-    <string name="Donate">Donate</string>
+    <string name="donate">Donate</string>
     <string name="summary_donate">Tap to open donation app\'s page on Google Play. (Please donate via donation app.)</string>
-    <string name="pref_key_feeling_to_donate">pref_key_feeling_to_donate</string>
+    <string name="pref_key_feeling_to_donate" translatable="false">pref_key_feeling_to_donate</string>
+	<!-- Special Thanks -->
+    <string name="special_thanks">Special Thanks</string>
+    <string name="summary_special_thanks">Tap to open information page.</string>
     
     <!-- SelectableListActivity -->
-    <string name="Show_only_checked">Show only checked</string>
-    <string name="Show_only_black">Show only black</string>
-    <string name="Show_only_white">Show only white</string>
-    <string name="No_applications">No applications</string>
+    <string name="show_only_checked">Show only checked</string>
+    <string name="show_only_black">Show only black</string>
+    <string name="show_only_white">Show only white</string>
+    <string name="no_applications">No applications</string>
+
+    <!-- Notification -->
+    <string name="notification_title">Toggle Flying Android</string>
 
 </resources>
