@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">让安卓飞</string>
+    <string name="app_name">飞行安卓</string>
     <string name="toggle_app_name">起飞/降落</string>
     <string name="shortcut_app_name">起飞/降落</string>
     <string name="niwatori_app_name">公鸡</string>
     <string name="niwatori_tachi_app_name">我们的公鸡</string>
-    <string name="xposed_description">移动窗口。\n由 tkgktyk 开发</string>
+    <string name="xposed_description">让你更自由地移动窗口\n由 tkgktyk 开发</string>
 
     <!-- SharedPreferences -->
     <!-- Note -->
@@ -17,15 +17,15 @@
     <string name="current_s1">当前： %1$s</string>
 
     <!-- Flying -->
-    <string name="flying">飞行中</string>
+    <string name="flying">飞行</string>
     <!-- Speed -->
     <string name="speed">速度</string>
     <!-- Initial position -->
     <string name="initial_position">初始位置</string>
-    <string name="summary_initial_position">点击&quot;起飞/降落&quot;时，会把窗口移动到这个初始位置。</string>
+    <string name="summary_initial_position">切换飞行状态时，会把窗口移动到这个初始位置。</string>
     <string name="usage_of_initial_position">拖动以移动位置。\n按返回键保存位置。</string>
     <!-- Notify flying -->
-    <string name="notify_flying">飞行提示</string>
+    <string name="notify_flying">状态提示</string>
     <string name="summary_notify_flying">飞行时，在窗口边缘显示绿边。</string>
     <!-- Flying dialog -->
     <string name="flying_dialog">让对话框飞</string>
@@ -34,7 +34,7 @@
     <!-- Pin -->
     <string name="pinning">钉子</string>
     <!-- Use pin -->
-    <string name="use_pin">使用钉子</string>
+    <string name="use_pin">启用钉子</string>
     <!-- Always show pin -->
     <string name="always_show_pin">总是显示钉子</string>
     <string name="summary_always_show_pin">钉子总在应用上显示。</string>
@@ -43,9 +43,9 @@
     <string name="summary_pin_position">长按拖动钉子，按返回键保存。</string>
     <!-- Auto pin -->
     <string name="auto_pin">自动钉住</string>
-    <string name="disabled">Disabled</string>
-    <string name="when_takeoff">When takeoff</string>
-    <string name="after_moving">After moving</string>
+    <string name="disabled">禁用</string>
+    <string name="when_takeoff">起飞时</string>
+    <string name="after_moving">移动后</string>
     <!-- White list -->
     <string name="white_list">白名单</string>
     <string name="summary_white_list">使钉子只在特定的应用上显示，不勾选任何应用则在所有应用上显示。</string>
@@ -66,7 +66,8 @@
     <string name="summary_force_set_black_background">如果你发现移动应用后应用界面仍在背景中残留，勾选即可将背景变为黑色。</string>
     <!-- Blask list -->
     <string name="black_list">黑名单</string>
-
+	<!-- Use Notification -->
+	<string name="use_notification">显示切换飞行状态的通知</string>
     <!-- Informations -->
     <string name="information">信息</string>
     <!-- Developer -->
@@ -76,16 +77,14 @@
     <string name="donate">捐赠</string>
     <string name="summary_donate">点击可以打开本应用在 Google Play 上的捐赠页面。（请通过该捐赠应用向我捐赠，谢谢）</string>
 	<!-- Special Thanks -->
-    <string name="special_thanks">Special Thanks</string>
-    <string name="summary_special_thanks">Tap to open information page.</string>
-    
+    <string name="special_thanks">特别感谢</string>
+    <string name="summary_special_thanks">点击查看感谢信息。</string>
     <!-- SelectableListActivity -->
     <string name="show_only_checked">只显示已勾选项</string>
     <string name="show_only_black">只显示已加入黑名单的项</string>
     <string name="show_only_white">只显示已加入白名单的项</string>
     <string name="no_applications">没有应用</string>
-
     <!-- Notification -->
-    <string name="notification_title">Toggle Flying Android</string>
+    <string name="notification_title">切换飞行状态</string>
     
 </resources>
