@@ -43,9 +43,9 @@
     <string name="summary_pin_position">长按拖动钉子，按返回键保存。</string>
     <!-- Auto pin -->
     <string name="auto_pin">自动钉住</string>
-    <string name="disabled">Disabled</string>
-    <string name="when_takeoff">When takeoff</string>
-    <string name="after_moving">After moving</string>
+    <string name="disabled">禁用</string>
+    <string name="when_takeoff">起飞时</string>
+    <string name="after_moving">移动后</string>
     <!-- White list -->
     <string name="white_list">白名单</string>
     <string name="summary_white_list">使钉子只在特定的应用上显示，不勾选任何应用则在所有应用上显示。</string>
@@ -76,8 +76,8 @@
     <string name="donate">捐赠</string>
     <string name="summary_donate">点击可以打开本应用在 Google Play 上的捐赠页面。（请通过该捐赠应用向我捐赠，谢谢）</string>
 	<!-- Special Thanks -->
-    <string name="special_thanks">Special Thanks</string>
-    <string name="summary_special_thanks">Tap to open information page.</string>
+    <string name="special_thanks">特别感谢</string>
+    <string name="summary_special_thanks">点击查看感谢信息。</string>
     
     <!-- SelectableListActivity -->
     <string name="show_only_checked">只显示已勾选项</string>
@@ -86,6 +86,6 @@
     <string name="no_applications">没有应用</string>
 
     <!-- Notification -->
-    <string name="notification_title">Toggle Flying Android</string>
+    <string name="notification_title">切换飞行状态</string>
     
 </resources>
