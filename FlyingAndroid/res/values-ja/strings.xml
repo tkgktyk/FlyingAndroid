@@ -45,11 +45,11 @@
     <string name="summary_always_show_pin">アプリ上にピンが常に表示されるようになります。</string>
     <!-- Pin position -->
     <string name="pin_position">ピン位置&#8230;</string>
-    <string name="summary_pin_position">ピンを長押しすることで動かせるように鳴ります。戻るキーで保存されます。</string>
+    <string name="summary_pin_position">ピンを長押しすることで動かせるようになります。戻るキーで保存されます。</string>
     <!-- Auto pin -->
     <string name="auto_pin">オートピン</string>
     <string name="disabled">無効</string>
-    <string name="when_takeoff">トグル時のみ</string>
+    <string name="when_takeoff">最初のみ</string>
     <string name="after_moving">移動後</string>
     <!-- White list -->
     <string name="white_list">ホワイトリスト&#8230;</string>
@@ -62,7 +62,7 @@
     <string name="summary_reset_when_collapsed">ステータスバーを閉じた時にフライング状態をリセットします。Android 4.2以上で動作します。</string>
     <!-- Use niwatori button -->
     <string name="niwatori_button">Niwatoriボタン</string>
-    <string name="summary_use_niwatori_button">ピンを外すボタンの代わりにNiwatoriを表示します。この機能を使用するには、寄付しようとする気持ちが必要になります。（下の「寄付」をクリックするとアンロックされます。）</string>
+    <string name="summary_use_niwatori_button">ピンを外すボタンの代わりにNiwatoriを表示します。この機能を使用するには、寄付しようとする気持ちが必要になります。（アプリ内の「寄付」をクリックするとアンロックされます。）</string>
 
     <!-- Troubleshooting -->
     <string name="troubleshooting">トラブルシューティング&#8230;</string>

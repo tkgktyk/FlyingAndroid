@@ -79,7 +79,7 @@
     <!-- Use niwatori button -->
     <string name="niwatori_button">Niwatori button</string>
     <string name="pref_key_use_niwatori_button" translatable="false">pref_key_use_niwatori_button</string>
-    <string name="summary_use_niwatori_button">Show Niwatori instead of Unpin button. This feature requires your feeling to donate. (Tap below \"Donate\" to unlock this feature.)</string>
+    <string name="summary_use_niwatori_button">Show Niwatori instead of Unpin button. This feature requires your feeling to donate. (Tap \"Donate\" in this app to unlock this feature.)</string>
 
     <!-- Troubleshooting -->
     <string name="troubleshooting">Troubleshooting&#8230;</string>
