@@ -17,10 +17,12 @@
     <string name="current_s1">Current: %1$s</string>
 
     <!-- Flying -->
-    <string name="flying">Flying</string>
+    <string name="flying">Flying&#8230;</string>
+    <string name="summary_flying">Settings for behavior of flying.</string>
     <!-- Speed -->
     <string name="speed">Speed</string>
     <string name="pref_key_speed" translatable="false">pref_key_speed</string>
+    <string name="note_speed">Recommended value:\n  - around 2 for smartphones.\n  - around 10 for tablets.</string>
     <!-- Initial position -->
     <string name="initial_position">Initial position&#8230;</string>
     <string name="pref_key_initial_position" translatable="false">pref_key_initial_position</string>
@@ -41,7 +43,8 @@
     <string name="pref_key_use_notification" translatable="false">pref_key_use_notification</string>
 
     <!-- Pin -->
-    <string name="pinning">Pinning</string>
+    <string name="pinning">Pinning&#8230;</string>
+    <string name="summary_pinning">Settings for pin.</string>
     <!-- Use pin -->
     <string name="use_pin">Use pin</string>
     <string name="pref_key_use_pin" translatable="false">pref_key_use_pin</string>
@@ -79,7 +82,8 @@
     <string name="summary_use_niwatori_button">Show Niwatori instead of Unpin button. This feature requires your feeling to donate. (Tap below \"Donate\" to unlock this feature.)</string>
 
     <!-- Troubleshooting -->
-    <string name="troubleshooting">Troubleshooting</string>
+    <string name="troubleshooting">Troubleshooting&#8230;</string>
+    <string name="summary_troubleshooting">Options for troubleshooting.</string>
     <!-- Force set black background -->
     <string name="force_set_black_background">Force set black background&#8230;</string>
     <string name="pref_key_force_set_black_background" translatable="false">pref_key_force_set_black_background</string>

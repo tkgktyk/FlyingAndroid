@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/pref_key_use_pin"
+        android:title="@string/use_pin" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:dependency="@string/pref_key_use_pin"
+        android:key="@string/pref_key_always_show_pin"
+        android:summary="@string/summary_always_show_pin"
+        android:title="@string/always_show_pin" />
+
+    <Preference
+        android:dependency="@string/pref_key_use_pin"
+        android:key="@string/pref_key_pin_position"
+        android:summary="@string/summary_pin_position"
+        android:title="@string/pin_position" />
+
+    <ListPreference
+        android:defaultValue="0"
+        android:dependency="@string/pref_key_use_pin"
+        android:entries="@array/autoPinSelections"
+        android:entryValues="@array/autoPinSelectionValues"
+        android:key="@string/pref_key_auto_pin_selection"
+        android:title="@string/auto_pin" />
+
+    <Preference
+        android:dependency="@string/pref_key_use_pin"
+        android:key="@string/pref_key_white_list"
+        android:summary="@string/summary_white_list"
+        android:title="@string/white_list" />
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:dependency="@string/pref_key_use_pin"
+        android:key="@string/pref_key_flying_status_bar"
+        android:summary="@string/summary_flying_status_bar"
+        android:title="@string/flying_status_bar" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:dependency="@string/pref_key_use_pin"
+        android:key="@string/pref_key_reset_when_collapsed"
+        android:summary="@string/summary_reset_when_collapsed"
+        android:title="@string/reset_when_collapsed" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:dependency="@string/pref_key_use_pin"
+        android:enabled="false"
+        android:key="@string/pref_key_use_niwatori_button"
+        android:summary="@string/summary_use_niwatori_button"
+        android:title="@string/niwatori_button" />
+
+</PreferenceScreen>
