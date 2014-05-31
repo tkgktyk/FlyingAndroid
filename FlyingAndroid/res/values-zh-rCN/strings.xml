@@ -18,8 +18,10 @@
 
     <!-- Flying -->
     <string name="flying">飞行</string>
+	 <string name="summary_flying">关于飞行行为的设置</string>
     <!-- Speed -->
     <string name="speed">速度</string>
+    <string name="note_speed">推荐速度值：\n  - 手机建议设为 2 左右\n  - 平板建议设为 10 左右</string>
     <!-- Initial position -->
     <string name="initial_position">初始位置</string>
     <string name="summary_initial_position">切换飞行状态时，会把窗口移动到这个初始位置。</string>
@@ -28,11 +30,14 @@
     <string name="notify_flying">状态提示</string>
     <string name="summary_notify_flying">飞行时，在窗口边缘显示绿边。</string>
     <!-- Flying dialog -->
-    <string name="flying_dialog">让对话框飞</string>
+    <string name="flying_dialog">飞行对话框</string>
     <string name="summary_flying_dialog">启用后，可以在对话框的边上竖直拖动来使对话框起飞。注意：输入法也是一个对话框。</string>
+    <!-- Use Notification -->
+    <string name="use_notification">显示切换飞行状态的通知</string>
 
     <!-- Pin -->
     <string name="pinning">钉子</string>
+    <string name="summary_pinning">关于钉子的设置</string>
     <!-- Use pin -->
     <string name="use_pin">启用钉子</string>
     <!-- Always show pin -->
@@ -50,24 +55,24 @@
     <string name="white_list">白名单</string>
     <string name="summary_white_list">使钉子只在特定的应用上显示，不勾选任何应用则在所有应用上显示。</string>
     <!-- Flying status bar -->
-    <string name="flying_status_bar">让状态栏飞</string>
+    <string name="flying_status_bar">飞行状态栏</string>
     <string name="summary_flying_status_bar">在展开的状态栏中显示钉子。</string>
     <!-- Reset when status bar is collapsed -->
     <string name="reset_when_collapsed">收起则复原</string>
     <string name="summary_reset_when_collapsed">状态栏收起时，重置飞行状态。需要 Android 4.2 以上。</string>
     <!-- Use niwatori button -->
     <string name="niwatori_button">公鸡按钮</string>
-    <string name="summary_use_niwatori_button">将拔钉按钮替换成公鸡按钮。仅限捐赠版本。（点击下面的捐赠按钮即可解锁）</string>
+    <string name="summary_use_niwatori_button">将拔钉按钮替换成公鸡按钮。请您考虑对我的捐赠。（点击捐赠按钮即可解锁）</string>
 
     <!-- Troubleshooting -->
-    <string name="troubleshooting">处理麻烦</string>
+    <string name="troubleshooting">排除故障</string>
+    <string name="summary_troubleshooting">一些可供您排除故障的选项。</string>
     <!-- Force set black background -->
     <string name="force_set_black_background">强制黑色背景</string>
     <string name="summary_force_set_black_background">如果你发现移动应用后应用界面仍在背景中残留，勾选即可将背景变为黑色。</string>
     <!-- Blask list -->
     <string name="black_list">黑名单</string>
-	<!-- Use Notification -->
-	<string name="use_notification">显示切换飞行状态的通知</string>
+
     <!-- Informations -->
     <string name="information">信息</string>
     <!-- Developer -->
