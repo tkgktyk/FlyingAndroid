@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <Preference
+        android:key="@string/pref_key_force_set_black_background"
+        android:summary="@string/summary_force_set_black_background"
+        android:title="@string/force_set_black_background" />
+    <Preference
+        android:key="@string/pref_key_black_list"
+        android:title="@string/black_list" />
+
+</PreferenceScreen>

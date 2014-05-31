@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- Notice -->
+    <header
+        android:summary="@string/summary_note"
+        android:title="@string/note" />
+    <!-- Settings -->
+    <header
+        android:fragment="jp.tkgktyk.flyingandroid.app.MainActivity$FlyingFragment"
+        android:summary="@string/summary_flying"
+        android:title="@string/flying" />
+    <header
+        android:fragment="jp.tkgktyk.flyingandroid.app.MainActivity$PinningFragment"
+        android:summary="@string/summary_pinning"
+        android:title="@string/pinning" />
+    <header
+        android:fragment="jp.tkgktyk.flyingandroid.app.MainActivity$TroubleshootingFragment"
+        android:summary="@string/summary_troubleshooting"
+        android:title="@string/troubleshooting" />
+
+    <!-- information -->
+    <header
+        android:summary="@string/summary_developer"
+        android:title="@string/developer" >
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://forum.xda-developers.com/xposed/modules/mod-flying-android-t2717372" />
+    </header>
+    <header
+        android:id="@+id/donate"
+        android:summary="@string/summary_donate"
+        android:title="@string/donate" >
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="market://details?id=jp.tkgktyk.donatetotkgktyk" />
+    </header>
+    <header
+        android:summary="@string/summary_special_thanks"
+        android:title="@string/special_thanks" >
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://sites.google.com/site/tkgktyk/android/flying-android" />
+    </header>
+
+</preference-headers>

@@ -94,17 +94,6 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 					FlyingHelper helper = FlyingHelper.getFrom(activity
 							.getWindow().peekDecorView());
 					if (helper != null) {
-						Boolean handled = (Boolean) XposedHelpers
-								.getAdditionalInstanceField(activity,
-										FA_HANDLED);
-						if (handled.equals(Boolean.FALSE)) {
-							if (helper.getSettings().forceSetBlackBackgroundSet
-									.contains(activity.getPackageName())) {
-								forceSetBlackBackground(activity);
-							}
-							XposedHelpers.setAdditionalInstanceField(activity,
-									FA_HANDLED, Boolean.TRUE);
-						}
 						helper.toggle();
 					} else {
 						FA.logD("FlyingHelper is not found.");
@@ -236,12 +225,6 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			}
 		}
 		return false;
-	}
-
-	private void forceSetBlackBackground(Activity activity) {
-		// force set black background for clear background.
-		activity.getWindow().setBackgroundDrawableResource(
-				android.R.drawable.screen_background_dark);
 	}
 
 	private void hooksForDialog() {

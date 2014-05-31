@@ -23,7 +23,7 @@ public class InitialPosition {
 				DEFAULT_Y_PERCENT);
 	}
 
-	public InitialPosition(Context context, int xp, int yp) {
+	public InitialPosition(int xp, int yp) {
 		mXp = xp;
 		mYp = yp;
 	}

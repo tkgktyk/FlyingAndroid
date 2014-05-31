@@ -6,7 +6,7 @@
         <item>@string/when_takeoff</item>
         <item>@string/after_moving</item>
     </string-array>
-    <string-array name="autoPinSelectionValues">
+    <string-array name="autoPinSelectionValues" translatable="false">
         <item>0</item>
         <item>1</item>
         <item>2</item>

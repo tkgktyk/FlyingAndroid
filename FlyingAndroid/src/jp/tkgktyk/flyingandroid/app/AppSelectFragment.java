@@ -203,7 +203,6 @@ public class AppSelectFragment extends ListFragment implements
 				String appName = (String) pm.getApplicationLabel(info);
 				String packageName = info.packageName;
 				ret.add(new Entry(icon, appName, packageName));
-				// log(packageName);
 			}
 			return ret;
 		}
