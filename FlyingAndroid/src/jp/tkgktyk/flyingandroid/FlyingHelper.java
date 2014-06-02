@@ -299,18 +299,6 @@ public class FlyingHelper {
 	}
 
 	private void forceSetBlackBackground() {
-		// if (!mForceSet) {
-		// if (mFlyingLayout.getContext() instanceof Activity) {
-		// Activity activity = (Activity) mFlyingLayout.getContext();
-		// if (mSettings.forceSetBlackBackgroundSet.contains(activity
-		// .getPackageName())) {
-		// // force set black background for clear background.
-		// activity.getWindow().setBackgroundDrawableResource(
-		// android.R.drawable.screen_background_dark);
-		// }
-		// }
-		// mForceSet = true;
-		// }
 		if (mForceSet) {
 			Activity activity = (Activity) mFlyingLayout.getContext();
 			// force set black background for clear background.
@@ -356,5 +344,4 @@ public class FlyingHelper {
 		// goHome must be placed after pin() for "Reset when collapsed" option.
 		mFlyingLayout.goHome();
 	}
-
 }
