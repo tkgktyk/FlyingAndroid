@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">飛行安卓</string>
+    <string name="toggle_app_name">起飛/降落</string>
+    <string name="shortcut_app_name">起飛/降落</string>
+    <string name="niwatori_app_name">公雞</string>
+    <string name="niwatori_tachi_app_name">我們的公雞</string>
+    <string name="xposed_description">讓你更自由地移動窗口\n由 tkgktyk 開發</string>
+
+    <!-- SharedPreferences -->
+    <!-- Note -->
+    <string name="note">註意</string>
+    <string name="summary_note">要使更改生效，需要重新啟動軟件。</string>
+
+    <!-- Settings -->
+    <string name="current_s1">當前： %1$s</string>
+
+    <!-- Flying -->
+    <string name="flying">飛行</string>
+	 <string name="summary_flying">關於飛行行為的設置</string>
+    <!-- Speed -->
+    <string name="speed">速度</string>
+    <string name="note_speed">推薦速度值：\n  - 智能手機建議設為 2 左右\n  - 平板建議設為 10 左右</string>
+    <!-- Initial position -->
+    <string name="initial_position">初始位置</string>
+    <string name="summary_initial_position">切換飛行狀態時，會把窗口移動到這個初始位置。</string>
+    <string name="usage_of_initial_position">拖動以移動位置。\n按返回鍵保存位置。</string>
+    <!-- Notify flying -->
+    <string name="notify_flying">狀態提示</string>
+    <string name="summary_notify_flying">飛行時，在窗口邊緣顯示綠邊。</string>
+    <!-- Flying dialog -->
+    <string name="flying_dialog">飛行對話框</string>
+    <string name="summary_flying_dialog">啟用後，可以在對話框的邊上豎直拖動來使對話框起飛。註意：輸入法也是一個對話框。</string>
+    <!-- Use Notification -->
+    <string name="use_notification">顯示切換飛行狀態的通知</string>
+
+    <!-- Pin -->
+    <string name="pinning">釘子</string>
+    <string name="summary_pinning">關於釘子的設置</string>
+    <!-- Use pin -->
+    <string name="use_pin">啟用釘子</string>
+    <!-- Always show pin -->
+    <string name="always_show_pin">總是顯示釘子</string>
+    <string name="summary_always_show_pin">釘子總在應用上顯示。</string>
+    <!-- Pin position -->
+    <string name="pin_position">釘子位置</string>
+    <string name="summary_pin_position">長按拖動釘子，按返回鍵保存。</string>
+    <!-- Auto pin -->
+    <string name="auto_pin">自動釘住</string>
+    <string name="disabled">禁用</string>
+    <string name="when_takeoff">起飛時</string>
+    <string name="after_moving">移動後</string>
+    <!-- White list -->
+    <string name="white_list">白名單</string>
+    <string name="summary_white_list">使釘子只在特定的應用上顯示，不勾選任何應用則在所有應用上顯示。</string>
+    <!-- Flying status bar -->
+    <string name="flying_status_bar">飛行狀態欄</string>
+    <string name="summary_flying_status_bar">在展開的狀態欄中顯示釘子。</string>
+    <!-- Reset when status bar is collapsed -->
+    <string name="reset_when_collapsed">收起則復原</string>
+    <string name="summary_reset_when_collapsed">狀態欄收起時，重置飛行狀態。需要 Android 4.2 以上。</string>
+    <!-- Use niwatori button -->
+    <string name="niwatori_button">公雞按鈕</string>
+    <string name="summary_use_niwatori_button">將拔釘按鈕替換成公雞按鈕。請您考慮對我的捐贈。（點擊捐贈按鈕即可解鎖）</string>
+
+    <!-- Troubleshooting -->
+    <string name="troubleshooting">排除故障</string>
+    <string name="summary_troubleshooting">一些可供您排除故障的選項。</string>
+    <!-- Force set black background -->
+    <string name="force_set_black_background">強制黑色背景</string>
+    <string name="summary_force_set_black_background">如果你發現移動應用後應用界面仍在背景中殘留，勾選即可將背景變為黑色。</string>
+    <!-- Blask list -->
+    <string name="black_list">黑名單</string>
+
+    <!-- Informations -->
+    <string name="information">信息</string>
+    <!-- Developer -->
+    <string name="developer">開發者</string>
+    <string name="summary_developer">讓安卓飛由 tkgktyk 編寫。點擊可查看在 XDA 的發布帖。</string>
+    <!-- Donate -->
+    <string name="donate">捐贈</string>
+    <string name="summary_donate">點擊可以打開本應用在 Google Play 上的捐贈頁面。（請通過該捐贈應用向我捐贈，謝謝）</string>
+	<!-- Special Thanks -->
+    <string name="special_thanks">特別感謝</string>
+    <string name="summary_special_thanks">點擊查看感謝信息。</string>
+    <!-- SelectableListActivity -->
+    <string name="show_only_checked">只顯示已勾選項</string>
+    <string name="show_only_black">只顯示已加入黑名單的項</string>
+    <string name="show_only_white">只顯示已加入白名單的項</string>
+    <string name="no_applications">沒有應用</string>
+    <!-- Notification -->
+    <string name="notification_title">切換飛行狀態</string>
+    
+</resources>
