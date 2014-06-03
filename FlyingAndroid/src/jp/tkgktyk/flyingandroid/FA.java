@@ -9,13 +9,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 
 public class FA {
-	public static final String PACKAGE_NAME = FA.class.getPackage()
-			.getName();
+	public static final String PACKAGE_NAME = FA.class.getPackage().getName();
 	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
 
 	private final static int NOTIFICATION_ID = R.drawable.ic_launcher;
@@ -32,6 +31,13 @@ public class FA {
 
 	public static void logE(Throwable t) {
 		XposedBridge.log(t);
+	}
+
+	@SuppressWarnings("deprecation")
+	@SuppressLint("WorldReadableFiles")
+	public static SharedPreferences getSharedPreferences(Context context) {
+		return context.getSharedPreferences(FA.PACKAGE_NAME + "_preferences",
+				Context.MODE_WORLD_READABLE);
 	}
 
 	public static final int AUTO_PIN_DISABLED = 0;

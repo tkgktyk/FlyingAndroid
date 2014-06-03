@@ -6,14 +6,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 public class BootCompletedReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(context);
+		SharedPreferences pref = FA.getSharedPreferences(context);
 		if (pref.getBoolean(
 				context.getString(R.string.pref_key_use_notification), false)) {
 			// do nothing when pref is false.

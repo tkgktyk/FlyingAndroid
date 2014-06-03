@@ -1,5 +1,6 @@
 package jp.tkgktyk.flyingandroid.app;
 
+import jp.tkgktyk.flyingandroid.FA;
 import jp.tkgktyk.flyingandroid.InitialPosition;
 import jp.tkgktyk.flyingandroid.R;
 import jp.tkgktyk.flyinglayout.FlyingLayoutF;
@@ -8,7 +9,6 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
 public class InitialPositionActivity extends Activity {
@@ -25,8 +25,7 @@ public class InitialPositionActivity extends Activity {
 		mInitialPosition = new InitialPosition(this);
 
 		mFlyingLayout = (FlyingLayoutF) findViewById(R.id.flying);
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(this);
+		SharedPreferences pref = FA.getSharedPreferences(this);
 		mFlyingLayout.setSpeed(Float.parseFloat(pref.getString(
 				getString(R.string.pref_key_speed), "1.5f")));
 		mFlyingLayout.getViewTreeObserver().addOnGlobalLayoutListener(
