@@ -134,11 +134,6 @@ public class FlyingHelper {
 					}
 
 					@Override
-					public void onMove(FlyingLayoutF v, int deltaX, int deltaY) {
-						// do nothing
-					}
-
-					@Override
 					public void onMoveFinished(FlyingLayoutF v) {
 						if (mSettings.autoPin(FA.AUTO_PIN_AFTER_MOVING)) {
 							pin();
@@ -332,7 +327,7 @@ public class FlyingHelper {
 		boolean moved = false;
 		if (x != 0 || y != 0) {
 			moved = true;
-			mFlyingLayout.moveWithoutSpeed(x, y);
+			mFlyingLayout.moveWithoutSpeed(x, y, true);
 		}
 		return moved;
 	}
@@ -342,6 +337,6 @@ public class FlyingHelper {
 		setOverlayShown(false);
 		pin();
 		// goHome must be placed after pin() for "Reset when collapsed" option.
-		mFlyingLayout.goHome();
+		mFlyingLayout.goHome(true);
 	}
 }

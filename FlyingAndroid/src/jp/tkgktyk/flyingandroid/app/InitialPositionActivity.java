@@ -63,11 +63,6 @@ public class InitialPositionActivity extends Activity {
 						v.setOffsetY(mInitialPosition.getY(v));
 						v.requestLayout();
 					}
-
-					@Override
-					public void onMove(FlyingLayoutF v, int deltaX, int deltaY) {
-						// doing nothing
-					}
 				});
 	}
 }
