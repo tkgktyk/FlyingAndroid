@@ -184,6 +184,10 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			return;
 		}
 		String packageName = activity.getPackageName();
+		if (packageName.equals(FA.PACKAGE_NAME)) {
+			FA.logD("ignore own activity.");
+			return;
+		}
 		FA.Settings settings = new FA.Settings(sPref);
 		FA.logD("reload settings at " + activity.getLocalClassName() + "@"
 				+ packageName);
