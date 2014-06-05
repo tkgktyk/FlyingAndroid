@@ -54,18 +54,17 @@ public class MainActivity extends PreferenceActivity {
 			return findPreference(getString(id));
 		}
 
-		private final OnPreferenceChangeListener mListChangeListener = new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference,
-					Object newValue) {
-				setListSummary((ListPreference) preference, (String) newValue);
-				return true;
-			}
-		};
-
 		protected void showListSummary(int id) {
 			ListPreference list = (ListPreference) findPreference(id);
-			list.setOnPreferenceChangeListener(mListChangeListener);
+			list.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+				@Override
+				public boolean onPreferenceChange(Preference preference,
+						Object newValue) {
+					setListSummary((ListPreference) preference,
+							(String) newValue);
+					return true;
+				}
+			});
 			setListSummary(list, list.getValue());
 		}
 
