@@ -327,7 +327,7 @@ public class FlyingHelper {
 		boolean moved = false;
 		if (x != 0 || y != 0) {
 			moved = true;
-			mFlyingLayout.moveWithoutSpeed(x, y, true);
+			mFlyingLayout.moveWithoutSpeed(x, y, mSettings.animation);
 		}
 		return moved;
 	}
@@ -337,6 +337,6 @@ public class FlyingHelper {
 		setOverlayShown(false);
 		pin();
 		// goHome must be placed after pin() for "Reset when collapsed" option.
-		mFlyingLayout.goHome(true);
+		mFlyingLayout.goHome(mSettings.animation);
 	}
 }

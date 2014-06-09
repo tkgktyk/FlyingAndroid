@@ -49,6 +49,7 @@ public class FA {
 		public float speed;
 		public int initialXp;
 		public int initialYp;
+		public boolean animation;
 		public boolean notifyFlying;
 		public boolean flyingDialog;
 		public Set<String> forceSetBlackBackgroundSet;
@@ -72,6 +73,7 @@ public class FA {
 					InitialPosition.DEFAULT_X_PERCENT);
 			initialYp = pref.getInt("pref_key_initial_y_percent",
 					InitialPosition.DEFAULT_Y_PERCENT);
+			animation = pref.getBoolean("pref_key_animation", true);
 			notifyFlying = pref.getBoolean("pref_key_notify_flying", true);
 			flyingDialog = pref.getBoolean("pref_key_flying_dialog", false);
 			forceSetBlackBackgroundSet = pref.getStringSet(

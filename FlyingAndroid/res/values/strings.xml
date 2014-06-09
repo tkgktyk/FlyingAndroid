@@ -31,6 +31,10 @@
     <string name="pref_key_initial_y_percent" translatable="false">pref_key_initial_y_percent</string>
     <string name="summary_initial_position">Move to this position when you launch FA Toggle.</string>
     <string name="usage_of_initial_position">Drag to change position.\nPress back key to save.</string>
+    <!-- Animation -->
+    <string name="animation">Animation</string>
+    <string name="pref_key_animation" translatable="false">pref_key_animation</string>
+    <string name="summary_animation">Movement will be smooth.</string>
     <!-- Notify flying -->
     <string name="notify_flying">Notify flying</string>
     <string name="pref_key_notify_flying" translatable="false">pref_key_notify_flying</string>

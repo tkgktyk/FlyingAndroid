@@ -16,6 +16,11 @@
 
     <CheckBoxPreference
         android:defaultValue="true"
+        android:key="@string/pref_key_animation"
+        android:summary="@string/summary_animation"
+        android:title="@string/animation" />
+    <CheckBoxPreference
+        android:defaultValue="true"
         android:key="@string/pref_key_notify_flying"
         android:summary="@string/summary_notify_flying"
         android:title="@string/notify_flying" />
