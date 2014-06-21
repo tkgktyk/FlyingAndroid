@@ -26,6 +26,9 @@
     <string name="initial_position">初期位置&#8230;</string>
     <string name="summary_initial_position">FAトグルを起動した時にこの位置へ移動します。</string>
     <string name="usage_of_initial_position">ドラッグして位置を変えてください。\n戻るキーで保存されます。</string>
+    <!-- Animation -->
+    <string name="animation">アニメーション</string>
+    <string name="summary_animation">動きが滑らかになります。</string>
     <!-- Notify flying -->
     <string name="notify_flying">フライング中の通知</string>
     <string name="summary_notify_flying">フライング中にウィンドウの周囲に線を描画します。</string>
