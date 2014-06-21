@@ -16,6 +16,7 @@ import de.robv.android.xposed.XposedBridge;
 public class FA {
 	public static final String PACKAGE_NAME = FA.class.getPackage().getName();
 	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
+	public static final String ACTION_RESET = PACKAGE_NAME + ".ACTION_RESET";
 
 	private final static int NOTIFICATION_ID = R.drawable.ic_launcher;
 
