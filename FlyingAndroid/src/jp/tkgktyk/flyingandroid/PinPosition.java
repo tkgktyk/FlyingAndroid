@@ -82,7 +82,7 @@ public class PinPosition {
 				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) left
 						.getLayoutParams();
 				lp.weight = mXp;
-				left.setLayoutParams(lp);
+				left.requestLayout();
 			}
 		}
 		{
@@ -91,7 +91,7 @@ public class PinPosition {
 				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) right
 						.getLayoutParams();
 				lp.weight = 100 - mXp;
-				right.setLayoutParams(lp);
+				right.requestLayout();
 			}
 		}
 		{
@@ -100,7 +100,7 @@ public class PinPosition {
 				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) top
 						.getLayoutParams();
 				lp.weight = mYp;
-				top.setLayoutParams(lp);
+				top.requestLayout();
 			}
 		}
 		{
@@ -109,7 +109,7 @@ public class PinPosition {
 				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) bottom
 						.getLayoutParams();
 				lp.weight = 100 - mYp;
-				bottom.setLayoutParams(lp);
+				bottom.requestLayout();
 			}
 		}
 	}
