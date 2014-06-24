@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ResultReceiver;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -95,13 +96,29 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			public void onReceive(Context context, Intent intent) {
 				Activity activity = (Activity) context;
 				if (!isTabContent(activity)) {
-					FlyingHelper helper = FlyingHelper.getFrom(activity
-							.getWindow().peekDecorView());
+					View decor = activity.getWindow().peekDecorView();
+					FlyingHelper helper = FlyingHelper.getFrom(decor);
 					if (helper != null) {
 						if (intent.getAction().equals(FA.ACTION_TOGGLE)) {
-							helper.toggle();
+							PinPosition pos = new PinPosition(activity,
+									helper.getSettings().initialXp,
+									helper.getSettings().initialYp);
+							try {
+								XposedHelpers.callMethod(activity,
+										"onToggleFlyingMode", pos.getX(decor),
+										pos.getY(decor));
+								FA.logD("ACTION_TOGGLE is overridden");
+							} catch (NoSuchMethodError e) {
+								helper.toggle();
+							}
 						} else if (intent.getAction().equals(FA.ACTION_RESET)) {
-							helper.resetState();
+							try {
+								XposedHelpers.callMethod(activity,
+										"onResetFlyingMode");
+								FA.logD("ACTION_RESET is overridden");
+							} catch (NoSuchMethodError e) {
+								helper.resetState();
+							}
 						}
 					} else {
 						FA.logD("FlyingHelper is not found.");
