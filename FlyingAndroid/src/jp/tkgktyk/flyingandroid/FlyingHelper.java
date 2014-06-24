@@ -130,7 +130,7 @@ public class FlyingHelper {
 					@Override
 					public void onOutsideClick(FlyingLayoutF v, int x, int y) {
 						// log("outside click");
-						toggle();
+						resetState();
 					}
 
 					@Override
