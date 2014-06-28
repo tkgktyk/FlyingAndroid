@@ -54,7 +54,7 @@ public class FlyingHelper {
 		// create FlyingLayout
 		installFlyingLayout(target.getContext(), true);
 
-		installToViewGroup(target);
+		attachTo(target);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class FlyingHelper {
 		// create FlyingLayout
 		installFlyingLayout(target.getContext(), false);
 
-		installToViewGroup(target);
+		attachTo(target);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class FlyingHelper {
 		pin();
 		setOverlayShown(true);
 
-		installToViewGroup(target);
+		attachTo(target);
 	}
 
 	private static String FA_HELPER = "FA_helper";
@@ -209,7 +209,7 @@ public class FlyingHelper {
 		mContainerView = dragView;
 	}
 
-	private void installToViewGroup(ViewGroup target) {
+	private void attachTo(ViewGroup target) {
 		List<View> contents = new ArrayList<View>();
 		for (int i = 0; i < target.getChildCount(); ++i) {
 			contents.add(target.getChildAt(i));
