@@ -17,6 +17,7 @@ public class FA {
 	public static final String PACKAGE_NAME = FA.class.getPackage().getName();
 	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
 	public static final String ACTION_RESET = PACKAGE_NAME + ".ACTION_RESET";
+	public static final String ACTION_TOGGLE_PIN = PACKAGE_NAME + ".ACTION_TOGGLE_PIN";
 
 	private final static int NOTIFICATION_ID = R.drawable.ic_launcher;
 

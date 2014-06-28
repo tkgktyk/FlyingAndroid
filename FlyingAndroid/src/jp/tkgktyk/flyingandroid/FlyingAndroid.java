@@ -11,7 +11,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ResultReceiver;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -99,7 +98,8 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 					View decor = activity.getWindow().peekDecorView();
 					FlyingHelper helper = FlyingHelper.getFrom(decor);
 					if (helper != null) {
-						if (intent.getAction().equals(FA.ACTION_TOGGLE)) {
+						String action = intent.getAction();
+						if (action.equals(FA.ACTION_TOGGLE)) {
 							PinPosition pos = new PinPosition(activity,
 									helper.getSettings().initialXp,
 									helper.getSettings().initialYp);
@@ -111,13 +111,25 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 							} catch (NoSuchMethodError e) {
 								helper.toggle();
 							}
-						} else if (intent.getAction().equals(FA.ACTION_RESET)) {
+						} else if (action.equals(FA.ACTION_RESET)) {
 							try {
 								XposedHelpers.callMethod(activity,
 										"onResetFlyingMode");
 								FA.logD("ACTION_RESET is overridden");
 							} catch (NoSuchMethodError e) {
 								helper.resetState();
+							}
+						} else if (action.equals(FA.ACTION_TOGGLE_PIN)) {
+							PinPosition pos = new PinPosition(activity,
+									helper.getSettings().initialXp,
+									helper.getSettings().initialYp);
+							try {
+								XposedHelpers.callMethod(activity,
+										"onToggleFlyingPin", pos.getX(decor),
+										pos.getY(decor));
+								FA.logD("ACTION_TOGGLE_PIN is overridden");
+							} catch (NoSuchMethodError e) {
+								helper.togglePin();
 							}
 						}
 					} else {
@@ -142,6 +154,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 								IntentFilter filter = new IntentFilter();
 								filter.addAction(FA.ACTION_TOGGLE);
 								filter.addAction(FA.ACTION_RESET);
+								filter.addAction(FA.ACTION_TOGGLE_PIN);
 								activity.registerReceiver(toggleReceiver,
 										filter);
 								XposedHelpers.setAdditionalInstanceField(

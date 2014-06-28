@@ -29,7 +29,6 @@ public class FlyingHelper {
 
 	private Drawable mBoundaryDrawable;
 
-	private boolean mFlying = false;
 	private boolean mForceSet = false;
 
 	public FlyingHelper(FA.Settings settings) {
@@ -277,10 +276,13 @@ public class FlyingHelper {
 		mPinButton.setChecked(false);
 	}
 
+	public void togglePin() {
+		mPinButton.setChecked(!mPinButton.isChecked());
+	}
+
 	private void unfly() {
 		mFlyingLayout.setIgnoreTouchEvent(true);
 		setBoundaryShown(false);
-		mFlying = false;
 	}
 
 	private void fly() {
@@ -290,7 +292,6 @@ public class FlyingHelper {
 		}
 		mFlyingLayout.setIgnoreTouchEvent(false);
 		setBoundaryShown(true);
-		mFlying = true;
 	}
 
 	private void forceSetBlackBackground() {
@@ -303,7 +304,7 @@ public class FlyingHelper {
 	}
 
 	public void toggle() {
-		if (mFlyingLayout.staysHome() && !mFlying) {
+		if (mFlyingLayout.getIgnoreTouchEvent() && mFlyingLayout.staysHome()) {
 			// take off
 			setOverlayShown(true);
 			boolean moved = moveToInitialPosition();
