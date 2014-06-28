@@ -17,6 +17,6 @@ public class ToggleActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		sendBroadcast(new Intent("jp.tkgktyk.flyingandroid.ACTION_TOGGLE"));
+		sendBroadcast(new Intent(FA.ACTION_TOGGLE));
 	}
 }
