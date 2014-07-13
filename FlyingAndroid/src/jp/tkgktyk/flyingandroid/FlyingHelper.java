@@ -300,12 +300,17 @@ public class FlyingHelper {
 	}
 
 	private void forceSetBlackBackground() {
-		if (mForceSet) {
-			Activity activity = (Activity) mFlyingLayout.getContext();
-			// force set black background for clear background.
-			activity.getWindow().setBackgroundDrawableResource(
-					android.R.drawable.screen_background_dark);
-		}
+		Activity activity = (Activity) mFlyingLayout.getContext();
+		mFlyingLayout.setBackgroundDrawable(activity.getWindow()
+				.peekDecorView().getBackground());
+		activity.getWindow().setBackgroundDrawableResource(
+				android.R.drawable.screen_background_dark);
+		// if (mForceSet) {
+		// Activity activity = (Activity) mFlyingLayout.getContext();
+		// // force set black background for clear background.
+		// activity.getWindow().setBackgroundDrawableResource(
+		// android.R.drawable.screen_background_dark);
+		// }
 	}
 
 	public void toggle() {
