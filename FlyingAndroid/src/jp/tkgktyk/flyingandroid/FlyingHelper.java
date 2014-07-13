@@ -21,6 +21,8 @@ public class FlyingHelper {
 	public static final String PACKAGE_NAME = FlyingAndroid.class.getPackage()
 			.getName();
 
+	private ViewGroup mTarget;
+
 	private final FA.Settings mSettings;
 	private FlyingLayoutF mFlyingLayout;
 	private FrameLayout mContainerView;
@@ -85,7 +87,6 @@ public class FlyingHelper {
 		// create FlyingLayout
 		installFlyingLayout(target.getContext(), false);
 
-		pin();
 		setOverlayShown(true);
 
 		attachTo(target);
@@ -167,6 +168,8 @@ public class FlyingHelper {
 		mOverlayView = LayoutInflater.from(flyContext).inflate(
 				R.layout.view_pin_button, null);
 		mPinButton = (ToggleButton) mOverlayView.findViewById(R.id.pin);
+		// set initial state to pinned
+		mPinButton.setChecked(true);
 		mPinButton
 				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 					@Override
@@ -221,6 +224,8 @@ public class FlyingHelper {
 		target.addView(mFlyingLayout);
 		XposedHelpers.setAdditionalInstanceField(target.getRootView(),
 				FA_HELPER, this);
+
+		mTarget = target;
 	}
 
 	/**
