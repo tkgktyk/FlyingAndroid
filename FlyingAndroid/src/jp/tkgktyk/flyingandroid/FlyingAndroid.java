@@ -98,15 +98,15 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 					View decor = activity.getWindow().peekDecorView();
 					FlyingHelper helper = FlyingHelper.getFrom(decor);
 					if (helper != null) {
+						FA.Settings settings = helper.getSettings();
 						String action = intent.getAction();
 						if (action.equals(FA.ACTION_TOGGLE)) {
 							PinPosition pos = new PinPosition(activity,
-									helper.getSettings().initialXp,
-									helper.getSettings().initialYp);
+									settings.initialXp, settings.initialYp);
 							try {
 								XposedHelpers.callMethod(activity,
-										"onToggleFlyingMode", pos.getX(decor),
-										pos.getY(decor));
+										"onToggleFlyingMode", settings.speed,
+										pos.getX(decor), pos.getY(decor));
 								FA.logD("ACTION_TOGGLE is overridden");
 							} catch (NoSuchMethodError e) {
 								helper.toggle();
@@ -121,12 +121,11 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 							}
 						} else if (action.equals(FA.ACTION_TOGGLE_PIN)) {
 							PinPosition pos = new PinPosition(activity,
-									helper.getSettings().initialXp,
-									helper.getSettings().initialYp);
+									settings.initialXp, settings.initialYp);
 							try {
 								XposedHelpers.callMethod(activity,
-										"onToggleFlyingPin", pos.getX(decor),
-										pos.getY(decor));
+										"onToggleFlyingPin", settings.speed,
+										pos.getX(decor), pos.getY(decor));
 								FA.logD("ACTION_TOGGLE_PIN is overridden");
 							} catch (NoSuchMethodError e) {
 								helper.togglePin();
