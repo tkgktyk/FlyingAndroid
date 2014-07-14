@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ResultReceiver;
@@ -19,7 +21,9 @@ import android.widget.TabHost;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
@@ -45,6 +49,43 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 	}
 
 	private void hooksForActivity() {
+		XposedHelpers.findAndHookMethod(View.class, "setBackgroundDrawable",
+				Drawable.class, new XC_MethodReplacement() {
+					@Override
+					protected Object replaceHookedMethod(MethodHookParam param)
+							throws Throwable {
+						Object[] args = null;
+						if (param.thisObject
+								.getClass()
+								.getName()
+								.equals("com.android.internal.policy.impl.PhoneWindow$DecorView")) {
+							View v = (View) param.thisObject;
+							FlyingHelper helper = FlyingHelper.getFrom(v);
+							if (helper != null) {
+								Drawable d = (Drawable) param.args[0];
+								Context context = v.getContext();
+								Drawable dark = context
+										.getResources()
+										.getDrawable(
+												android.R.drawable.screen_background_dark);
+								if (d == null) {
+									helper.getFlyingLayout()
+											.setBackgroundDrawable(dark);
+								} else if (d.getOpacity() == PixelFormat.OPAQUE) {
+									helper.getFlyingLayout()
+											.setBackgroundDrawable(d);
+								}
+								args = new Object[] { dark };
+							}
+						}
+						if (args == null) {
+							args = param.args;
+						}
+						XposedBridge.invokeOriginalMethod(param.method,
+								param.thisObject, param.args);
+						return null;
+					}
+				});
 		XposedHelpers.findAndHookMethod(Activity.class, "onPostCreate",
 				Bundle.class, new XC_MethodHook() {
 					@Override
