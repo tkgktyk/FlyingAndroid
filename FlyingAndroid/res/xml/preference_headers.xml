@@ -5,6 +5,7 @@
     <header
         android:summary="@string/summary_note"
         android:title="@string/note" />
+
     <!-- Settings -->
     <header
         android:fragment="jp.tkgktyk.flyingandroid.app.MainActivity$FlyingFragment"
@@ -19,7 +20,7 @@
         android:summary="@string/summary_troubleshooting"
         android:title="@string/troubleshooting" />
 
-    <!-- information -->
+    <!-- Information -->
     <header
         android:summary="@string/summary_developer"
         android:title="@string/developer" >

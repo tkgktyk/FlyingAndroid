@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import jp.tkgktyk.flyingandroid.BuildConfig;
+import jp.tkgktyk.flyingandroid.FA;
 import jp.tkgktyk.flyingandroid.R;
 import android.app.ListFragment;
 import android.app.LoaderManager;
@@ -161,9 +162,8 @@ public class AppSelectFragment extends ListFragment implements
 		Adapter adapter = new Adapter(getActivity(), deliverer);
 		setListAdapter(adapter);
 
-		Set<String> selectedSet = PreferenceManager
-				.getDefaultSharedPreferences(getActivity()).getStringSet(
-						mPrefKey, Collections.<String> emptySet());
+		Set<String> selectedSet = FA.getSharedPreferences(getActivity())
+				.getStringSet(mPrefKey, Collections.<String> emptySet());
 		for (Entry entry : entries) {
 			entry.selected = selectedSet.contains(entry.packageName);
 			if (!mShowOnlySelected || entry.selected) {

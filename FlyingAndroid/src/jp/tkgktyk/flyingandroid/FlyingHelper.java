@@ -96,6 +96,9 @@ public class FlyingHelper {
 
 	private void installFlyingLayout(Context context, boolean verticalDrag)
 			throws Throwable {
+		mForceSet = mSettings.forceSetBlackBackgroundSet.contains(context
+				.getPackageName());
+
 		// prepare boundary
 		prepareBoundary(context);
 
@@ -128,11 +131,6 @@ public class FlyingHelper {
 					public void onOutsideClick(FlyingLayoutF v, int x, int y) {
 						// log("outside click");
 						toggle();
-					}
-
-					@Override
-					public void onMove(FlyingLayoutF v, int deltaX, int deltaY) {
-						// do nothing
 					}
 
 					@Override
@@ -296,17 +294,11 @@ public class FlyingHelper {
 	}
 
 	private void forceSetBlackBackground() {
-		if (!mForceSet) {
-			if (mFlyingLayout.getContext() instanceof Activity) {
-				Activity activity = (Activity) mFlyingLayout.getContext();
-				if (mSettings.forceSetBlackBackgroundSet.contains(activity
-						.getPackageName())) {
-					// force set black background for clear background.
-					activity.getWindow().setBackgroundDrawableResource(
-							android.R.drawable.screen_background_dark);
-				}
-			}
-			mForceSet = true;
+		if (mForceSet) {
+			Activity activity = (Activity) mFlyingLayout.getContext();
+			// force set black background for clear background.
+			activity.getWindow().setBackgroundDrawableResource(
+					android.R.drawable.screen_background_dark);
 		}
 	}
 
@@ -335,7 +327,7 @@ public class FlyingHelper {
 		boolean moved = false;
 		if (x != 0 || y != 0) {
 			moved = true;
-			mFlyingLayout.moveWithoutSpeed(x, y);
+			mFlyingLayout.moveWithoutSpeed(x, y, mSettings.animation);
 		}
 		return moved;
 	}
@@ -345,6 +337,6 @@ public class FlyingHelper {
 		setOverlayShown(false);
 		pin();
 		// goHome must be placed after pin() for "Reset when collapsed" option.
-		mFlyingLayout.goHome();
+		mFlyingLayout.goHome(mSettings.animation);
 	}
 }

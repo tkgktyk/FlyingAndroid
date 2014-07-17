@@ -9,14 +9,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-
+import android.content.SharedPreferences;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 
 public class FA {
-	public static final String PACKAGE_NAME = FA.class.getPackage()
-			.getName();
+	public static final String PACKAGE_NAME = FA.class.getPackage().getName();
 	public static final String ACTION_TOGGLE = PACKAGE_NAME + ".ACTION_TOGGLE";
+	public static final String ACTION_RESET = PACKAGE_NAME + ".ACTION_RESET";
 
 	private final static int NOTIFICATION_ID = R.drawable.ic_launcher;
 
@@ -34,6 +34,13 @@ public class FA {
 		XposedBridge.log(t);
 	}
 
+	@SuppressWarnings("deprecation")
+	@SuppressLint("WorldReadableFiles")
+	public static SharedPreferences getSharedPreferences(Context context) {
+		return context.getSharedPreferences(FA.PACKAGE_NAME + "_preferences",
+				Context.MODE_WORLD_READABLE);
+	}
+
 	public static final int AUTO_PIN_DISABLED = 0;
 	public static final int AUTO_PIN_WHEN_TAKEOFF = 1;
 	public static final int AUTO_PIN_AFTER_MOVING = 2;
@@ -43,6 +50,7 @@ public class FA {
 		public float speed;
 		public int initialXp;
 		public int initialYp;
+		public boolean animation;
 		public boolean notifyFlying;
 		public boolean flyingDialog;
 		public Set<String> forceSetBlackBackgroundSet;
@@ -66,6 +74,7 @@ public class FA {
 					InitialPosition.DEFAULT_X_PERCENT);
 			initialYp = pref.getInt("pref_key_initial_y_percent",
 					InitialPosition.DEFAULT_Y_PERCENT);
+			animation = pref.getBoolean("pref_key_animation", true);
 			notifyFlying = pref.getBoolean("pref_key_notify_flying", true);
 			flyingDialog = pref.getBoolean("pref_key_flying_dialog", false);
 			forceSetBlackBackgroundSet = pref.getStringSet(

@@ -14,7 +14,6 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 
 public class MainActivity extends PreferenceActivity {
 
@@ -35,8 +34,7 @@ public class MainActivity extends PreferenceActivity {
 		super.onHeaderClick(header, position);
 
 		if (header.id == R.id.donate) {
-			PreferenceManager
-					.getDefaultSharedPreferences(this)
+			FA.getSharedPreferences(this)
 					.edit()
 					.putBoolean(getString(R.string.pref_key_feeling_to_donate),
 							true).apply();
@@ -56,24 +54,18 @@ public class MainActivity extends PreferenceActivity {
 			return findPreference(getString(id));
 		}
 
-		private final OnPreferenceChangeListener mListChangeListener = new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference,
-					Object newValue) {
-				setListSummary((ListPreference) preference, (String) newValue);
-				return true;
-			}
-		};
-
 		protected void showListSummary(int id) {
 			ListPreference list = (ListPreference) findPreference(id);
-			list.setOnPreferenceChangeListener(mListChangeListener);
-			setListSummary(list, getSharedString(id));
-		}
-
-		private String getSharedString(int keyId) {
-			return PreferenceManager.getDefaultSharedPreferences(getActivity())
-					.getString(getString(keyId), null);
+			list.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+				@Override
+				public boolean onPreferenceChange(Preference preference,
+						Object newValue) {
+					setListSummary((ListPreference) preference,
+							(String) newValue);
+					return true;
+				}
+			});
+			setListSummary(list, list.getValue());
 		}
 
 		private void setListSummary(ListPreference pref, String value) {

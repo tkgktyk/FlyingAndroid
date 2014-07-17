@@ -2,7 +2,6 @@ package jp.tkgktyk.flyingandroid;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.view.View;
 
 public class InitialPosition {
@@ -13,8 +12,7 @@ public class InitialPosition {
 	private int mYp;
 
 	public InitialPosition(Context context) {
-		SharedPreferences pref = PreferenceManager
-				.getDefaultSharedPreferences(context);
+		SharedPreferences pref = FA.getSharedPreferences(context);
 		mXp = pref.getInt(
 				context.getString(R.string.pref_key_initial_x_percent),
 				DEFAULT_X_PERCENT);
@@ -29,8 +27,7 @@ public class InitialPosition {
 	}
 
 	public void save(Context context) {
-		PreferenceManager
-				.getDefaultSharedPreferences(context)
+		FA.getSharedPreferences(context)
 				.edit()
 				.putInt(context.getString(R.string.pref_key_initial_x_percent),
 						mXp)

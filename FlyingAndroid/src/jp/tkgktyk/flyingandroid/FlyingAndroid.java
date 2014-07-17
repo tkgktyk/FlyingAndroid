@@ -9,9 +9,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.ResultReceiver;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TabHost;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -35,6 +38,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 		try {
 			hooksForActivity();
 			hooksForDialog();
+			hooksForInputMethod();
 		} catch (Throwable t) {
 			FA.logE(t);
 		}
@@ -94,7 +98,11 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 					FlyingHelper helper = FlyingHelper.getFrom(activity
 							.getWindow().peekDecorView());
 					if (helper != null) {
-						helper.toggle();
+						if (intent.getAction().equals(FA.ACTION_TOGGLE)) {
+							helper.toggle();
+						} else if (intent.getAction().equals(FA.ACTION_RESET)) {
+							helper.resetState();
+						}
 					} else {
 						FA.logD("FlyingHelper is not found.");
 					}
@@ -114,8 +122,11 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 									.getAdditionalInstanceField(activity,
 											FA_REGISTERED);
 							if (registered == null) {
+								IntentFilter filter = new IntentFilter();
+								filter.addAction(FA.ACTION_TOGGLE);
+								filter.addAction(FA.ACTION_RESET);
 								activity.registerReceiver(toggleReceiver,
-										new IntentFilter(FA.ACTION_TOGGLE));
+										filter);
 								XposedHelpers.setAdditionalInstanceField(
 										activity, FA_REGISTERED, true);
 							} else {
@@ -184,6 +195,10 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			return;
 		}
 		String packageName = activity.getPackageName();
+		if (packageName.equals(FA.PACKAGE_NAME)) {
+			FA.logD("ignore own activity.");
+			return;
+		}
 		FA.Settings settings = new FA.Settings(sPref);
 		FA.logD("reload settings at " + activity.getLocalClassName() + "@"
 				+ packageName);
@@ -271,6 +286,35 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 						}
 					}
 				});
+	}
+
+	private void hooksForInputMethod() {
+		XC_MethodHook onSoftInputShown = new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param)
+					throws Throwable {
+				try {
+					FA.logD(param.method.getName());
+					Context context = ((View) XposedHelpers.getObjectField(
+							param.thisObject, "mCurRootView")).getContext();
+					context.sendBroadcast(new Intent(FA.ACTION_RESET));
+				} catch (Throwable t) {
+					FA.logE(t);
+				}
+			}
+		};
+		// for general EditText
+		XposedHelpers.findAndHookMethod(InputMethodManager.class,
+				"showSoftInput", View.class, int.class, ResultReceiver.class,
+				onSoftInputShown);
+		// for SearchView (on ActionBar)
+		XposedHelpers.findAndHookMethod(InputMethodManager.class,
+				"showSoftInputUnchecked", int.class, ResultReceiver.class,
+				onSoftInputShown);
+		// for another case??? just to be sure
+		XposedHelpers.findAndHookMethod(InputMethodManager.class,
+				"showSoftInputFromInputMethod", IBinder.class, int.class,
+				onSoftInputShown);
 	}
 
 	@Override
