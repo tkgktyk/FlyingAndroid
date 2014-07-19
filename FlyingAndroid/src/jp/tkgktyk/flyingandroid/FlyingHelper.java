@@ -18,9 +18,6 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 public class FlyingHelper {
-	public static final String PACKAGE_NAME = FlyingAndroid.class.getPackage()
-			.getName();
-
 	private ViewGroup mTarget;
 
 	private final FA.Settings mSettings;
@@ -99,16 +96,17 @@ public class FlyingHelper {
 		mForceSet = mSettings.forceSetBlackBackgroundSet.contains(context
 				.getPackageName());
 
+		mFlyingLayout = new FlyingLayoutF(context);
+
 		// prepare boundary
 		prepareBoundary(context);
 
 		// prepare dragView as FlyingLayout's container
 		prepareContainerView(context, verticalDrag);
 		// prepare overlay
-		prepareOverlayView(context);
+		prepareOverlayView(context, mFlyingLayout);
 
 		// setup view hierarchy
-		mFlyingLayout = new FlyingLayoutF(context);
 		mFlyingLayout.addView(mContainerView);
 		mFlyingLayout.addView(mOverlayView);
 
@@ -117,8 +115,8 @@ public class FlyingHelper {
 				ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT));
 		mFlyingLayout.setSpeed(mSettings.speed);
-		final Context flyContext = context.createPackageContext(PACKAGE_NAME,
-				Context.CONTEXT_IGNORE_SECURITY);
+		final Context flyContext = context.createPackageContext(
+				FA.PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
 		final int padding = flyContext.getResources().getDimensionPixelSize(
 				R.dimen.flying_view_padding);
 		mFlyingLayout.setHorizontalPadding(padding);
@@ -148,7 +146,7 @@ public class FlyingHelper {
 		} else {
 			Context flyContext = null;
 			try {
-				flyContext = context.createPackageContext(PACKAGE_NAME,
+				flyContext = context.createPackageContext(FA.PACKAGE_NAME,
 						Context.CONTEXT_IGNORE_SECURITY);
 			} catch (Throwable t) {
 				XposedBridge.log(t);
@@ -162,11 +160,12 @@ public class FlyingHelper {
 		}
 	}
 
-	private void prepareOverlayView(Context context) throws Throwable {
-		Context flyContext = context.createPackageContext(PACKAGE_NAME,
+	private void prepareOverlayView(Context context, ViewGroup parent)
+			throws Throwable {
+		Context flyContext = context.createPackageContext(FA.PACKAGE_NAME,
 				Context.CONTEXT_IGNORE_SECURITY);
 		mOverlayView = LayoutInflater.from(flyContext).inflate(
-				R.layout.view_pin_button, null);
+				R.layout.view_pin_button, parent, false);
 		mPinButton = (ToggleButton) mOverlayView.findViewById(R.id.pin);
 		// set initial state to pinned
 		mPinButton.setChecked(true);
