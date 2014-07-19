@@ -142,7 +142,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 						FA.Settings settings = helper.getSettings();
 						String action = intent.getAction();
 						if (action.equals(FA.ACTION_TOGGLE)) {
-							PinPosition pos = new PinPosition(activity,
+							InitialPosition pos = new InitialPosition(
 									settings.initialXp, settings.initialYp);
 							try {
 								XposedHelpers.callMethod(activity,
@@ -161,7 +161,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 								helper.resetState();
 							}
 						} else if (action.equals(FA.ACTION_TOGGLE_PIN)) {
-							PinPosition pos = new PinPosition(activity,
+							InitialPosition pos = new InitialPosition(
 									settings.initialXp, settings.initialYp);
 							try {
 								XposedHelpers.callMethod(activity,
