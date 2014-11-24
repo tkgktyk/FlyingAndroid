@@ -1,16 +1,17 @@
 package jp.tkgktyk.flyingandroid.app;
 
-import jp.tkgktyk.flyinglayout.FlyingLayoutF;
+import jp.tkgktyk.flyinglayout.FlyingLayout;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 
-public class GridLinedFlyingLayout extends FlyingLayoutF {
+public class GridLinedFlyingLayout extends FlyingLayout {
 
 	private Paint mLinePaint;
 
-	public GridLinedFlyingLayout(Context context, AttributeSet attrs, int defStyle) {
+	public GridLinedFlyingLayout(Context context, AttributeSet attrs,
+			int defStyle) {
 		super(context, attrs, defStyle);
 		init();
 	}

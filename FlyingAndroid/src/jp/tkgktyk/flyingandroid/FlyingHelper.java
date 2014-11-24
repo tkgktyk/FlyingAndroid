@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.tkgktyk.flyingandroid.VerticalDragDetectorView.OnDraggedListener;
-import jp.tkgktyk.flyinglayout.FlyingLayoutF;
+import jp.tkgktyk.flyinglayout.FlyingLayout;
+import jp.tkgktyk.flyinglayout.FlyingLayout.OnFlyingEventListener;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -21,7 +22,7 @@ public class FlyingHelper {
 	private ViewGroup mTarget;
 
 	private final FA.Settings mSettings;
-	private FlyingLayoutF mFlyingLayout;
+	private FlyingLayout mFlyingLayout;
 	private FrameLayout mContainerView;
 	private View mOverlayView;
 	private ToggleButton mPinButton;
@@ -96,7 +97,7 @@ public class FlyingHelper {
 		mForceSet = mSettings.forceSetBlackBackgroundSet.contains(context
 				.getPackageName());
 
-		mFlyingLayout = new FlyingLayoutF(context);
+		mFlyingLayout = new FlyingLayout(context);
 
 		// prepare boundary
 		prepareBoundary(context);
@@ -121,23 +122,28 @@ public class FlyingHelper {
 				R.dimen.flying_view_padding);
 		mFlyingLayout.setHorizontalPadding(padding);
 		mFlyingLayout.setVerticalPadding(padding);
-		mFlyingLayout.setIgnoreTouchEvent(true);
+		mFlyingLayout.setEnableTouchEventX(false);
+		mFlyingLayout.setEnableTouchEventY(false);
 		mFlyingLayout.setUseContainer(true);
-		mFlyingLayout
-				.setOnFlyingEventListener(new FlyingLayoutF.OnFlyingEventListener() {
-					@Override
-					public void onOutsideClick(FlyingLayoutF v, int x, int y) {
-						// log("outside click");
-						resetState();
-					}
+		mFlyingLayout.setOnFlyingEventListener(new OnFlyingEventListener() {
+			@Override
+			public void onOutsideClick(FlyingLayout v, int x, int y) {
+				// log("outside click");
+				resetState();
+			}
 
-					@Override
-					public void onMoveFinished(FlyingLayoutF v) {
-						if (mSettings.autoPin(FA.AUTO_PIN_AFTER_MOVING)) {
-							pin();
-						}
-					}
-				});
+			@Override
+			public void onDragStarted(FlyingLayout v) {
+				// doing nothing
+			}
+
+			@Override
+			public void onDragFinished(FlyingLayout v) {
+				if (mSettings.autoPin(FA.AUTO_PIN_AFTER_MOVING)) {
+					pin();
+				}
+			}
+		});
 	}
 
 	public void prepareBoundary(Context context) {
@@ -244,7 +250,7 @@ public class FlyingHelper {
 		return mSettings;
 	}
 
-	public FlyingLayoutF getFlyingLayout() {
+	public FlyingLayout getFlyingLayout() {
 		return mFlyingLayout;
 	}
 
@@ -285,7 +291,8 @@ public class FlyingHelper {
 	}
 
 	private void unfly() {
-		mFlyingLayout.setIgnoreTouchEvent(true);
+		mFlyingLayout.setEnableTouchEventX(false);
+		mFlyingLayout.setEnableTouchEventY(false);
 		setBoundaryShown(false);
 	}
 
@@ -294,21 +301,24 @@ public class FlyingHelper {
 		if (mFlyingLayout.staysHome()) {
 			moveToInitialPosition();
 		}
-		mFlyingLayout.setIgnoreTouchEvent(false);
+		mFlyingLayout.setEnableTouchEventX(true);
+		mFlyingLayout.setEnableTouchEventY(true);
 		setBoundaryShown(true);
 	}
 
 	private void forceSetBlackBackground() {
-		// if (mForceSet) {
-		// Activity activity = (Activity) mFlyingLayout.getContext();
-		// // force set black background for clear background.
-		// activity.getWindow().setBackgroundDrawableResource(
-		// android.R.drawable.screen_background_dark);
-		// }
+		if (mForceSet) {
+			Activity activity = (Activity) mFlyingLayout.getContext();
+			// force set black background for clear background.
+			activity.getWindow().setBackgroundDrawableResource(
+					android.R.drawable.screen_background_dark);
+		}
 	}
 
 	public void toggle() {
-		if (mFlyingLayout.getIgnoreTouchEvent() && mFlyingLayout.staysHome()) {
+		if (!mFlyingLayout.getEnableTouchEventX()
+				&& !mFlyingLayout.getEnableTouchEventY()
+				&& mFlyingLayout.staysHome()) {
 			// take off
 			setOverlayShown(true);
 			boolean moved = moveToInitialPosition();
@@ -338,7 +348,7 @@ public class FlyingHelper {
 	}
 
 	public void resetState() {
-		// go home and unfly
+		// go home and unflys
 		setOverlayShown(false);
 		pin();
 		// goHome must be placed after pin() for "Reset when collapsed" option.

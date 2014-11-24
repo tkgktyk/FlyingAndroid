@@ -1,6 +1,6 @@
 package jp.tkgktyk.flyingandroid;
 
-import jp.tkgktyk.flyinglayout.FlyingLayoutF;
+import jp.tkgktyk.flyinglayout.FlyingLayout;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -240,7 +240,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 							FlyingHelper helper = FlyingHelper.getFrom(activity
 									.getWindow().peekDecorView());
 							if (helper != null) {
-								FlyingLayoutF flyingLayout = helper
+								FlyingLayout flyingLayout = helper
 										.getFlyingLayout();
 								Configuration newConfig = (Configuration) param.args[0];
 								if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -275,7 +275,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 		FlyingHelper helper = null;
 		if (!settings.blackSet.contains(packageName)) {
 			// save / restore current focus
-			View v = activity.getCurrentFocus();
+			View focus = activity.getCurrentFocus();
 			settings.overwriteUsePinByWhiteList(packageName);
 			helper = new FlyingHelper(settings);
 			try {
@@ -288,8 +288,8 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 				FA.logE(t);
 				helper = null;
 			}
-			if (v != null) {
-				v.requestFocus();
+			if (focus != null) {
+				focus.requestFocus();
 			}
 		} else {
 			FA.logD(packageName + " is contained blacklist.");

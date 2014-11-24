@@ -3,7 +3,8 @@ package jp.tkgktyk.flyingandroid.app;
 import jp.tkgktyk.flyingandroid.FA;
 import jp.tkgktyk.flyingandroid.InitialPosition;
 import jp.tkgktyk.flyingandroid.R;
-import jp.tkgktyk.flyinglayout.FlyingLayoutF;
+import jp.tkgktyk.flyinglayout.FlyingLayout;
+import jp.tkgktyk.flyinglayout.FlyingLayout.OnFlyingEventListener;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -13,7 +14,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
 public class InitialPositionActivity extends Activity {
 
-	private FlyingLayoutF mFlyingLayout;
+	private FlyingLayout mFlyingLayout;
 
 	private InitialPosition mInitialPosition;
 
@@ -24,7 +25,7 @@ public class InitialPositionActivity extends Activity {
 
 		mInitialPosition = new InitialPosition(this);
 
-		mFlyingLayout = (FlyingLayoutF) findViewById(R.id.flying);
+		mFlyingLayout = (FlyingLayout) findViewById(R.id.flying);
 		SharedPreferences pref = FA.getSharedPreferences(this);
 		mFlyingLayout.setSpeed(Float.parseFloat(pref.getString(
 				getString(R.string.pref_key_speed), "1.5f")));
@@ -47,22 +48,26 @@ public class InitialPositionActivity extends Activity {
 						}
 					}
 				});
-		mFlyingLayout
-				.setOnFlyingEventListener(new FlyingLayoutF.OnFlyingEventListener() {
-					@Override
-					public void onOutsideClick(FlyingLayoutF v, int x, int y) {
-						// doing nothing
-					}
+		mFlyingLayout.setOnFlyingEventListener(new OnFlyingEventListener() {
+			@Override
+			public void onOutsideClick(FlyingLayout v, int x, int y) {
+				// doing nothing
+			}
 
-					@Override
-					public void onMoveFinished(FlyingLayoutF v) {
-						mInitialPosition.setXp(v, v.getOffsetX());
-						mInitialPosition.setYp(v, v.getOffsetY());
-						mInitialPosition.save(v.getContext());
-						v.setOffsetX(mInitialPosition.getX(v));
-						v.setOffsetY(mInitialPosition.getY(v));
-						v.requestLayout();
-					}
-				});
+			@Override
+			public void onDragStarted(FlyingLayout v) {
+				// doing nothing
+			}
+
+			@Override
+			public void onDragFinished(FlyingLayout v) {
+				mInitialPosition.setXp(v, v.getOffsetX());
+				mInitialPosition.setYp(v, v.getOffsetY());
+				mInitialPosition.save(v.getContext());
+				v.setOffsetX(mInitialPosition.getX(v));
+				v.setOffsetY(mInitialPosition.getY(v));
+				v.requestLayout();
+			}
+		});
 	}
 }
