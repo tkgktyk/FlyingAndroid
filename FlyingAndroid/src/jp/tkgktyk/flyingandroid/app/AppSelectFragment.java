@@ -17,7 +17,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -219,7 +218,7 @@ public class AppSelectFragment extends ListFragment implements
 				selectedSet.add(entry.packageName);
 			}
 		}
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
+		FA.getSharedPreferences(getActivity()).edit()
 				.putStringSet(mPrefKey, selectedSet).apply();
 
 		mSave = false;
