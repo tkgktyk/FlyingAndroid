@@ -25,6 +25,7 @@ import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class FlyingAndroid implements IXposedHookZygoteInit,
@@ -146,9 +147,9 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 									settings.initialXp, settings.initialYp);
 							try {
 								XposedHelpers.callMethod(activity,
-										"onToggleFlyingMode", settings.speed,
-										pos.getX(decor), pos.getY(decor));
-								FA.logD("ACTION_TOGGLE is overridden");
+										"onToggleFlyingMode", pos.getX(decor),
+										pos.getY(decor));
+								FA.logD(FA.ACTION_TOGGLE + " is overridden");
 							} catch (NoSuchMethodError e) {
 								helper.toggle();
 							}
@@ -156,7 +157,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 							try {
 								XposedHelpers.callMethod(activity,
 										"onResetFlyingMode");
-								FA.logD("ACTION_RESET is overridden");
+								FA.logD(FA.ACTION_RESET + " is overridden");
 							} catch (NoSuchMethodError e) {
 								helper.resetState();
 							}
@@ -165,9 +166,9 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 									settings.initialXp, settings.initialYp);
 							try {
 								XposedHelpers.callMethod(activity,
-										"onToggleFlyingPin", settings.speed,
-										pos.getX(decor), pos.getY(decor));
-								FA.logD("ACTION_TOGGLE_PIN is overridden");
+										"onToggleFlyingPin", pos.getX(decor),
+										pos.getY(decor));
+								FA.logD(FA.ACTION_TOGGLE_PIN + " is overridden");
 							} catch (NoSuchMethodError e) {
 								helper.togglePin();
 							}
@@ -393,6 +394,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			if (!lpparam.packageName.equals("com.android.systemui")) {
 				return;
 			}
+			hookForFlyingLayout(lpparam);
 			try {
 				XposedHelpers.findAndHookMethod(
 						"com.android.systemui.statusbar.phone.PhoneStatusBar",
@@ -451,6 +453,28 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			}
 		} catch (Throwable t) {
 			FA.logE(t);
+		}
+	}
+
+	private void hookForFlyingLayout(LoadPackageParam lpparam) {
+		try {
+			XposedHelpers.findAndHookMethod(FlyingLayout.class.getName(),
+					lpparam.classLoader, "overwriteSpeedByXposed",
+					new XC_MethodHook() {
+						@Override
+						protected void afterHookedMethod(MethodHookParam param)
+								throws Throwable {
+							if (param.thisObject.getClass().getName()
+									.equals(FlyingLayout.class.getName())) {
+								FA.Settings settings = new FA.Settings(
+										sPref);
+								XposedHelpers.callMethod(param.thisObject,
+										"setSpeed", settings.speed);
+							}
+						}
+					});
+		} catch (ClassNotFoundError e) {
+			// this package doesn't have FlyingLayout
 		}
 	}
 }
