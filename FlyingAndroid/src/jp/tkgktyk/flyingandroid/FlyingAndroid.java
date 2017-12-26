@@ -18,6 +18,10 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TabHost;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
@@ -50,6 +54,69 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 	}
 
 	private void hooksForActivity() {
+
+		XC_MethodHook replaceAddView = new XC_MethodReplacement() {
+			@Override
+			protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+				if (param.thisObject
+						.getClass()
+						.getName()
+						.equals("com.android.internal.policy.DecorView")) {
+					ViewGroup decor = (ViewGroup) param.thisObject;
+					FlyingLayout flyingLayout = null;
+					ViewGroup viewToAdd = null;
+					try {
+						 viewToAdd = (ViewGroup) param.args[0]; // possible to crash and reset
+						 View v = viewToAdd.getChildAt(0);
+						 if(v.getClass()
+								 .getName()
+								 .equals("jp.tkgktyk.flyinglayout.FlyingLayout")) {
+							flyingLayout = (FlyingLayout) v;
+						 }
+					}
+					catch (Throwable t) {
+						// Do nothing
+					}
+
+					if (flyingLayout != null) {
+						viewToAdd.removeViewAt(0);
+						decor.addView(flyingLayout);
+						ViewGroup container = (ViewGroup) flyingLayout.getChildAt(0);
+						List<View> containerChildren = new ArrayList<View>();
+						List<View> viewToAddChildren = new ArrayList<View>();
+						for (int i = 0; i < container.getChildCount(); ++i) {
+							containerChildren.add(container.getChildAt(i));
+						}
+						for (int i = 0; i < viewToAdd.getChildCount(); ++i) {
+							viewToAddChildren.add(viewToAdd.getChildAt(i));
+						}
+						viewToAdd.removeAllViews();
+						container.removeAllViews();
+						for (View v : containerChildren) {
+							viewToAdd.addView(v, v.getLayoutParams());
+						}
+						for (View v : viewToAddChildren) {
+							viewToAdd.addView(v, v.getLayoutParams());
+						}
+						container.addView(viewToAdd);
+						return null;
+					}
+				}
+				return XposedBridge.invokeOriginalMethod(param.method,
+						param.thisObject, param.args);
+			}
+		};
+		XposedHelpers.findAndHookMethod(ViewGroup.class, "addView",
+				View.class, ViewGroup.LayoutParams.class, replaceAddView);
+		XposedHelpers.findAndHookMethod(ViewGroup.class, "addView",
+				View.class, int.class, replaceAddView);
+		XposedHelpers.findAndHookMethod(ViewGroup.class, "addView",
+				View.class, int.class, ViewGroup.LayoutParams.class, replaceAddView);
+		XposedHelpers.findAndHookMethod(ViewGroup.class, "addView",
+				View.class, replaceAddView);
+		XposedHelpers.findAndHookMethod(ViewGroup.class, "addView",
+				View.class, int.class, int.class, replaceAddView);
+
 		XposedHelpers.findAndHookMethod(View.class, "setBackgroundDrawable",
 				Drawable.class, new XC_MethodReplacement() {
 					@Override
