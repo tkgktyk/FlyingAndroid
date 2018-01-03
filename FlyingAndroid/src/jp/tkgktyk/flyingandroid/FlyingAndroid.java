@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.PopupWindow;
 import android.widget.TabHost;
 
 import java.util.ArrayList;
@@ -48,11 +49,46 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			hooksForActivity();
 			hooksForDialog();
 			hooksForInputMethod();
+			hooksForPopupWindow();
 		} catch (Throwable t) {
 			FA.logE(t);
 		}
 	}
 
+	private void hooksForPopupWindow(){
+
+		XC_MethodHook createReplace = new XC_MethodReplacement() {
+			@Override
+			protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+				ViewGroup decor = (ViewGroup) XposedBridge.invokeOriginalMethod(param.method,
+						param.thisObject, param.args);
+
+				FA.Settings settings = new FA.Settings(sPref);
+				String packageName = decor.getContext().getPackageName();
+				FlyingHelper helper = null;
+				if (!settings.blackSet.contains(packageName)) {
+					// save / restore current focus
+					helper = new FlyingHelper(settings);
+					try {
+						if (settings.alwaysShowPin()) {
+							helper.installWithPinShownAlways(decor);
+						} else {
+							helper.install(decor);
+						}
+					} catch (Throwable t) {
+						FA.logE(t);
+						helper = null;
+					}
+				} else {
+					FA.logD(packageName + " is contained blacklist.");
+				}
+
+				return decor;
+			}
+		};
+
+		XposedBridge.hookAllMethods(PopupWindow.class, "createDecorView", createReplace);
+	}
 	private void hooksForActivity() {
 
 		XC_MethodHook replaceAddView = new XC_MethodReplacement() {
@@ -106,16 +142,7 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 						param.thisObject, param.args);
 			}
 		};
-		XposedHelpers.findAndHookMethod(ViewGroup.class, "addView",
-				View.class, ViewGroup.LayoutParams.class, replaceAddView);
-		XposedHelpers.findAndHookMethod(ViewGroup.class, "addView",
-				View.class, int.class, replaceAddView);
-		XposedHelpers.findAndHookMethod(ViewGroup.class, "addView",
-				View.class, int.class, ViewGroup.LayoutParams.class, replaceAddView);
-		XposedHelpers.findAndHookMethod(ViewGroup.class, "addView",
-				View.class, replaceAddView);
-		XposedHelpers.findAndHookMethod(ViewGroup.class, "addView",
-				View.class, int.class, int.class, replaceAddView);
+		XposedBridge.hookAllMethods(ViewGroup.class, "addView", replaceAddView);
 
 		XposedHelpers.findAndHookMethod(View.class, "setBackgroundDrawable",
 				Drawable.class, new XC_MethodReplacement() {
