@@ -17,7 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.PopupWindow;
 import android.widget.TabHost;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
@@ -44,12 +49,101 @@ public class FlyingAndroid implements IXposedHookZygoteInit,
 			hooksForActivity();
 			hooksForDialog();
 			hooksForInputMethod();
+			hooksForPopupWindow();
 		} catch (Throwable t) {
 			FA.logE(t);
 		}
 	}
 
+	private void hooksForPopupWindow(){
+
+		XC_MethodHook createReplace = new XC_MethodReplacement() {
+			@Override
+			protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+				ViewGroup decor = (ViewGroup) XposedBridge.invokeOriginalMethod(param.method,
+						param.thisObject, param.args);
+
+				FA.Settings settings = new FA.Settings(sPref);
+				String packageName = decor.getContext().getPackageName();
+				FlyingHelper helper = null;
+				if (!settings.blackSet.contains(packageName)) {
+					// save / restore current focus
+					helper = new FlyingHelper(settings);
+					try {
+						if (settings.alwaysShowPin()) {
+							helper.installWithPinShownAlways(decor);
+						} else {
+							helper.install(decor);
+						}
+					} catch (Throwable t) {
+						FA.logE(t);
+						helper = null;
+					}
+				} else {
+					FA.logD(packageName + " is contained blacklist.");
+				}
+
+				return decor;
+			}
+		};
+
+		XposedBridge.hookAllMethods(PopupWindow.class, "createDecorView", createReplace);
+	}
 	private void hooksForActivity() {
+
+		XC_MethodHook replaceAddView = new XC_MethodReplacement() {
+			@Override
+			protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+				if (param.thisObject
+						.getClass()
+						.getName()
+						.equals("com.android.internal.policy.DecorView")) {
+					ViewGroup decor = (ViewGroup) param.thisObject;
+					FlyingLayout flyingLayout = null;
+					ViewGroup viewToAdd = null;
+					try {
+						 viewToAdd = (ViewGroup) param.args[0]; // possible to crash and reset
+						 View v = viewToAdd.getChildAt(0);
+						 if(v.getClass()
+								 .getName()
+								 .equals("jp.tkgktyk.flyinglayout.FlyingLayout")) {
+							flyingLayout = (FlyingLayout) v;
+						 }
+					}
+					catch (Throwable t) {
+						// Do nothing
+					}
+
+					if (flyingLayout != null) {
+						viewToAdd.removeViewAt(0);
+						decor.addView(flyingLayout);
+						ViewGroup container = (ViewGroup) flyingLayout.getChildAt(0);
+						List<View> containerChildren = new ArrayList<View>();
+						List<View> viewToAddChildren = new ArrayList<View>();
+						for (int i = 0; i < container.getChildCount(); ++i) {
+							containerChildren.add(container.getChildAt(i));
+						}
+						for (int i = 0; i < viewToAdd.getChildCount(); ++i) {
+							viewToAddChildren.add(viewToAdd.getChildAt(i));
+						}
+						viewToAdd.removeAllViews();
+						container.removeAllViews();
+						for (View v : containerChildren) {
+							viewToAdd.addView(v, v.getLayoutParams());
+						}
+						for (View v : viewToAddChildren) {
+							viewToAdd.addView(v, v.getLayoutParams());
+						}
+						container.addView(viewToAdd);
+						return null;
+					}
+				}
+				return XposedBridge.invokeOriginalMethod(param.method,
+						param.thisObject, param.args);
+			}
+		};
+		XposedBridge.hookAllMethods(ViewGroup.class, "addView", replaceAddView);
+
 		XposedHelpers.findAndHookMethod(View.class, "setBackgroundDrawable",
 				Drawable.class, new XC_MethodReplacement() {
 					@Override
